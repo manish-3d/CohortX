@@ -4,21 +4,38 @@ exports.getProfile = async (req, res) => {
   try {
     const { username } = req.params;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-      select: {
-        id: true,
-        username: true,
-        bio: true,
-        avatar: true,
-        githubUsername: true,
-        linkedinUrl: true,
-        xUrl: true,
-        createdAt: true,
-      },
-    });
+      const user =
+await prisma.user.findUnique({
+where:{
+username
+},
+
+select:{
+id:true,
+
+username:true,
+
+bio:true,
+
+avatar:true,
+
+githubUsername:true,
+
+linkedinUrl:true,
+
+xUrl:true,
+
+projects:true,
+
+_count:{
+select:{
+followers:true,
+
+following:true
+}
+}
+}
+});
 
     if (!user) {
       return res.status(404).json({
