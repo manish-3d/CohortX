@@ -61,10 +61,30 @@ exports.getProject = async (req, res) => {
           id: req.params.id,
         },
         include: {
-          author: true,
-          comments: true,
-          likes: true,
+  author: {
+    select: {
+      username: true,
+      avatar: true,
+    },
+  },
+
+  comments: {
+    include: {
+      user: {
+        select: {
+          username: true,
+          avatar: true,
         },
+      },
+    },
+  },
+
+  likes: {
+    select: {
+      userId: true,
+    },
+  },
+},
       });
 
     if (!project) {
@@ -74,6 +94,57 @@ exports.getProject = async (req, res) => {
     }
 
     res.json(project);
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};
+exports.updateProject = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      githubUrl,
+      demoUrl,
+      coverImage,
+    } = req.body;
+
+    const project =
+      await prisma.project.findUnique({
+        where: {
+          id: req.params.id,
+        },
+      });
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    if (project.authorId !== req.user.id) {
+      return res.status(403).json({
+        message: "Forbidden",
+      });
+    }
+
+    const updatedProject =
+      await prisma.project.update({
+        where: {
+          id: req.params.id,
+        },
+        data: {
+          title,
+          description,
+          githubUrl,
+          demoUrl,
+          coverImage,
+        },
+      });
+
+    res.json(updatedProject);
+
   } catch (err) {
     res.status(500).json({
       error: err.message,
