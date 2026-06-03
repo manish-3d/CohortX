@@ -22,18 +22,46 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin:
+      "http://localhost:5173",
+
+    credentials:
+      true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+    ],
   })
 );
 
 app.use(
   session({
     secret:
-      process.env.SESSION_SECRET ||
-      "supersecret",
-    resave: false,
-    saveUninitialized: false,
+      process.env
+        .SESSION_SECRET,
+
+    resave:
+      false,
+
+    saveUninitialized:
+      false,
+
+    cookie: {
+      secure:
+        false,
+
+      httpOnly:
+        true,
+
+      maxAge:
+        1000 *
+        60 *
+        60 *
+        24,
+    },
   })
 );
 
