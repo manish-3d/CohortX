@@ -7,21 +7,17 @@ import {
 
 import api from "../services/api";
 
-const AuthContext =
+export const AuthContext =
   createContext();
 
 export function AuthProvider({
   children,
 }) {
-  const [
-    user,
-    setUser,
-  ] = useState(null);
+  const [user, setUser] =
+    useState(null);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     loadUser();
@@ -37,14 +33,12 @@ export function AuthProvider({
       setUser(
         res.data
       );
+
     } catch {
-      setUser(
-        null
-      );
+      setUser(null);
+
     } finally {
-      setLoading(
-        false
-      );
+      setLoading(false);
     }
   }
 

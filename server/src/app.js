@@ -18,12 +18,27 @@ require(
 );
 const app = express();
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+].filter(Boolean);
+
 app.use(express.json());
 
 app.use(
   cors({
-    origin:
-      "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error("Not allowed by CORS")
+      );
+    },
 
     credentials:
       true,
@@ -41,7 +56,8 @@ app.use(
   session({
     secret:
       process.env
-        .SESSION_SECRET,
+        .SESSION_SECRET ||
+      "cohortx-dev-session-secret",
 
     resave:
       false,
@@ -71,7 +87,9 @@ app.use(passport.session());
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/projects", projectRoutes);
 app.use("/projects", likeRoutes);
+app.use("/projects", commentRoutes);
 app.use("/users",followRoutes);
 app.use("/feed",feedRoutes);
 app.use(fileUpload({useTempFiles:true}));

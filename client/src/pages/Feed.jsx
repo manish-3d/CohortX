@@ -1,25 +1,22 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import api from "../services/api";
 
 import Navbar from "../components/Navbar";
+import ProjectCard from "../components/ProjectCard";
 
 export default function Feed() {
-  const [
-    projects,
+  const [projects, setProjects] =
+    useState([]);
 
-    setProjects,
-
-  ] = useState([]);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
-    fetchFeed();
+    loadFeed();
   }, []);
 
-  async function fetchFeed() {
+  async function loadFeed() {
     try {
       const res =
         await api.get(
@@ -29,66 +26,91 @@ export default function Feed() {
       setProjects(
         res.data
       );
-    } catch {
+
+    } catch (err) {
+      console.log(err);
+
       alert(
-        "Feed failed"
+        "Failed to load feed"
+      );
+
+    } finally {
+      setLoading(
+        false
       );
     }
   }
 
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+
+        <div
+          style={{
+            padding:
+              "40px",
+          }}
+        >
+          <h2>
+            Loading feed...
+          </h2>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div>
-
       <Navbar />
 
       <div
         style={{
+          maxWidth:
+            "900px",
+
+          margin:
+            "40px auto",
+
           padding:
-            "30px",
+            "20px",
         }}
       >
         <h1>
           Feed
         </h1>
 
-        {projects.map(
-          project => (
-            <div
-              key={
-                project.id
-              }
-            >
-              <h2>
-                {
-                  project.title
-                }
-              </h2>
+        {projects.length === 0 ? (
+          <div>
+            <h3>
+              No projects found
+            </h3>
 
-              <p>
-                {
-                  project.description
-                }
-              </p>
+            <p>
+              Follow builders or create a project.
+            </p>
+          </div>
 
-              <small>
+        ) : (
 
-                By
-
-                {" "}
-
-                {
-                  project.author
-                    .username
+          projects.map(
+            (
+              project
+            ) => (
+              <ProjectCard
+                key={
+                  project.id
                 }
 
-              </small>
-
-              <hr />
-            </div>
+                project={
+                  project
+                }
+              />
+            )
           )
+
         )}
       </div>
-
     </div>
   );
 }

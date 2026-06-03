@@ -9,10 +9,17 @@ import {
 export default function ProtectedRoute({
   children,
 }) {
+  const auth =
+    useAuth();
+
+  if (!auth) {
+    return null;
+  }
+
   const {
     user,
     loading,
-  } = useAuth();
+  } = auth;
 
   if (loading) {
     return (

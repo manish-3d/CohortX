@@ -4,50 +4,60 @@ exports.getProfile = async (req, res) => {
   try {
     const { username } = req.params;
 
-      const user =
-await prisma.user.findUnique({
-where:{
-username
-},
+    const user =
+      await prisma.user.findUnique({
+        where: {
+          username,
+        },
 
-select:{
-id:true,
+        include: {
+          projects: {
+            include: {
+              author: {
+                select: {
+                  username: true,
+                },
+              },
 
-username:true,
+              _count: {
+                select: {
+                  likes: true,
+                  comments: true,
+                },
+              },
+            },
+          },
 
-bio:true,
-
-avatar:true,
-
-githubUsername:true,
-
-linkedinUrl:true,
-
-xUrl:true,
-
-projects:true,
-
-_count:{
-select:{
-followers:true,
-
-following:true
-}
-}
-}
-});
+          _count: {
+            select: {
+              followers: true,
+              following: true,
+            },
+          },
+        },
+      });
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res
+        .status(404)
+        .json({
+          message:
+            "User not found",
+        });
     }
 
-    res.json(user);
+    return res.json(user);
+
   } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
+
+    console.log(err);
+
+    return res
+      .status(500)
+      .json({
+        message:
+          "Server error",
+      });
   }
 };
 exports.updateProfile = async (req, res) => {
@@ -78,5 +88,51 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({
       error: err.message,
     });
+  }
+};
+exports.searchUsers = async (
+  req,
+  res
+) => {
+  try {
+    const { q } = req.query;
+
+    const users =
+      await prisma.user.findMany({
+        where: {
+          username: {
+            contains:
+              q,
+
+            mode:
+              "insensitive",
+          },
+        },
+
+        select: {
+          id: true,
+
+          username: true,
+
+          bio: true,
+
+          avatar: true,
+        },
+
+        take: 20,
+      });
+
+    return res.json(
+      users
+    );
+
+  } catch {
+
+    return res
+      .status(500)
+      .json({
+        message:
+          "Search failed",
+      });
   }
 };

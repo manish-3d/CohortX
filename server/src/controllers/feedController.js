@@ -1,100 +1,82 @@
 const prisma =
-require("../config/db");
+  require("../config/db");
 
 exports.getFeed =
-async (
-req,
-res
-)=>{
+  async (
+    req,
+    res
+  ) => {
+    try {
 
-try{
+      const following =
+        await prisma.follow.findMany({
+          where: {
+            followerId:
+              req.user.id,
+          },
 
-const following =
-await prisma.follow.findMany({
+          select: {
+            followingId:
+              true,
+          },
+        });
 
-where:{
-followerId:
-req.user.id
-},
+      const ids =
+        following.map(
+          (f) =>
+            f.followingId
+        );
 
-select:{
-followingId:true
-}
+      const projects =
+        await prisma.project.findMany({
+          where:
+            ids.length
+              ? {
+                  authorId: {
+                    in: ids,
+                  },
+                }
+              : {},
 
-});
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+              },
+            },
 
-const ids =
-following.map(
-f =>
-f.followingId
-);
+            _count: {
+              select: {
+                likes: true,
+                comments: true,
+              },
+            },
+          },
 
-const projects =
-await prisma.project.findMany({
+          orderBy: {
+            createdAt:
+              "desc",
+          },
 
-where:
+          take: 20,
+        });
 
-ids.length
+      return res.json(
+        projects
+      );
 
-?
+    } catch (err) {
 
-{
-authorId:{
-in:ids
-}
-}
+      console.log(err);
 
-:
+      return res
+        .status(500)
+        .json({
+          message:
+            "Failed to load feed",
+        });
 
-{},
-
-include:{
-
-author:{
-select:{
-id:true,
-username:true,
-avatar:true
-}
-},
-
-_count:{
-select:{
-likes:true,
-comments:true
-}
-}
-
-},
-
-orderBy:{
-createdAt:
-"desc"
-},
-
-take:20
-
-});
-
-res.json(
-projects
-);
-
-}
-
-catch(err){
-
-console.log(
-err
-);
-
-res.status(500).json({
-
-message:
-"Failed to load feed"
-
-});
-
-}
-
-};
+    }
+  };

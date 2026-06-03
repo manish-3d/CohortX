@@ -1,14 +1,26 @@
-import { Link } from "react-router-dom";
-
-import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 
+import {
+  useAuth,
+} from "../context/AuthContext";
+
 export default function Navbar() {
+  const navigate =
+    useNavigate();
+
+  const auth =
+    useAuth();
+
+  if (!auth) {
+    return null;
+  }
+
   const {
     user,
     setUser,
-  } = useAuth();
+  } = auth;
 
   async function handleLogout() {
     try {
@@ -16,10 +28,14 @@ export default function Navbar() {
         "/auth/logout"
       );
 
-      setUser(null);
+      setUser(
+        null
+      );
 
-      window.location.href =
-        "/login";
+      navigate(
+        "/login"
+      );
+
     } catch {
       alert(
         "Logout failed"
@@ -34,28 +50,49 @@ export default function Navbar() {
         justifyContent:
           "space-between",
 
-        padding: "20px",
+        padding:
+          "20px",
 
         borderBottom:
           "1px solid #ddd",
       }}
     >
-      <Link to="/">
+      <Link to="/feed">
         CohortX
       </Link>
 
       <div
         style={{
-          display: "flex",
+          display:
+            "flex",
 
-          gap: "20px",
+          gap:
+            "20px",
         }}
       >
-        <Link
-          to={`/profile/${user?.username}`}
-        >
-          {user?.username}
+        <Link to="/create">
+          Create
         </Link>
+
+        <Link to="/explore">
+          Explore
+        </Link>
+
+        <Link to="/search">
+          Discover
+        </Link>
+
+        <Link to="/profile/edit">
+          Edit
+        </Link>
+
+        {user && (
+          <Link
+            to={`/profile/${user.username}`}
+          >
+            {user.username}
+          </Link>
+        )}
 
         <button
           onClick={

@@ -1,9 +1,8 @@
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
 import {
   useNavigate,
+  Link,
 } from "react-router-dom";
 
 import api from "../services/api";
@@ -16,9 +15,8 @@ export default function Login() {
   const navigate =
     useNavigate();
 
-  const {
-    setUser,
-  } = useAuth();
+  const { setUser } =
+    useAuth();
 
   const [form, setForm] =
     useState({
@@ -26,12 +24,26 @@ export default function Login() {
       password: "",
     });
 
+  const [loading, setLoading] =
+    useState(false);
+
+  function handleChange(e) {
+    setForm({
+      ...form,
+
+      [e.target.name]:
+        e.target.value,
+    });
+  }
+
   async function handleSubmit(
     e
   ) {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res =
         await api.post(
           "/auth/login",
@@ -42,27 +54,49 @@ export default function Login() {
         res.data.user
       );
 
-      navigate("/");
+      navigate(
+        "/feed"
+      );
+
     } catch (err) {
+
+      console.log(err);
+
       alert(
+        err.response
+          ?.data
+          ?.message ||
         "Login failed"
       );
+
+    } finally {
+
+      setLoading(
+        false
+      );
+
     }
   }
 
-  function handleChange(
-    e
-  ) {
-    setForm({
-      ...form,
-
-      [e.target.name]:
-        e.target.value,
-    });
-  }
-
   return (
-    <div>
+    <div
+      style={{
+        maxWidth:
+          "500px",
+
+        margin:
+          "80px auto",
+
+        padding:
+          "30px",
+
+        border:
+          "1px solid #ddd",
+
+        borderRadius:
+          "10px",
+      }}
+    >
       <h1>
         Login
       </h1>
@@ -82,8 +116,11 @@ export default function Login() {
           onChange={
             handleChange
           }
+
+          required
         />
 
+        <br />
         <br />
 
         <input
@@ -96,16 +133,39 @@ export default function Login() {
           onChange={
             handleChange
           }
+
+          required
         />
 
+        <br />
         <br />
 
         <button
           type="submit"
+
+          disabled={
+            loading
+          }
         >
-          Login
+          {loading
+            ? "Logging in..."
+            : "Login"}
         </button>
       </form>
+
+      <br />
+
+      <p>
+        Don't have an account?
+
+        {" "}
+
+        <Link
+          to="/register"
+        >
+          Register
+        </Link>
+      </p>
     </div>
   );
 }

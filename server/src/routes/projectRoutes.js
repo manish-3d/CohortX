@@ -6,6 +6,7 @@ const {
   getProject,
   updateProject,
   deleteProject,
+  exploreProjects
 } = require("../controllers/projectController");
 
 const {
@@ -15,7 +16,7 @@ const {
 const router = express.Router();
 
 router.get("/", getProjects);
-
+router.get("/explore",isAuthenticated, exploreProjects);
 router.get("/:id", getProject);
 
 router.post(

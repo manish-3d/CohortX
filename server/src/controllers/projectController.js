@@ -187,3 +187,44 @@ exports.deleteProject = async (req, res) => {
     });
   }
 };
+exports.exploreProjects = async (req, res) => {
+  try {
+    const projects =
+      await prisma.project.findMany({
+        include: {
+          author: {
+            select: {
+              id: true,
+              username: true,
+              avatar: true,
+            },
+          },
+
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            },
+          },
+        },
+
+        orderBy: {
+          createdAt: "desc",
+        },
+
+        take: 30,
+      });
+
+    return res.json(projects);
+
+  } catch (err) {
+    console.log(err);
+
+    return res
+      .status(500)
+      .json({
+        message:
+          "Explore failed",
+      });
+  }
+};

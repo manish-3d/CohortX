@@ -2,6 +2,7 @@ const express = require("express");
 
 const {
   getProfile,
+  searchUsers,
   updateProfile,
 } = require("../controllers/userController");
 
@@ -10,6 +11,8 @@ const {
 } = require("../middleware/authMiddleware");
 
 const router = express.Router();
+
+router.get("/search", searchUsers);
 
 router.get("/:username", getProfile);
 
