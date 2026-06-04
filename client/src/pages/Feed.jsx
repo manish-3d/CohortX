@@ -87,16 +87,14 @@ export default function Feed() {
             </h3>
 
             <p>
-              Follow builders or create a project.
+              Follow users or create projects.
             </p>
           </div>
 
         ) : (
 
           projects.map(
-            (
-              project
-            ) => (
+            (project) => (
               <ProjectCard
                 key={
                   project.id
