@@ -1,42 +1,79 @@
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
 import api from "../services/api";
 
 export default function LikeButton({
   projectId,
-  initialLikes,
+  initialLikes = 0,
+  initialLiked = false,
 }) {
-  const [
-    likes,
-    setLikes,
-  ] = useState(initialLikes);
+  const [likes, setLikes] =
+    useState(initialLikes);
 
-  async function handleLike() {
+  const [liked, setLiked] =
+    useState(initialLiked);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  async function handleToggle() {
     try {
-      await api.post(
-        `/projects/${projectId}/like`
-      );
+      setLoading(true);
+
+      const res =
+        await api.post(
+          `/projects/${projectId}/like/toggle`
+        );
 
       setLikes(
-        (prev) =>
-          prev + 1
+        res.data.likesCount
       );
-    } catch {
+
+      setLiked(
+        res.data.liked
+      );
+
+    } catch (err) {
+      console.log(err);
+
       alert(
-        "Already liked"
+        "Failed to update like"
       );
+
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <button
-      className="action-button"
-      onClick={handleLike}
-      type="button"
+      onClick={
+        handleToggle
+      }
+
+      disabled={
+        loading
+      }
+
+      aria-pressed={
+        liked
+      }
+
+      style={{
+        cursor:
+          loading
+            ? "not-allowed"
+            : "pointer",
+
+        background:
+          liked
+            ? "#dc2626"
+            : "black",
+      }}
     >
-      Like {likes}
+      {loading
+        ? "..."
+        : `${liked ? "Liked" : "Like"} ${likes}`}
     </button>
   );
 }
