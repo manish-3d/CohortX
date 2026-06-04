@@ -1,139 +1,104 @@
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
-import {
-  Link,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import api from "../services/api";
+
 import Navbar from "../components/Navbar";
 
 export default function Search() {
-  const [
-    q,
-    setQ,
-  ] = useState("");
+  const [query, setQuery] =
+    useState("");
 
-  const [
-    users,
-    setUsers,
-  ] = useState([]);
+  const [users, setUsers] =
+    useState([]);
 
-  async function search(e) {
-    e.preventDefault();
-
-    const query =
-      q.trim();
-
-    if (!query) {
-      setUsers([]);
+  async function handleSearch() {
+    if (!query.trim()) {
       return;
     }
 
     try {
       const res =
         await api.get(
-          `/users/search?q=${encodeURIComponent(query)}`
+          `/users/search?q=${query}`
         );
 
       setUsers(
         res.data
       );
-    } catch (err) {
+
+    } catch {
       alert(
-        err.response
-          ?.data
-          ?.message ||
-        err.response
-          ?.data
-          ?.error ||
         "Search failed"
       );
     }
   }
 
   return (
-    <div className="app-shell">
+    <div>
       <Navbar />
 
-      <main className="main-column">
-        <header className="page-header">
-          <div>
-            <h1 className="page-title">
-              Discover
-            </h1>
+      <div
+        style={{
+          maxWidth: "700px",
+          margin: "40px auto",
+          padding: "20px",
+        }}
+      >
+        <h1>
+          Discover Builders
+        </h1>
 
-            <p className="page-subtitle">
-              Find builders, founders, and collaborators
-            </p>
-          </div>
-        </header>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          <input
+            placeholder="Search users"
 
-        <section className="form-panel">
-          <form
-            className="comment-form"
-            onSubmit={search}
+            value={query}
+
+            onChange={(e) =>
+              setQuery(
+                e.target.value
+              )
+            }
+          />
+
+          <button
+            onClick={
+              handleSearch
+            }
           >
-            <input
-              placeholder="Search by username"
-              value={q}
-              onChange={(e) =>
-                setQ(
-                  e.target.value
-                )
-              }
-            />
+            Search
+          </button>
+        </div>
 
-            <button
-              className="primary-button"
-              type="submit"
-            >
-              Search
-            </button>
-          </form>
-        </section>
+        <br />
 
-        {users.length === 0 ? (
-          <div className="feed-empty">
-            Search for a username to discover builders.
-          </div>
-        ) : (
-          users.map((user) => (
-            <article
-              className="post-card"
+        {users.map(
+          (user) => (
+            <div
               key={user.id}
             >
               <Link
-                className="avatar"
                 to={`/profile/${user.username}`}
               >
-                {user.username?.[0] || "B"}
+                @{user.username}
               </Link>
 
-              <div>
-                <div className="post-head">
-                  <Link
-                    className="account-name"
-                    to={`/profile/${user.username}`}
-                  >
-                    {user.username}
-                  </Link>
+              <p>
+                {user.bio}
+              </p>
 
-                  <span className="post-meta">
-                    @{user.username}
-                  </span>
-                </div>
-
-                <p className="post-body">
-                  {user.bio ||
-                    "Building in public on CohortX."}
-                </p>
-              </div>
-            </article>
-          ))
+              <hr />
+            </div>
+          )
         )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import api from "../services/api";
 
@@ -46,18 +49,36 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        display: "flex",
+        display:
+          "flex",
+
         justifyContent:
           "space-between",
 
+        alignItems:
+          "center",
+
         padding:
-          "20px",
+          "20px 40px",
+
+        background:
+          "#fff",
 
         borderBottom:
-          "1px solid #ddd",
+          "1px solid #eee",
       }}
     >
-      <Link to="/feed">
+      <Link
+        to="/feed"
+
+        style={{
+          fontSize:
+            "28px",
+
+          fontWeight:
+            "700",
+        }}
+      >
         CohortX
       </Link>
 
@@ -66,8 +87,11 @@ export default function Navbar() {
           display:
             "flex",
 
+          alignItems:
+            "center",
+
           gap:
-            "20px",
+            "30px",
         }}
       >
         <Link to="/create">
@@ -82,17 +106,42 @@ export default function Navbar() {
           Discover
         </Link>
 
-        <Link to="/profile/edit">
-          Edit
+        <Link
+          to="/profile/edit"
+        >
+          Edit Profile
         </Link>
 
-        {user && (
-          <Link
-            to={`/profile/${user.username}`}
-          >
-            {user.username}
-          </Link>
-        )}
+        <Link
+          to={`/profile/${user?.username}`}
+        >
+          <img
+            src={
+              user?.avatar ||
+
+              "https://placehold.co/40"
+            }
+
+            alt="avatar"
+
+            style={{
+              width:
+                "42px",
+
+              height:
+                "42px",
+
+              borderRadius:
+                "50%",
+
+              objectFit:
+                "cover",
+
+              border:
+                "2px solid #ddd",
+            }}
+          />
+        </Link>
 
         <button
           onClick={
