@@ -1,57 +1,48 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import api from "../services/api";
 
 export default function CommentSection({
   projectId,
+  count = 0,
 }) {
-  const [
-    comments,
-    setComments,
-  ] = useState([]);
+  const [comments, setComments] =
+    useState([]);
 
-  const [
-    content,
-    setContent,
-  ] = useState("");
+  const [content, setContent] =
+    useState("");
+
+  const [open, setOpen] =
+    useState(false);
 
   useEffect(() => {
-    async function loadComments() {
-      try {
-        const res =
-          await api.get(
-            `/projects/${projectId}/comments`
-          );
-
-        setComments(
-          res.data
-        );
-      } catch (err) {
-        alert(
-          err.response
-            ?.data
-            ?.message ||
-          err.response
-            ?.data
-            ?.error ||
-          "Failed to load comments"
-        );
-      }
+    if (open) {
+      loadComments();
     }
+  }, [open]);
 
-    loadComments();
-  }, [
-    projectId,
-  ]);
+  async function loadComments() {
+    try {
+      const res =
+        await api.get(
+          `/projects/${projectId}/comments`
+        );
+
+      setComments(
+        res.data
+      );
+
+    } catch {
+      alert(
+        "Comments failed"
+      );
+    }
+  }
 
   async function addComment() {
-    const trimmed =
-      content.trim();
-
-    if (!trimmed) {
+    if (
+      !content.trim()
+    ) {
       return;
     }
 
@@ -60,73 +51,187 @@ export default function CommentSection({
         await api.post(
           `/projects/${projectId}/comments`,
           {
-            content: trimmed,
+            content,
           }
         );
 
-      setComments((prev) => [
-        res.data,
-        ...prev,
-      ]);
+      setComments(
+        [
+          ...comments,
+          res.data,
+        ]
+      );
 
       setContent("");
-    } catch (err) {
+
+    } catch {
       alert(
-        err.response
-          ?.data
-          ?.message ||
-        err.response
-          ?.data
-          ?.error ||
-        "Comment failed"
+        "Failed"
       );
     }
   }
 
+  const preview =
+    comments[0];
+
   return (
-    <section className="comment-section">
-      <h3 className="comment-title">
-        Join the thread
-      </h3>
+    <>
+      {preview && (
+        <div>
+          <strong>
+            {
+              preview.user
+                ?.username
+            }
+          </strong>
 
-      <div className="comment-form">
-        <input
-          placeholder="Post a thoughtful reply"
-          value={content}
-          onChange={(e) =>
-            setContent(
-              e.target.value
-            )
+          {" "}
+
+          {
+            preview.content
           }
-        />
-
-        <button
-          className="primary-button"
-          onClick={addComment}
-          type="button"
-        >
-          Reply
-        </button>
-      </div>
-
-      {comments.length > 0 && (
-        <div className="comment-list">
-          {comments.map((comment) => (
-            <div
-              className="comment-item"
-              key={comment.id}
-            >
-              <strong>
-                @{comment.user?.username || "builder"}
-              </strong>
-
-              <p>
-                {comment.content}
-              </p>
-            </div>
-          ))}
         </div>
       )}
-    </section>
+
+      <button
+        onClick={() =>
+          setOpen(
+            true
+          )
+        }
+
+        style={{
+          background:
+            "transparent",
+
+          color:
+            "#666",
+
+          padding:
+            0,
+        }}
+      >
+        View all {count} comments
+      </button>
+
+      {open && (
+        <div
+          style={{
+            position:
+              "fixed",
+
+            inset:
+              0,
+
+            background:
+              "rgba(0,0,0,.5)",
+
+            display:
+              "flex",
+
+            justifyContent:
+              "center",
+
+            alignItems:
+              "center",
+          }}
+        >
+          <div
+            style={{
+              background:
+                "white",
+
+              width:
+                "600px",
+
+              maxHeight:
+                "80vh",
+
+              overflow:
+                "auto",
+
+              padding:
+                "30px",
+
+              borderRadius:
+                "20px",
+            }}
+          >
+            <button
+              onClick={() =>
+                setOpen(
+                  false
+                )
+              }
+            >
+              ✕
+
+            </button>
+
+            <h2>
+              Comments
+            </h2>
+
+            {comments.map(
+              (
+                comment
+              ) => (
+                <div
+                  key={
+                    comment.id
+                  }
+
+                  style={{
+                    marginBottom:
+                      "20px",
+                  }}
+                >
+                  <strong>
+                    {
+                      comment.user
+                        ?.username
+                    }
+                  </strong>
+
+                  <p>
+                    {
+                      comment.content
+                    }
+                  </p>
+                </div>
+              )
+            )}
+
+            <input
+              value={
+                content
+              }
+
+              onChange={
+                (
+                  e
+                ) =>
+                  setContent(
+                    e.target
+                      .value
+                  )
+              }
+
+              placeholder="Add comment"
+            />
+
+            <br />
+
+            <button
+              onClick={
+                addComment
+              }
+            >
+              Post
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
