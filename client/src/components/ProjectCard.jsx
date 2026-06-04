@@ -1,6 +1,4 @@
-import {
-  Link,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import LikeButton from "./LikeButton";
 import CommentSection from "./CommentSection";
@@ -8,92 +6,135 @@ import CommentSection from "./CommentSection";
 export default function ProjectCard({
   project,
 }) {
-  const author =
-    project.author || {};
-
-  const initial =
-    author.username?.[0] || "B";
-
   return (
-    <article className="post-card">
-      <Link
-        className="avatar"
-        to={`/profile/${author.username}`}
+    <div
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: "12px",
+
+        padding: "24px",
+
+        marginBottom: "24px",
+
+        background: "#fff",
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: "10px",
+        }}
       >
-        {initial}
-      </Link>
+        {project.title}
+      </h2>
 
-      <div>
-        <div className="post-head">
-          <Link
-            className="account-name"
-            to={`/profile/${author.username}`}
-          >
-            {author.username || "Builder"}
-          </Link>
+      <p
+        style={{
+          marginBottom: "20px",
+        }}
+      >
+        {project.description}
+      </p>
 
-          <span className="post-meta">
-            @{author.username || "cohortx"}
-          </span>
+      <div
+        style={{
+          marginBottom: "20px",
+        }}
+      >
+        By{" "}
 
-          <span className="post-meta">
-            · now
-          </span>
-        </div>
-
-        <h2 className="post-title">
-          {project.title}
-        </h2>
-
-        <p className="post-body">
-          {project.description}
-        </p>
-
-        {(project.githubUrl ||
-          project.demoUrl) && (
-          <div className="post-links">
-            {project.githubUrl && (
-              <a
-                className="link-chip"
-                href={project.githubUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub
-              </a>
-            )}
-
-            {project.demoUrl && (
-              <a
-                className="link-chip"
-                href={project.demoUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Live demo
-              </a>
-            )}
-          </div>
-        )}
-
-        <div className="post-actions">
-          <LikeButton
-            projectId={project.id}
-            initialLikes={
-              project._count?.likes || 0
-            }
-          />
-
-          <span className="action-button">
-            Comments{" "}
-            {project._count?.comments || 0}
-          </span>
-        </div>
-
-        <CommentSection
-          projectId={project.id}
-        />
+        <Link
+          to={`/profile/${project.author.username}`}
+        >
+          @{project.author.username}
+        </Link>
       </div>
-    </article>
+
+      <div
+        style={{
+          display: "flex",
+
+          gap: "20px",
+
+          alignItems:
+            "center",
+
+          marginBottom:
+            "20px",
+        }}
+      >
+        <LikeButton
+          projectId={
+            project.id
+          }
+
+          initialLikes={
+            project._count
+              ?.likes || 0
+          }
+
+          initialLiked={
+            Boolean(
+              project.likes
+                ?.length
+            )
+          }
+        />
+
+        <span>
+          💬{" "}
+          {
+            project._count
+              ?.comments || 0
+          }
+        </span>
+      </div>
+
+      {(project.githubUrl ||
+        project.demoUrl) && (
+        <div
+          style={{
+            marginBottom:
+              "20px",
+          }}
+        >
+          {project.githubUrl && (
+            <a
+              href={
+                project.githubUrl
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+          )}
+
+          {"  "}
+
+          {project.demoUrl && (
+            <a
+              href={
+                project.demoUrl
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              Live Demo
+            </a>
+          )}
+        </div>
+      )}
+
+     <CommentSection
+projectId={
+project.id
+}
+
+count={
+project._count
+?.comments
+}
+/>
+    </div>
   );
 }

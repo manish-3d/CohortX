@@ -206,6 +206,17 @@ exports.exploreProjects = async (req, res) => {
               comments: true,
             },
           },
+
+          likes: {
+            where: {
+              userId:
+                req.user.id,
+            },
+
+            select: {
+              userId: true,
+            },
+          },
         },
 
         orderBy: {
