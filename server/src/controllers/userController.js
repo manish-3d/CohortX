@@ -25,6 +25,17 @@ exports.getProfile = async (req, res) => {
                   comments: true,
                 },
               },
+
+              likes: {
+                where: {
+                  userId:
+                    req.user.id,
+                },
+
+                select: {
+                  userId: true,
+                },
+              },
             },
           },
 
@@ -136,3 +147,54 @@ exports.searchUsers = async (
       });
   }
 };
+exports.uploadAvatar =
+  async (
+    req,
+    res
+  ) => {
+    try {
+      if (
+        !req.file
+      ) {
+        return res
+          .status(400)
+          .json({
+            message:
+              "Image required",
+          });
+      }
+
+      const apiUrl =
+        process.env.API_URL ||
+        `${req.protocol}://${req.get("host")}`;
+
+      const avatar =
+        `${apiUrl}/uploads/${req.file.filename}`;
+
+      const user =
+        await prisma.user.update({
+          where: {
+            id:
+              req.user.id,
+          },
+
+          data: {
+            avatar,
+          },
+        });
+
+      return res.json(
+        user
+      );
+
+    } catch {
+
+      return res
+        .status(500)
+        .json({
+          message:
+            "Upload failed",
+        });
+
+    }
+  };

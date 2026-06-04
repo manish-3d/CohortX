@@ -1,21 +1,15 @@
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
 import api from "../services/api";
 
 export default function FollowButton({
   userId,
 }) {
-  const [
-    following,
-    setFollowing,
-  ] = useState(false);
+  const [following, setFollowing] =
+    useState(false);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   async function handleFollow() {
     try {
@@ -27,6 +21,7 @@ export default function FollowButton({
         );
 
         setFollowing(false);
+
       } else {
         await api.post(
           `/users/${userId}/follow`
@@ -34,10 +29,12 @@ export default function FollowButton({
 
         setFollowing(true);
       }
+
     } catch {
       alert(
         "Action failed"
       );
+
     } finally {
       setLoading(false);
     }
@@ -45,20 +42,19 @@ export default function FollowButton({
 
   return (
     <button
-      className={
-        following
-          ? "secondary-button"
-          : "primary-button"
+      onClick={
+        handleFollow
       }
-      onClick={handleFollow}
-      disabled={loading}
-      type="button"
+
+      disabled={
+        loading
+      }
     >
       {loading
-        ? "Loading"
+        ? "Loading..."
         : following
-          ? "Following"
-          : "Follow"}
+        ? "Following"
+        : "Follow"}
     </button>
   );
 }
