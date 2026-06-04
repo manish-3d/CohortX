@@ -1,11 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import api from "../services/api";
@@ -14,68 +9,71 @@ export default function EditProfile() {
   const navigate =
     useNavigate();
 
-  const [
-    form,
-    setForm,
-  ] = useState({
-    bio: "",
-    githubUsername: "",
-    linkedinUrl: "",
-    xUrl: "",
-  });
+  const [form, setForm] =
+    useState({
+      bio: "",
+      githubUsername: "",
+      linkedinUrl: "",
+      xUrl: "",
+    });
 
   useEffect(() => {
-    async function loadProfile() {
-      try {
-        const res =
-          await api.get(
-            "/auth/me"
-          );
-
-        setForm({
-          bio:
-            res.data.bio ||
-            "",
-          githubUsername:
-            res.data.githubUsername ||
-            "",
-          linkedinUrl:
-            res.data.linkedinUrl ||
-            "",
-          xUrl:
-            res.data.xUrl ||
-            "",
-        });
-      } catch {
-        alert(
-          "Failed to load"
-        );
-      }
-    }
-
     loadProfile();
   }, []);
+
+  async function loadProfile() {
+    try {
+      const res =
+        await api.get(
+          "/auth/me"
+        );
+
+      setForm({
+        bio:
+          res.data.bio || "",
+
+        githubUsername:
+          res.data.githubUsername || "",
+
+        linkedinUrl:
+          res.data.linkedinUrl || "",
+
+        xUrl:
+          res.data.xUrl || "",
+      });
+
+    } catch {
+      alert(
+        "Failed to load profile"
+      );
+    }
+  }
 
   function handleChange(e) {
     setForm({
       ...form,
+
       [e.target.name]:
         e.target.value,
     });
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(
+    e
+  ) {
     e.preventDefault();
 
     try {
       await api.put(
         "/users/profile/edit",
+
         form
       );
 
       navigate(
         "/feed"
       );
+
     } catch {
       alert(
         "Update failed"
@@ -84,92 +82,70 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="app-shell">
+    <div>
       <Navbar />
 
-      <main className="main-column">
-        <header className="page-header">
-          <div>
-            <h1 className="page-title">
-              Edit profile
-            </h1>
+      <div
+        style={{
+          maxWidth: "700px",
+          margin: "40px auto",
+          padding: "20px",
+        }}
+      >
+        <h1>
+          Edit Profile
+        </h1>
 
-            <p className="page-subtitle">
-              Make your builder profile feel investable
-            </p>
-          </div>
-        </header>
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
+          <textarea
+            name="bio"
+            placeholder="Bio"
+            value={form.bio}
+            onChange={handleChange}
+          />
 
-        <section className="form-panel">
-          <form
-            className="form-card"
-            onSubmit={handleSubmit}
-          >
-            <div className="field">
-              <label htmlFor="bio">
-                Bio
-              </label>
+          <br />
+          <br />
 
-              <textarea
-                id="bio"
-                name="bio"
-                placeholder="What are you building?"
-                value={form.bio}
-                onChange={handleChange}
-              />
-            </div>
+          <input
+            name="githubUsername"
+            placeholder="GitHub"
+            value={form.githubUsername}
+            onChange={handleChange}
+          />
 
-            <div className="field">
-              <label htmlFor="githubUsername">
-                GitHub username
-              </label>
+          <br />
+          <br />
 
-              <input
-                id="githubUsername"
-                name="githubUsername"
-                placeholder="your-handle"
-                value={form.githubUsername}
-                onChange={handleChange}
-              />
-            </div>
+          <input
+            name="linkedinUrl"
+            placeholder="LinkedIn"
+            value={form.linkedinUrl}
+            onChange={handleChange}
+          />
 
-            <div className="field">
-              <label htmlFor="linkedinUrl">
-                LinkedIn URL
-              </label>
+          <br />
+          <br />
 
-              <input
-                id="linkedinUrl"
-                name="linkedinUrl"
-                placeholder="https://linkedin.com/in/..."
-                value={form.linkedinUrl}
-                onChange={handleChange}
-              />
-            </div>
+          <input
+            name="xUrl"
+            placeholder="X"
+            value={form.xUrl}
+            onChange={handleChange}
+          />
 
-            <div className="field">
-              <label htmlFor="xUrl">
-                X URL
-              </label>
+          <br />
+          <br />
 
-              <input
-                id="xUrl"
-                name="xUrl"
-                placeholder="https://x.com/..."
-                value={form.xUrl}
-                onChange={handleChange}
-              />
-            </div>
-
-            <button
-              className="post-button"
-              type="submit"
-            >
-              Save profile
-            </button>
-          </form>
-        </section>
-      </main>
+          <button>
+            Save
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
