@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 
 import GithubHeatmap from "./GithubHeatmap";
+import PageLoader from "./PageLoader";
 
 export default function GithubStats({
   username,
@@ -137,9 +138,10 @@ export default function GithubStats({
             <br />
 
             {loading ? (
-              <p>
-                Loading...
-              </p>
+              <PageLoader
+                text="Loading contributions..."
+                minHeight="260px"
+              />
             ) : (
               <GithubHeatmap
                 data={
