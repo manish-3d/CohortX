@@ -1,140 +1,415 @@
-import { Link } from "react-router-dom";
 
-import LikeButton from "./LikeButton";
-import CommentSection from "./CommentSection";
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import LikeButton
+from "./LikeButton";
+
+import CommentSection
+from "./CommentSection";
 
 export default function ProjectCard({
   project,
 }) {
+  const navigate =
+    useNavigate();
+
   return (
+
     <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "12px",
 
-        padding: "24px",
+      role="link"
 
-        marginBottom: "24px",
+      tabIndex={0}
 
-        background: "#fff",
+      onClick={() =>
+        navigate(
+          `/projects/${project.id}`
+        )
+      }
+
+      onKeyDown={(e) => {
+        if (
+          e.key === "Enter" ||
+          e.key === " "
+        ) {
+          navigate(
+            `/projects/${project.id}`
+          );
+        }
       }}
+
+      style={{
+        textDecoration:
+          "none",
+
+        color:
+          "inherit",
+
+        display:
+          "block",
+
+        cursor:
+          "pointer",
+      }}
+
     >
-      <h2
-        style={{
-          marginBottom: "10px",
-        }}
-      >
-        {project.title}
-      </h2>
-
-      <p
-        style={{
-          marginBottom: "20px",
-        }}
-      >
-        {project.description}
-      </p>
 
       <div
+
         style={{
-          marginBottom: "20px",
-        }}
-      >
-        By{" "}
 
-        <Link
-          to={`/profile/${project.author.username}`}
-        >
-          @{project.author.username}
-        </Link>
-      </div>
+          background:
+            "rgba(255,255,255,.94)",
 
-      <div
-        style={{
-          display: "flex",
+          backdropFilter:
+            "blur(18px)",
 
-          gap: "20px",
+          border:
+            "1px solid rgba(255,255,255,.72)",
 
-          alignItems:
-            "center",
+          borderRadius:
+            "18px",
+
+          overflow:
+            "hidden",
 
           marginBottom:
-            "20px",
+            "28px",
+
+          boxShadow:
+            "0 24px 70px rgba(15,23,42,.16), 0 1px 0 rgba(255,255,255,.9) inset",
+
         }}
+
       >
-        <LikeButton
-          projectId={
-            project.id
-          }
 
-          initialLikes={
-            project._count
-              ?.likes || 0
-          }
+        {/* HEADER */}
 
-          initialLiked={
-            Boolean(
-              project.likes
-                ?.length
-            )
-          }
-        />
+        <div
 
-        <span>
-          💬{" "}
-          {
-            project._count
-              ?.comments || 0
-          }
-        </span>
-      </div>
+          style={{
 
-      {(project.githubUrl ||
-        project.demoUrl) && (
+            display:
+              "flex",
+
+            alignItems:
+              "center",
+
+            padding:
+              "18px 20px",
+
+          }}
+
+        >
+
+          <img
+
+            src={
+              project.author
+                ?.avatar
+            }
+
+            alt="avatar"
+
+            style={{
+
+              width:
+                "52px",
+
+              height:
+                "52px",
+
+              borderRadius:
+                "50%",
+
+              objectFit:
+                "cover",
+
+            }}
+
+          />
+
+          <div
+            style={{
+              marginLeft:
+                "14px",
+            }}
+          >
+
+            <div
+              style={{
+                fontWeight:
+                  "700",
+
+                fontSize:
+                  "18px",
+              }}
+            >
+              @
+              {
+                project.author
+                  ?.username
+              }
+            </div>
+
+            <div
+              style={{
+                color:
+                  "#777",
+
+                fontSize:
+                  "14px",
+              }}
+            >
+              {
+                new Date(
+                  project.createdAt
+                )
+                .toLocaleDateString()
+              }
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* CONTENT */}
+
         <div
           style={{
-            marginBottom:
-              "20px",
+            padding:
+              "0 22px",
           }}
         >
-          {project.githubUrl && (
-            <a
-              href={
-                project.githubUrl
-              }
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub
-            </a>
-          )}
 
-          {"  "}
+          <h2>
+            {
+              project.title
+            }
+          </h2>
 
-          {project.demoUrl && (
-            <a
-              href={
-                project.demoUrl
-              }
-              target="_blank"
-              rel="noreferrer"
-            >
-              Live Demo
-            </a>
-          )}
+          <p
+
+            style={{
+
+              color:
+                "#444",
+
+              lineHeight:
+                "1.8",
+
+            }}
+
+          >
+            {
+              project.description
+            }
+          </p>
+
         </div>
-      )}
 
-     <CommentSection
-projectId={
-project.id
-}
+        {/* MEDIA */}
 
-count={
-project._count
-?.comments
-}
-/>
+        {
+          project.mediaType ===
+            "image"
+
+          &&
+
+          <img
+
+            src={
+              project.mediaUrl
+            }
+
+            alt="project"
+
+            style={{
+
+              width:
+                "100%",
+
+              maxHeight:
+                "700px",
+
+              objectFit:
+                "cover",
+
+            }}
+
+          />
+
+        }
+
+        {
+          project.mediaType ===
+            "video"
+
+          &&
+
+          <video
+
+            controls
+
+            src={
+              project.mediaUrl
+            }
+
+            style={{
+              width:
+                "100%",
+            }}
+
+          />
+
+        }
+
+        {/* LINKS */}
+
+        <div
+
+          style={{
+
+            display:
+              "flex",
+
+            gap:
+              "16px",
+
+            padding:
+              "18px 22px",
+
+          }}
+
+          onClick={
+            (
+              e
+            ) =>
+              e.stopPropagation()
+          }
+
+        >
+
+          {
+            project.githubUrl && (
+
+              <a
+
+                href={
+                  project.githubUrl
+                }
+
+                target="_blank"
+
+                rel="noreferrer"
+
+              >
+
+                GitHub
+
+              </a>
+
+            )
+          }
+
+          {
+            project.demoUrl && (
+
+              <a
+
+                href={
+                  project.demoUrl
+                }
+
+                target="_blank"
+
+                rel="noreferrer"
+
+              >
+
+                Live Demo
+
+              </a>
+
+            )
+          }
+
+        </div>
+
+        {/* ACTIONS */}
+
+        <div
+
+          style={{
+
+            display:
+              "flex",
+
+            gap:
+              "20px",
+
+            padding:
+              "18px 22px",
+
+            borderTop:
+              "1px solid #eee",
+
+          }}
+
+          onClick={
+            (
+              e
+            ) =>
+              e.stopPropagation()
+          }
+
+        >
+
+          <LikeButton
+
+            projectId={
+              project.id
+            }
+
+            initialLikes={
+              project
+                ._count
+                ?.likes || 0
+            }
+
+            initialLiked={
+              Boolean(
+                project.liked ||
+                project
+                  .likes
+                  ?.length > 0
+              )
+            }
+
+          />
+
+          <CommentSection
+
+            projectId={
+              project.id
+            }
+
+            count={
+              project
+                ._count
+                ?.comments || 0
+            }
+
+          />
+
+        </div>
+
+      </div>
+
     </div>
+
   );
+
 }
