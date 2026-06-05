@@ -1,241 +1,344 @@
-const prisma = require("../config/db");
 
-exports.createProject = async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      githubUrl,
-      demoUrl,
-      coverImage,
-    } = req.body;
+const prisma =
+  require("../config/db");
 
-    const project = await prisma.project.create({
-      data: {
+/* ==========================
+   CREATE PROJECT
+========================== */
+
+exports.createProject =
+  async (req, res) => {
+    try {
+      const {
         title,
         description,
         githubUrl,
         demoUrl,
-        coverImage,
-        authorId: req.user.id,
-      },
-    });
+      } = req.body;
 
-    res.status(201).json(project);
-  } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
-  }
-};
-exports.getProjects = async (req, res) => {
-  try {
-    const projects =
-      await prisma.project.findMany({
-        include: {
-          author: {
-            select: {
-              username: true,
-              avatar: true,
-            },
+      let mediaUrl =
+        null;
+
+      let mediaType =
+        null;
+
+      if (req.file) {
+        mediaUrl =
+          `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+        mediaType =
+          req.file.mimetype.startsWith(
+            "video"
+          )
+            ? "video"
+            : "image";
+      }
+
+      const project =
+        await prisma.project.create({
+          data: {
+            title,
+            description,
+            githubUrl,
+            demoUrl,
+            mediaUrl,
+            mediaType,
+
+            authorId:
+              req.user.id,
           },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+        });
 
-    res.json(projects);
-  } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
-  }
-};
+      return res
+        .status(201)
+        .json(project);
 
-exports.getProject = async (req, res) => {
-  try {
-    const project =
-      await prisma.project.findUnique({
-        where: {
-          id: req.params.id,
-        },
-        include: {
-  author: {
-    select: {
-      username: true,
-      avatar: true,
-    },
-  },
+    } catch (err) {
+      console.log(err);
 
-  comments: {
-    include: {
-      user: {
-        select: {
-          username: true,
-          avatar: true,
-        },
-      },
-    },
-  },
-
-  likes: {
-    select: {
-      userId: true,
-    },
-  },
-},
-      });
-
-    if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
+      return res
+        .status(500)
+        .json({
+          message:
+            "Create failed",
+        });
     }
+  };
 
-    res.json(project);
-  } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
-  }
-};
-exports.updateProject = async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      githubUrl,
-      demoUrl,
-      coverImage,
-    } = req.body;
+/* ==========================
+   GET ALL PROJECTS
+========================== */
 
-    const project =
-      await prisma.project.findUnique({
-        where: {
-          id: req.params.id,
-        },
-      });
+exports.getProjects =
+  async (req, res) => {
+    try {
+      const projects =
+        await prisma.project.findMany({
+          include: {
+            author: {
+              select: {
+                username:
+                  true,
 
-    if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
-    }
-
-    if (project.authorId !== req.user.id) {
-      return res.status(403).json({
-        message: "Forbidden",
-      });
-    }
-
-    const updatedProject =
-      await prisma.project.update({
-        where: {
-          id: req.params.id,
-        },
-        data: {
-          title,
-          description,
-          githubUrl,
-          demoUrl,
-          coverImage,
-        },
-      });
-
-    res.json(updatedProject);
-
-  } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
-  }
-};
-exports.deleteProject = async (req, res) => {
-  try {
-    const project =
-      await prisma.project.findUnique({
-        where: {
-          id: req.params.id,
-        },
-      });
-
-    if (!project) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
-    }
-
-    if (project.authorId !== req.user.id) {
-      return res.status(403).json({
-        message: "Forbidden",
-      });
-    }
-
-    await prisma.project.delete({
-      where: {
-        id: req.params.id,
-      },
-    });
-
-    res.json({
-      message: "Project deleted",
-    });
-  } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
-  }
-};
-exports.exploreProjects = async (req, res) => {
-  try {
-    const projects =
-      await prisma.project.findMany({
-        include: {
-          author: {
-            select: {
-              id: true,
-              username: true,
-              avatar: true,
+                avatar:
+                  true,
+              },
             },
           },
 
-          _count: {
-            select: {
-              likes: true,
-              comments: true,
-            },
+          orderBy: {
+            createdAt:
+              "desc",
+          },
+        });
+
+      res.json(
+        projects
+      );
+
+    } catch (err) {
+      res
+        .status(500)
+        .json({
+          error:
+            err.message,
+        });
+    }
+  };
+
+/* ==========================
+   GET SINGLE PROJECT
+========================== */
+
+exports.getProject =
+  async (req, res) => {
+    try {
+      const project =
+        await prisma.project.findUnique({
+          where: {
+            id:
+              req.params.id,
           },
 
-          likes: {
-            where: {
-              userId:
-                req.user.id,
+          include: {
+            author: {
+              select: {
+                username:
+                  true,
+
+                avatar:
+                  true,
+              },
             },
 
-            select: {
-              userId: true,
+            comments: {
+              include: {
+                user: {
+                  select: {
+                    username:
+                      true,
+
+                    avatar:
+                      true,
+                  },
+                },
+              },
+            },
+
+            _count: {
+              select: {
+                likes:
+                  true,
+
+                comments:
+                  true,
+              },
+            },
+
+            likes: {
+              where: {
+                userId:
+                  req.user.id,
+              },
+
+              select: {
+                userId:
+                  true,
+              },
             },
           },
-        },
+        });
 
-        orderBy: {
-          createdAt: "desc",
-        },
+      if (!project) {
+        return res
+          .status(404)
+          .json({
+            message:
+              "Project not found",
+          });
+      }
 
-        take: 30,
+      res.json(
+        project
+      );
+
+    } catch (err) {
+      res
+        .status(500)
+        .json({
+          error:
+            err.message,
+        });
+    }
+  };
+
+/* ==========================
+   UPDATE PROJECT
+========================== */
+
+exports.updateProject =
+  async (req, res) => {
+    try {
+      const {
+        title,
+        description,
+        githubUrl,
+        demoUrl,
+        mediaUrl,
+        mediaType,
+      } = req.body;
+
+      const updated =
+        await prisma.project.update({
+          where: {
+            id:
+              req.params.id,
+          },
+
+          data: {
+            title,
+            description,
+            githubUrl,
+            demoUrl,
+            mediaUrl,
+            mediaType,
+          },
+        });
+
+      res.json(
+        updated
+      );
+
+    } catch (err) {
+      res
+        .status(500)
+        .json({
+          error:
+            err.message,
+        });
+    }
+  };
+
+/* ==========================
+   DELETE PROJECT
+========================== */
+
+exports.deleteProject =
+  async (req, res) => {
+    try {
+      await prisma.project.delete({
+        where: {
+          id:
+            req.params.id,
+        },
       });
 
-    return res.json(projects);
-
-  } catch (err) {
-    console.log(err);
-
-    return res
-      .status(500)
-      .json({
+      res.json({
         message:
-          "Explore failed",
+          "Deleted",
       });
-  }
-};
+
+    } catch (err) {
+      res
+        .status(500)
+        .json({
+          error:
+            err.message,
+        });
+    }
+  };
+
+/* ==========================
+   EXPLORE PROJECTS
+========================== */
+
+exports.exploreProjects =
+  async (req, res) => {
+    try {
+      const projects =
+        await prisma.project.findMany({
+          include: {
+            author: {
+              select: {
+                id:
+                  true,
+
+                username:
+                  true,
+
+                avatar:
+                  true,
+              },
+            },
+
+            _count: {
+              select: {
+                likes:
+                  true,
+
+                comments:
+                  true,
+              },
+            },
+
+            likes: {
+              where: {
+                userId:
+                  req.user.id,
+              },
+
+              select: {
+                userId:
+                  true,
+              },
+            },
+          },
+
+          orderBy: {
+            createdAt:
+              "desc",
+          },
+
+          take:
+            30,
+        });
+
+      return res
+        .json(
+          projects
+        );
+
+    } catch (err) {
+      console.log(
+        err
+      );
+
+      return res
+        .status(500)
+        .json({
+          message:
+            "Explore failed",
+        });
+    }
+  };
+
