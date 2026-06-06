@@ -3,7 +3,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
+import Live
+from "./pages/Live";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Feed from "./pages/Feed";
@@ -13,7 +14,8 @@ import EditProfile from "./pages/EditProfile";
 import Search from "./pages/Search";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Explore from "./pages/Explore";
-
+import ProjectDetail from "./pages/ProjectDetail";
+import CreateStory from "./pages/CreateStory";
 function App() {
   return (
     <Routes>
@@ -82,6 +84,28 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+path="/live"
+element={
+<Live/>
+}
+/>
+      <Route
+path="/story/create"
+element={
+<ProtectedRoute>
+<CreateStory/>
+</ProtectedRoute>
+}
+/>
+      <Route
+        path="/projects/:id"
+        element={
+          <ProtectedRoute>
+            <ProjectDetail />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/create" element={
     <ProtectedRoute>
       <CreateProject />
@@ -90,6 +114,7 @@ function App() {
 />
 
     </Routes>
+
   );
 }
 
