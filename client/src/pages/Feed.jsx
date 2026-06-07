@@ -1,24 +1,56 @@
-import { useEffect, useState } from "react";
 
-import api from "../services/api";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import Navbar from "../components/Navbar";
-import ProjectCard from "../components/ProjectCard";
+import api
+from "../services/api";
+
+import ProjectCard
+from "../components/ProjectCard";
+
+import PageLoader
+from "../components/PageLoader";
+
+import StoryTray
+from "../components/StoryTray";
+
+import AppLayout
+from "../layout/AppLayout";
 
 export default function Feed() {
-  const [projects, setProjects] =
+
+  const [
+    projects,
+    setProjects,
+  ] =
     useState([]);
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(true);
 
-  useEffect(() => {
-    loadFeed();
-  }, []);
+  useEffect(
+
+    ()=>{
+
+      loadFeed();
+
+    },
+
+    []
+
+  );
 
   async function loadFeed() {
+
     try {
+
       const res =
+
         await api.get(
           "/feed"
         );
@@ -27,88 +59,139 @@ export default function Feed() {
         res.data
       );
 
-    } catch (err) {
-      console.log(err);
+    }
+
+    catch(
+      err
+    ){
+
+      console.log(
+        err
+      );
 
       alert(
         "Failed to load feed"
       );
 
-    } finally {
+    }
+
+    finally{
+
       setLoading(
         false
       );
+
     }
+
   }
 
-  if (loading) {
-    return (
-      <>
-        <Navbar />
+  if (
+    loading
+  ) {
 
-        <div
-          style={{
-            padding:
-              "40px",
-          }}
-        >
-          <h2>
-            Loading feed...
-          </h2>
-        </div>
-      </>
+    return (
+
+      <AppLayout>
+
+        <PageLoader
+          text=
+          "Loading feed..."
+        />
+
+      </AppLayout>
+
     );
+
   }
 
   return (
-    <div>
-      <Navbar />
+
+    <AppLayout>
 
       <div
+
         style={{
+
           maxWidth:
-            "900px",
+            "760px",
 
           margin:
-            "40px auto",
+            "0 auto",
 
           padding:
-            "20px",
+            "30px",
+
         }}
+
       >
-        <h1>
-          Feed
-        </h1>
 
-        {projects.length === 0 ? (
-          <div>
-            <h3>
-              No projects found
-            </h3>
+        <StoryTray />
 
-            <p>
-              Follow users or create projects.
-            </p>
-          </div>
+        {
 
-        ) : (
+          projects
+          .length === 0
 
-          projects.map(
-            (project) => (
-              <ProjectCard
-                key={
-                  project.id
-                }
+          ?
 
-                project={
-                  project
-                }
-              />
-            )
+          (
+
+            <div>
+
+              <h3>
+
+                No projects found
+
+              </h3>
+
+              <p>
+
+                Follow users
+                or create
+                projects
+
+              </p>
+
+            </div>
+
           )
 
-        )}
+          :
+
+          (
+
+            projects.map(
+
+              (
+
+                project
+
+              )=>(
+
+                <ProjectCard
+
+                  key={
+                    project.id
+                  }
+
+                  project={
+                    project
+                  }
+
+                />
+
+              )
+
+            )
+
+          )
+
+        }
+
       </div>
-    </div>
+
+    </AppLayout>
+
   );
+
 }

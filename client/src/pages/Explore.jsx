@@ -4,6 +4,7 @@ import api from "../services/api";
 
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
+import PageLoader from "../components/PageLoader";
 
 export default function Explore() {
   const [projects, setProjects] =
@@ -41,9 +42,8 @@ export default function Explore() {
     return (
       <>
         <Navbar />
-        <h2>
-          Loading...
-        </h2>
+
+        <PageLoader text="Loading explore..." />
       </>
     );
   }

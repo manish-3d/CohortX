@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import {
-  useNavigate,
   Link,
+  useNavigate,
 } from "react-router-dom";
 
 import api from "../services/api";
@@ -60,8 +60,6 @@ export default function Login() {
 
     } catch (err) {
 
-      console.log(err);
-
       alert(
         err.response
           ?.data
@@ -71,9 +69,7 @@ export default function Login() {
 
     } finally {
 
-      setLoading(
-        false
-      );
+      setLoading(false);
 
     }
   }
@@ -81,20 +77,11 @@ export default function Login() {
   return (
     <div
       style={{
-        maxWidth:
-          "500px",
-
-        margin:
-          "80px auto",
-
-        padding:
-          "30px",
-
-        border:
-          "1px solid #ddd",
-
-        borderRadius:
-          "10px",
+        maxWidth: "500px",
+        margin: "80px auto",
+        padding: "30px",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
       }}
     >
       <h1>
@@ -107,12 +94,16 @@ export default function Login() {
         }
       >
         <input
-          name="email"
           type="email"
+
+          name="email"
+
           placeholder="Email"
+
           value={
             form.email
           }
+
           onChange={
             handleChange
           }
@@ -124,12 +115,16 @@ export default function Login() {
         <br />
 
         <input
-          name="password"
           type="password"
+
+          name="password"
+
           placeholder="Password"
+
           value={
             form.password
           }
+
           onChange={
             handleChange
           }
@@ -156,7 +151,7 @@ export default function Login() {
       <br />
 
       <p>
-        Don't have an account?
+        Don't have account?
 
         {" "}
 

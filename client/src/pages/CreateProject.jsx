@@ -1,10 +1,13 @@
+
 import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import Navbar from "../components/Navbar";
+
 import api from "../services/api";
 
-import Navbar from "../components/Navbar";
+import "./CreateProject.css";
 
 export default function CreateProject() {
   const navigate =
@@ -18,6 +21,15 @@ export default function CreateProject() {
       demoUrl: "",
     });
 
+  const [media, setMedia] =
+    useState(null);
+
+  const [preview, setPreview] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
   function handleChange(e) {
     setForm({
       ...form,
@@ -27,43 +39,86 @@ export default function CreateProject() {
     });
   }
 
+  function handleMedia(e) {
+    const file =
+      e.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setMedia(
+      file
+    );
+
+    setPreview(
+      URL.createObjectURL(
+        file
+      )
+    );
+  }
+
   async function handleSubmit(
     e
   ) {
     e.preventDefault();
 
     try {
+      setLoading(
+        true
+      );
+
+      const fd =
+        new FormData();
+
+      Object.entries(
+        form
+      ).forEach(
+        ([k, v]) =>
+          fd.append(
+            k,
+            v
+          )
+      );
+
+      if (media) {
+        fd.append(
+          "media",
+          media
+        );
+      }
+
       await api.post(
         "/projects",
-        form
+        fd
       );
 
       navigate(
         "/feed"
       );
 
-    } catch (err) {
+    } catch {
       alert(
-        err.response
-          ?.data
-          ?.message ||
-        "Project creation failed"
+        "Create failed"
+      );
+
+    } finally {
+      setLoading(
+        false
       );
     }
   }
 
   return (
-    <div>
+    <>
       <Navbar />
 
       <div
-        style={{
-          maxWidth: "700px",
-          margin: "40px auto",
-          padding: "20px",
-        }}
+        className="create-page"
       >
-        <h1>
+        <h1
+          className="create-title"
+        >
           Create Project
         </h1>
 
@@ -72,84 +127,163 @@ export default function CreateProject() {
             handleSubmit
           }
         >
-          <input
-            name="title"
-            placeholder="Title"
+          <label
+            htmlFor="media"
+          >
+            <div
+              className="media-box"
+            >
+              {!preview ? (
 
-            value={
-              form.title
-            }
+                <div
+                  className="upload-text"
+                >
+                  Upload
+                  Image / Video
+                </div>
 
-            onChange={
-              handleChange
-            }
+              ) : media
+                  ?.type
+                  .startsWith(
+                    "video"
+                  ) ? (
 
-            required
-          />
+                <video
+                  controls
 
-          <br />
-          <br />
+                  src={
+                    preview
+                  }
 
-          <textarea
-            name="description"
+                  className="media-preview"
+                />
 
-            placeholder="Description"
+              ) : (
 
-            value={
-              form.description
-            }
+                <img
+                  src={
+                    preview
+                  }
 
-            onChange={
-              handleChange
-            }
+                  alt="preview"
 
-            required
-          />
+                  className="media-preview"
+                />
 
-          <br />
-          <br />
-
-          <input
-            name="githubUrl"
-
-            placeholder="GitHub URL"
-
-            value={
-              form.githubUrl
-            }
-
-            onChange={
-              handleChange
-            }
-          />
-
-          <br />
-          <br />
+              )}
+            </div>
+          </label>
 
           <input
-            name="demoUrl"
+            id="media"
 
-            placeholder="Demo URL"
+            hidden
 
-            value={
-              form.demoUrl
-            }
+            type="file"
+
+            accept="
+image/*,
+video/*
+"
 
             onChange={
-              handleChange
+              handleMedia
             }
           />
 
-          <br />
-          <br />
+          <div
+            className="form-group"
+          >
+            <input
+              name="title"
+
+              placeholder="Project Title"
+
+              value={
+                form.title
+              }
+
+              onChange={
+                handleChange
+              }
+            />
+          </div>
+
+          <div
+            className="form-group"
+          >
+            <textarea
+              name="description"
+
+              placeholder="Describe your project"
+
+              value={
+                form.description
+              }
+
+              onChange={
+                handleChange
+              }
+            />
+          </div>
+
+          <div
+            className="form-group"
+          >
+            <input
+              name="githubUrl"
+
+              placeholder="GitHub URL"
+
+              value={
+                form.githubUrl
+              }
+
+              onChange={
+                handleChange
+              }
+            />
+          </div>
+
+          <div
+            className="form-group"
+          >
+            <input
+              name="demoUrl"
+
+              placeholder="Live Demo URL"
+
+              value={
+                form.demoUrl
+              }
+
+              onChange={
+                handleChange
+              }
+            />
+          </div>
 
           <button
-            type="submit"
+            className="publish-btn"
+
+            disabled={
+              loading
+            }
           >
-            Publish
+            {
+              loading
+
+              ?
+
+              "Publishing..."
+
+              :
+
+              "Publish Project"
+            }
           </button>
         </form>
       </div>
-    </div>
+    </>
   );
 }
