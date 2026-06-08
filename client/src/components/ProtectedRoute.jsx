@@ -5,6 +5,7 @@ import {
 import {
   useAuth,
 } from "../context/AuthContext";
+import PageLoader from "./PageLoader";
 
 export default function ProtectedRoute({
   children,
@@ -23,9 +24,10 @@ export default function ProtectedRoute({
 
   if (loading) {
     return (
-      <h2>
-        Loading...
-      </h2>
+      <PageLoader
+        text="Checking session..."
+        minHeight="100vh"
+      />
     );
   }
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-
+import {
+  Link,
+} from "react-router-dom";
 import {
   useNavigate,
   useParams,
@@ -177,6 +179,41 @@ export default function Profile() {
                   profile.id
                 }
               />
+<Link
+
+to={
+
+`/chat/${profile.id}`
+
+}
+
+style={{
+
+display:
+"inline-block",
+
+marginLeft:
+"12px",
+
+padding:
+"10px 18px",
+
+background:
+"#111",
+
+color:
+"white",
+
+borderRadius:
+"10px",
+
+}}
+
+>
+
+Message
+
+</Link>
             </div>
 
             <p>

@@ -1,9 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
-
 const passport = require("./config/passport");
-
+const storyRoutes = require("./routes/storyRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const projectRoutes = require("./routes/projectRoutes");
@@ -12,12 +11,16 @@ const commentRoutes = require("./routes/commentRoutes");
 const followRoutes = require("./routes/followRoutes");
 const feedRoutes = require("./routes/feedRoutes");
 const fileUpload = require("express-fileupload");
-const uploadRoutes =
-require(
-"./routes/uploadRoutes"
-);
+const uploadRoutes = require("./routes/uploadRoutes");
+const githubRoutes =require("./routes/githubRoutes");
+const path =require("path");
 const app = express();
-
+const uploadsPath = path.join(__dirname, "../uploads");
+const conversationRoutes =
+require(
+"./routes/conversationRoutes"
+);
+const messageRoutes = require("./routes/messageRoutes");
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173",
@@ -92,12 +95,16 @@ app.use("/projects", likeRoutes);
 app.use("/projects", commentRoutes);
 app.use("/users",followRoutes);
 app.use("/feed",feedRoutes);
+app.use("/stories", storyRoutes);
 app.use(fileUpload({useTempFiles:true}));
-app.use("/uplad",uploadRoutes);
+app.use("/upload",uploadRoutes);
+app.use("/github",githubRoutes);
+app.use("/uploads",express.static(uploadsPath));
 app.get("/", (req, res) => {
-  res.json({
-    message: "CohortX API Running",
-  });
+  res.json({ message: "CohortX API Running", });
 });
+app.use("/messages",messageRoutes);
+app.use("/conversations",conversationRoutes);
+
 
 module.exports = app;

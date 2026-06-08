@@ -3,6 +3,7 @@ const prisma = require("../config/db");
 exports.getProfile = async (req, res) => {
   try {
     const { username } = req.params;
+    const viewerId = req.user?.id;
 
     const user =
       await prisma.user.findUnique({
@@ -15,6 +16,8 @@ exports.getProfile = async (req, res) => {
             include: {
               author: {
                 select: {
+                  avatar: true,
+
                   username: true,
                 },
               },
@@ -27,10 +30,13 @@ exports.getProfile = async (req, res) => {
               },
 
               likes: {
-                where: {
-                  userId:
-                    req.user.id,
-                },
+                ...(viewerId
+                  ? {
+                      where: {
+                        userId: viewerId,
+                      },
+                    }
+                  : {}),
 
                 select: {
                   userId: true,

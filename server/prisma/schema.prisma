@@ -21,9 +21,11 @@ model User {
   linkedinUrl    String?
   xUrl           String?
 
-  projects Project[]
-  comments Comment[]
-  likes    Like[]
+  projects      Project[]
+  comments      Comment[]
+  likes         Like[]
+  messages      Message[]
+  conversations ConversationParticipant[]
 
   following Follow[] @relation("Following")
   followers Follow[] @relation("Followers")
@@ -67,9 +69,8 @@ model Comment {
   userId    String
   projectId String
 
-  user    User    @relation(fields: [userId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
-
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -109,4 +110,41 @@ model Story {
   userId String
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+
+  messages     Message[]
+  participants ConversationParticipant[]
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  text String
+
+  senderId String
+
+  conversationId String?
+
+  createdAt DateTime @default(now())
+
+  conversation Conversation? @relation(fields: [conversationId], references: [id])
+  sender       User          @relation(fields: [senderId], references: [id])
+}
+
+model ConversationParticipant {
+  conversationId String
+
+  userId String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([conversationId, userId])
+  @@index([userId])
 }

@@ -103,3 +103,99 @@ err.message
 }
 
 };
+
+exports.getFollowers =
+async (
+req,
+res
+) => {
+try {
+const followers =
+await prisma.follow.findMany({
+where: {
+followingId:
+req.params.id,
+},
+
+include: {
+follower: {
+select: {
+id: true,
+username: true,
+avatar: true,
+bio: true,
+},
+},
+},
+});
+
+res.json(
+followers.map(
+(follow) =>
+follow.follower
+).sort(
+(a, b) =>
+a.username.localeCompare(
+b.username
+)
+)
+);
+
+}
+catch(err){
+
+res.status(500).json({
+error:
+err.message
+});
+
+}
+};
+
+exports.getFollowing =
+async (
+req,
+res
+) => {
+try {
+const following =
+await prisma.follow.findMany({
+where: {
+followerId:
+req.params.id,
+},
+
+include: {
+following: {
+select: {
+id: true,
+username: true,
+avatar: true,
+bio: true,
+},
+},
+},
+});
+
+res.json(
+following.map(
+(follow) =>
+follow.following
+).sort(
+(a, b) =>
+a.username.localeCompare(
+b.username
+)
+)
+);
+
+}
+catch(err){
+
+res.status(500).json({
+error:
+err.message
+});
+
+}
+};

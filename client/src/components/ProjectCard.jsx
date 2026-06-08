@@ -1,7 +1,18 @@
 
 import {
+  useState,
+} from "react";
+
+import {
   useNavigate,
 } from "react-router-dom";
+
+import {
+  useAuth,
+} from "../context/AuthContext";
+
+import api
+from "../services/api";
 
 import LikeButton
 from "./LikeButton";
@@ -15,136 +26,87 @@ export default function ProjectCard({
   const navigate =
     useNavigate();
 
+  const { user } =
+    useAuth();
+
+  const [open, setOpen] =
+    useState(false);
+
+  async function handleDelete() {
+    const ok =
+      window.confirm(
+        "Delete project?"
+      );
+
+    if (!ok) {
+      return;
+    }
+
+    try {
+      await api.delete(
+        `/projects/${project.id}`
+      );
+
+      window.location.reload();
+
+    } catch {
+      alert(
+        "Delete failed"
+      );
+    }
+  }
+
   return (
-
     <div
-
-      role="link"
-
-      tabIndex={0}
-
-      onClick={() =>
-        navigate(
-          `/projects/${project.id}`
-        )
-      }
-
-      onKeyDown={(e) => {
-        if (
-          e.key === "Enter" ||
-          e.key === " "
-        ) {
-          navigate(
-            `/projects/${project.id}`
-          );
-        }
-      }}
-
       style={{
-        textDecoration:
-          "none",
-
-        color:
-          "inherit",
-
-        display:
-          "block",
-
-        cursor:
-          "pointer",
+        background: "#fff",
+        border: "1px solid #eee",
+        borderRadius: "18px",
+        overflow: "hidden",
+        marginBottom: "28px",
       }}
-
     >
-
       <div
-
         style={{
-
-          background:
-            "rgba(255,255,255,.94)",
-
-          backdropFilter:
-            "blur(18px)",
-
-          border:
-            "1px solid rgba(255,255,255,.72)",
-
-          borderRadius:
-            "18px",
-
-          overflow:
-            "hidden",
-
-          marginBottom:
-            "28px",
-
-          boxShadow:
-            "0 24px 70px rgba(15,23,42,.16), 0 1px 0 rgba(255,255,255,.9) inset",
-
+          display: "flex",
+          justifyContent:
+            "space-between",
+          padding: "18px",
         }}
-
       >
-
-        {/* HEADER */}
-
         <div
-
+          onClick={() =>
+            navigate(
+              `/profile/${project.author?.username}`
+            )
+          }
           style={{
-
-            display:
-              "flex",
-
-            alignItems:
-              "center",
-
-            padding:
-              "18px 20px",
-
+            display: "flex",
+            gap: "14px",
+            cursor: "pointer",
           }}
-
         >
-
           <img
-
             src={
               project.author
                 ?.avatar
             }
-
             alt="avatar"
-
             style={{
-
-              width:
-                "52px",
-
-              height:
-                "52px",
-
+              width: "52px",
+              height: "52px",
               borderRadius:
                 "50%",
-
               objectFit:
                 "cover",
-
             }}
-
           />
 
-          <div
-            style={{
-              marginLeft:
-                "14px",
-            }}
-          >
-
+          <div>
             <div
               style={{
                 fontWeight:
                   "700",
-
-                fontSize:
-                  "18px",
               }}
             >
               @
@@ -154,262 +116,180 @@ export default function ProjectCard({
               }
             </div>
 
-            <div
-              style={{
-                color:
-                  "#777",
+            <div>
+              {new Date(
+                project.createdAt
+              ).toLocaleDateString()}
+            </div>
+          </div>
+        </div>
 
+        {user?.id ===
+          project.authorId && (
+          <div
+            style={{
+              position:
+                "relative",
+            }}
+          >
+            <button
+              onClick={() =>
+                setOpen(
+                  !open
+                )
+              }
+              style={{
+                background:
+                  "transparent",
+                color:
+                  "#111",
                 fontSize:
-                  "14px",
+                  "24px",
+                padding: 0,
               }}
             >
-              {
-                new Date(
-                  project.createdAt
-                )
-                .toLocaleDateString()
-              }
-            </div>
+              ⋮
+            </button>
 
+            {open && (
+              <div
+                style={{
+                  position:
+                    "absolute",
+                  top: "110%",
+                  right: 0,
+                  background:
+                    "#fff",
+                  border:
+                    "1px solid #ddd",
+                  borderRadius:
+                    "12px",
+                  overflow:
+                    "hidden",
+                  minWidth:
+                    "120px",
+                }}
+              >
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/projects/edit/${project.id}`
+                    )
+                  }
+                  style={{
+                    width:
+                      "100%",
+                    background:
+                      "white",
+                    color:
+                      "black",
+                  }}
+                >
+                  Edit
+                </button>
+
+                <button
+                  onClick={
+                    handleDelete
+                  }
+                  style={{
+                    width:
+                      "100%",
+                    background:
+                      "white",
+                    color:
+                      "red",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
-
-        </div>
-
-        {/* CONTENT */}
-
-        <div
-          style={{
-            padding:
-              "0 22px",
-          }}
-        >
-
-          <h2>
-            {
-              project.title
-            }
-          </h2>
-
-          <p
-
-            style={{
-
-              color:
-                "#444",
-
-              lineHeight:
-                "1.8",
-
-            }}
-
-          >
-            {
-              project.description
-            }
-          </p>
-
-        </div>
-
-        {/* MEDIA */}
-
-        {
-          project.mediaType ===
-            "image"
-
-          &&
-
-          <img
-
-            src={
-              project.mediaUrl
-            }
-
-            alt="project"
-
-            style={{
-
-              width:
-                "100%",
-
-              maxHeight:
-                "700px",
-
-              objectFit:
-                "cover",
-
-            }}
-
-          />
-
-        }
-
-        {
-          project.mediaType ===
-            "video"
-
-          &&
-
-          <video
-
-            controls
-
-            src={
-              project.mediaUrl
-            }
-
-            style={{
-              width:
-                "100%",
-            }}
-
-          />
-
-        }
-
-        {/* LINKS */}
-
-        <div
-
-          style={{
-
-            display:
-              "flex",
-
-            gap:
-              "16px",
-
-            padding:
-              "18px 22px",
-
-          }}
-
-          onClick={
-            (
-              e
-            ) =>
-              e.stopPropagation()
-          }
-
-        >
-
-          {
-            project.githubUrl && (
-
-              <a
-
-                href={
-                  project.githubUrl
-                }
-
-                target="_blank"
-
-                rel="noreferrer"
-
-              >
-
-                GitHub
-
-              </a>
-
-            )
-          }
-
-          {
-            project.demoUrl && (
-
-              <a
-
-                href={
-                  project.demoUrl
-                }
-
-                target="_blank"
-
-                rel="noreferrer"
-
-              >
-
-                Live Demo
-
-              </a>
-
-            )
-          }
-
-        </div>
-
-        {/* ACTIONS */}
-
-        <div
-
-          style={{
-
-            display:
-              "flex",
-
-            gap:
-              "20px",
-
-            padding:
-              "18px 22px",
-
-            borderTop:
-              "1px solid #eee",
-
-          }}
-
-          onClick={
-            (
-              e
-            ) =>
-              e.stopPropagation()
-          }
-
-        >
-
-          <LikeButton
-
-            projectId={
-              project.id
-            }
-
-            initialLikes={
-              project
-                ._count
-                ?.likes || 0
-            }
-
-            initialLiked={
-              Boolean(
-                project.liked ||
-                project
-                  .likes
-                  ?.length > 0
-              )
-            }
-
-          />
-
-          <CommentSection
-
-            projectId={
-              project.id
-            }
-
-            count={
-              project
-                ._count
-                ?.comments || 0
-            }
-
-          />
-
-        </div>
-
+        )}
       </div>
 
+      <div
+        style={{
+          padding:
+            "20px",
+        }}
+      >
+        <h2>
+          {project.title}
+        </h2>
+
+        <p>
+          {
+            project.description
+          }
+        </p>
+      </div>
+
+      {project.mediaType ===
+        "image" && (
+        <img
+          src={
+            project.mediaUrl
+          }
+          alt="project"
+          style={{
+            width:
+              "100%",
+          }}
+        />
+      )}
+
+      {project.mediaType ===
+        "video" && (
+        <video
+          controls
+          src={
+            project.mediaUrl
+          }
+          style={{
+            width:
+              "100%",
+          }}
+        />
+      )}
+
+      <div
+        style={{
+          display: "flex",
+          gap: "18px",
+          padding:
+            "18px",
+          borderTop:
+            "1px solid #eee",
+        }}
+      >
+        <LikeButton
+          projectId={
+            project.id
+          }
+          initialLikes={
+            project._count
+              ?.likes || 0
+          }
+          initialLiked={
+            Boolean(
+              project.liked
+            )
+          }
+        />
+
+        <CommentSection
+          projectId={
+            project.id
+          }
+          count={
+            project._count
+              ?.comments ||
+            0
+          }
+        />
+      </div>
     </div>
-
   );
-
 }

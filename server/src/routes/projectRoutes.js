@@ -9,6 +9,7 @@ const {
   exploreProjects
 } = require("../controllers/projectController");
 
+const upload= require("../config/upload");
 const {
   isAuthenticated,
 } = require("../middleware/authMiddleware");
@@ -17,11 +18,12 @@ const router = express.Router();
 
 router.get("/", getProjects);
 router.get("/explore",isAuthenticated, exploreProjects);
-router.get("/:id", getProject);
+router.get("/:id", isAuthenticated, getProject);
 
 router.post(
   "/",
   isAuthenticated,
+  upload.single("media"),
   createProject
 );
 

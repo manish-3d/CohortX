@@ -259,7 +259,7 @@ export default function Navbar() {
 
                 >
 
-                  🚀 New Project
+                  + New Project
 
                 </Link>
 
@@ -291,7 +291,7 @@ export default function Navbar() {
 
                 >
 
-                  📸 New Story
+                  + New Story
 
                 </Link>
 

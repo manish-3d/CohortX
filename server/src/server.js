@@ -1,9 +1,11 @@
 
-const app =
-  require("./app");
+const app =require("./app" );
+  
 
 const http =
-  require("http");
+  require(
+    "http"
+  );
 
 const {
   Server,
@@ -19,36 +21,131 @@ const server =
 
 const io =
   new Server(
+
     server,
+
     {
+
       cors: {
-        origin:
+
+        origin: [
+          process.env.CLIENT_URL,
           "http://localhost:5173",
+          "http://localhost:5174",
+          "http://127.0.0.1:5173",
+          "http://127.0.0.1:5174",
+        ].filter(Boolean),
+
+        credentials:
+          true,
+
       },
+
     }
+
   );
 
+/*
+Socket Connection
+
+User opens app
+
+↓
+
+socket connects
+
+*/
+
 io.on(
+
   "connection",
+
   (
+
     socket
+
   ) => {
 
     console.log(
-      "user connected"
+      "connected:",
+      socket.id
+    );
+
+    /*
+    Listen
+
+    User sends message
+    */
+
+    socket.on(
+
+      "join-conversation",
+
+      (
+
+        conversationId
+
+      ) => {
+
+        if (
+          conversationId
+        ) {
+          socket.join(
+            conversationId
+          );
+        }
+
+      }
+
     );
 
     socket.on(
 
-      "join-stream",
+      "leave-conversation",
 
       (
-        room
+
+        conversationId
+
       ) => {
 
-        socket.join(
-          room
+        if (
+          conversationId
+        ) {
+          socket.leave(
+            conversationId
+          );
+        }
+
+      }
+
+    );
+
+    socket.on(
+
+      "chat-message",
+
+      (
+
+        message
+
+      ) => {
+
+        console.log(
+          "received:",
+          message
         );
+
+        if (
+          message?.conversationId
+        ) {
+          socket
+            .to(message.conversationId)
+            .emit(
+              "chat-message",
+              message
+            );
+        }
 
       }
 
@@ -58,7 +155,7 @@ io.on(
 
       "disconnect",
 
-      ()=>{
+      () => {
 
         console.log(
           "user left"
@@ -69,16 +166,17 @@ io.on(
     );
 
   }
+
 );
 
 server.listen(
 
   5000,
 
-  ()=>{
+  () => {
 
     console.log(
-      "Live server running"
+      "Server running"
     );
 
   }

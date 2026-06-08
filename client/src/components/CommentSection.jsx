@@ -186,18 +186,75 @@ export default function CommentSection({
                       "20px",
                   }}
                 >
-                  <strong>
-                    {
-                      comment.user
-                        ?.username
-                    }
-                  </strong>
+                  <div
+  style={{
+    display: "flex",
 
-                  <p>
-                    {
-                      comment.content
-                    }
-                  </p>
+    gap: "12px",
+
+    marginBottom:
+      "18px",
+  }}
+>
+  <img
+    src={
+      comment.user
+        ?.avatar ||
+
+      "https://placehold.co/40"
+    }
+
+    alt="avatar"
+
+    style={{
+      width:
+        "40px",
+
+      height:
+        "40px",
+
+      borderRadius:
+        "50%",
+
+      objectFit:
+        "cover",
+    }}
+  />
+
+  <div>
+    <div
+      style={{
+        display:
+          "flex",
+
+        gap:
+          "8px",
+
+        alignItems:
+          "center",
+      }}
+    >
+      <strong>
+        @
+        {
+          comment.user
+            ?.username
+        }
+      </strong>
+    </div>
+
+    <p
+      style={{
+        marginTop:
+          "4px",
+      }}
+    >
+      {
+        comment.content
+      }
+    </p>
+  </div>
+</div>
                 </div>
               )
             )}

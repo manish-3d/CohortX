@@ -6,7 +6,11 @@ require(
 const {
 followUser,
 
-unfollowUser
+unfollowUser,
+
+getFollowers,
+
+getFollowing
 
 } =
 require(
@@ -38,6 +42,22 @@ router.delete(
 isAuthenticated,
 
 unfollowUser
+);
+
+router.get(
+"/:id/followers",
+
+isAuthenticated,
+
+getFollowers
+);
+
+router.get(
+"/:id/following",
+
+isAuthenticated,
+
+getFollowing
 );
 
 module.exports =
