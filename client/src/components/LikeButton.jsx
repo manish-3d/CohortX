@@ -1,212 +1,85 @@
+import { useEffect, useState } from "react";
 
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import api
-from "../services/api";
+import api from "../services/api";
 
 export default function LikeButton({
-
   projectId,
 
   initialLikes = 0,
 
   initialLiked = false,
-
 }) {
+  const [likes, setLikes] = useState(initialLikes);
 
-  const [
-    likes,
+  const [liked, setLiked] = useState(initialLiked);
 
-    setLikes,
-
-  ] =
-    useState(
-      initialLikes
-    );
-
-  const [
-    liked,
-
-    setLiked,
-
-  ] =
-    useState(
-      initialLiked
-    );
-
-  const [
-    loading,
-
-    setLoading,
-
-  ] =
-    useState(
-      false
-    );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLikes(
-      initialLikes
-    );
+    setLikes(initialLikes);
 
-    setLiked(
-      initialLiked
-    );
-  }, [
-    projectId,
-    initialLikes,
-    initialLiked,
-  ]);
+    setLiked(initialLiked);
+  }, [projectId, initialLikes, initialLiked]);
 
   async function handleToggle() {
-
-    if (
-      loading
-    ) {
+    if (loading) {
       return;
     }
 
     try {
+      setLoading(true);
 
-      setLoading(
-        true
-      );
+      const res = await api.post(`/projects/${projectId}/like/toggle`);
 
-      const res =
-        await api.post(
+      setLikes(res.data.likesCount);
 
-          `/projects/${projectId}/like/toggle`
+      setLiked(res.data.liked);
+    } catch (err) {
+      console.log(err);
 
-        );
-
-      setLikes(
-        res.data.likesCount
-      );
-
-      setLiked(
-        res.data.liked
-      );
-
+      alert("Failed to update like");
+    } finally {
+      setLoading(false);
     }
-
-    catch (
-      err
-    ) {
-
-      console.log(
-        err
-      );
-
-      alert(
-        "Failed to update like"
-      );
-
-    }
-
-    finally {
-
-      setLoading(
-        false
-      );
-
-    }
-
   }
 
   return (
-
     <button
-
-      onClick={
-        handleToggle
-      }
-
-      disabled={
-        loading
-      }
-
-      aria-pressed={
-        liked
-      }
-
+      onClick={handleToggle}
+      disabled={loading}
+      aria-pressed={liked}
       style={{
+        border: "none",
 
-        border:
-          "none",
+        background: "transparent",
 
-        background:
-          "transparent",
+        display: "flex",
 
-        display:
-          "flex",
+        alignItems: "center",
 
-        alignItems:
-          "center",
+        gap: "8px",
 
-        gap:
-          "8px",
+        cursor: loading ? "not-allowed" : "pointer",
 
-        cursor:
-
-          loading
-
-          ?
-
-          "not-allowed"
-
-          :
-
-          "pointer",
-
-        padding:
-          "6px 0",
-
+        padding: "6px 0",
       }}
-
     >
-
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-
         style={{
+          width: "24px",
 
-          width:
-            "24px",
+          height: "24px",
 
-          height:
-            "24px",
+          transition: ".25s",
 
-          transition:
-            ".25s",
+          transform: liked ? "scale(1.1)" : "scale(1)",
 
-          transform:
+          fill: liked ? "#2563eb" : "none",
 
-            liked
-
-            ?
-
-            "scale(1.1)"
-
-            :
-
-            "scale(1)",
-
-          fill:
-            liked
-              ? "#2563eb"
-              : "none",
-
-          stroke:
-            liked
-              ? "#2563eb"
-              : "#9ca3af",
-
+          stroke: liked ? "#2563eb" : "#9ca3af",
         }}
-
       >
         <path
           d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
@@ -217,49 +90,16 @@ export default function LikeButton({
       </svg>
 
       <span
-
         style={{
+          fontSize: "15px",
 
-          fontSize:
-            "15px",
+          fontWeight: "600",
 
-          fontWeight:
-            "600",
-
-          color:
-
-            liked
-
-            ?
-
-            "#264edc"
-
-            :
-
-            "#555",
-
+          color: liked ? "#264edc" : "#555",
         }}
-
       >
-
-        {
-
-          loading
-
-          ?
-
-          "..."
-
-          :
-
-          likes
-
-        }
-
+        {loading ? "..." : likes}
       </span>
-
     </button>
-
   );
-
 }
