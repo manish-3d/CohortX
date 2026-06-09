@@ -16,7 +16,8 @@ model User {
 
   bio    String?
   avatar String?
-
+  notification Notification[]
+  
   githubUsername String?
   linkedinUrl    String?
   xUrl           String?
@@ -147,4 +148,12 @@ model ConversationParticipant {
 
   @@id([conversationId, userId])
   @@index([userId])
+}
+model Notification{
+  id String @id @default(cuid())
+  message String 
+  isRead Boolean @default(false)
+  createdAt DateTime @default(now())
+  userId String
+  user User @relation(fields :[userId],references:[id])
 }
