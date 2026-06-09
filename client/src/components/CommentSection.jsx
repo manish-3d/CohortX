@@ -2,18 +2,12 @@ import { useEffect, useState } from "react";
 
 import api from "../services/api";
 
-export default function CommentSection({
-  projectId,
-  count = 0,
-}) {
-  const [comments, setComments] =
-    useState([]);
+export default function CommentSection({ projectId, count = 0 }) {
+  const [comments, setComments] = useState([]);
 
-  const [content, setContent] =
-    useState("");
+  const [content, setContent] = useState("");
 
-  const [open, setOpen] =
-    useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -23,92 +17,50 @@ export default function CommentSection({
 
   async function loadComments() {
     try {
-      const res =
-        await api.get(
-          `/projects/${projectId}/comments`
-        );
+      const res = await api.get(`/projects/${projectId}/comments`);
 
-      setComments(
-        res.data
-      );
-
+      setComments(res.data);
     } catch {
-      alert(
-        "Comments failed"
-      );
+      alert("Comments failed");
     }
   }
 
   async function addComment() {
-    if (
-      !content.trim()
-    ) {
+    if (!content.trim()) {
       return;
     }
 
     try {
-      const res =
-        await api.post(
-          `/projects/${projectId}/comments`,
-          {
-            content,
-          }
-        );
+      const res = await api.post(`/projects/${projectId}/comments`, {
+        content,
+      });
 
-      setComments(
-        [
-          ...comments,
-          res.data,
-        ]
-      );
+      setComments([...comments, res.data]);
 
       setContent("");
-
     } catch {
-      alert(
-        "Failed"
-      );
+      alert("Failed");
     }
   }
 
-  const preview =
-    comments[0];
+  const preview = comments[0];
 
   return (
     <>
       {preview && (
         <div>
-          <strong>
-            {
-              preview.user
-                ?.username
-            }
-          </strong>
-
-          {" "}
-
-          {
-            preview.content
-          }
+          <strong>{preview.user?.username}</strong> {preview.content}
         </div>
       )}
 
       <button
-        onClick={() =>
-          setOpen(
-            true
-          )
-        }
-
+        onClick={() => setOpen(true)}
         style={{
-          background:
-            "transparent",
+          background: "transparent",
 
-          color:
-            "#666",
+          color: "#666",
 
-          padding:
-            0,
+          padding: 0,
         }}
       >
         View all {count} comments
@@ -117,175 +69,102 @@ export default function CommentSection({
       {open && (
         <div
           style={{
-            position:
-              "fixed",
+            position: "fixed",
 
-            inset:
-              0,
+            inset: 0,
 
-            background:
-              "rgba(0,0,0,.5)",
+            background: "rgba(0,0,0,.5)",
 
-            display:
-              "flex",
+            display: "flex",
 
-            justifyContent:
-              "center",
+            justifyContent: "center",
 
-            alignItems:
-              "center",
+            alignItems: "center",
           }}
         >
           <div
             style={{
-              background:
-                "white",
+              background: "white",
 
-              width:
-                "600px",
+              width: "600px",
 
-              maxHeight:
-                "80vh",
+              maxHeight: "80vh",
 
-              overflow:
-                "auto",
+              overflow: "auto",
 
-              padding:
-                "30px",
+              padding: "30px",
 
-              borderRadius:
-                "20px",
+              borderRadius: "20px",
             }}
           >
-            <button
-              onClick={() =>
-                setOpen(
-                  false
-                )
-              }
-            >
-              ✕
+            <button onClick={() => setOpen(false)}>✕</button>
 
-            </button>
+            <h2>Comments</h2>
 
-            <h2>
-              Comments
-            </h2>
-
-            {comments.map(
-              (
-                comment
-              ) => (
+            {comments.map((comment) => (
+              <div
+                key={comment.id}
+                style={{
+                  marginBottom: "20px",
+                }}
+              >
                 <div
-                  key={
-                    comment.id
-                  }
-
                   style={{
-                    marginBottom:
-                      "20px",
+                    display: "flex",
+
+                    gap: "12px",
+
+                    marginBottom: "18px",
                   }}
                 >
-                  <div
-  style={{
-    display: "flex",
+                  <img
+                    src={comment.user?.avatar || "https://placehold.co/40"}
+                    alt="avatar"
+                    style={{
+                      width: "40px",
 
-    gap: "12px",
+                      height: "40px",
 
-    marginBottom:
-      "18px",
-  }}
->
-  <img
-    src={
-      comment.user
-        ?.avatar ||
+                      borderRadius: "50%",
 
-      "https://placehold.co/40"
-    }
+                      objectFit: "cover",
+                    }}
+                  />
 
-    alt="avatar"
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
 
-    style={{
-      width:
-        "40px",
+                        gap: "8px",
 
-      height:
-        "40px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <strong>@{comment.user?.username}</strong>
+                    </div>
 
-      borderRadius:
-        "50%",
-
-      objectFit:
-        "cover",
-    }}
-  />
-
-  <div>
-    <div
-      style={{
-        display:
-          "flex",
-
-        gap:
-          "8px",
-
-        alignItems:
-          "center",
-      }}
-    >
-      <strong>
-        @
-        {
-          comment.user
-            ?.username
-        }
-      </strong>
-    </div>
-
-    <p
-      style={{
-        marginTop:
-          "4px",
-      }}
-    >
-      {
-        comment.content
-      }
-    </p>
-  </div>
-</div>
+                    <p
+                      style={{
+                        marginTop: "4px",
+                      }}
+                    >
+                      {comment.content}
+                    </p>
+                  </div>
                 </div>
-              )
-            )}
+              </div>
+            ))}
 
             <input
-              value={
-                content
-              }
-
-              onChange={
-                (
-                  e
-                ) =>
-                  setContent(
-                    e.target
-                      .value
-                  )
-              }
-
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Add comment"
             />
 
             <br />
 
-            <button
-              onClick={
-                addComment
-              }
-            >
-              Post
-            </button>
+            <button onClick={addComment}>Post</button>
           </div>
         </div>
       )}

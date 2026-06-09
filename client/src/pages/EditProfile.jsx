@@ -6,16 +6,14 @@ import Navbar from "../components/Navbar";
 import api from "../services/api";
 
 export default function EditProfile() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [form, setForm] =
-    useState({
-      bio: "",
-      githubUsername: "",
-      linkedinUrl: "",
-      xUrl: "",
-    });
+  const [form, setForm] = useState({
+    bio: "",
+    githubUsername: "",
+    linkedinUrl: "",
+    xUrl: "",
+  });
 
   useEffect(() => {
     loadProfile();
@@ -23,29 +21,19 @@ export default function EditProfile() {
 
   async function loadProfile() {
     try {
-      const res =
-        await api.get(
-          "/auth/me"
-        );
+      const res = await api.get("/auth/me");
 
       setForm({
-        bio:
-          res.data.bio || "",
+        bio: res.data.bio || "",
 
-        githubUsername:
-          res.data.githubUsername || "",
+        githubUsername: res.data.githubUsername || "",
 
-        linkedinUrl:
-          res.data.linkedinUrl || "",
+        linkedinUrl: res.data.linkedinUrl || "",
 
-        xUrl:
-          res.data.xUrl || "",
+        xUrl: res.data.xUrl || "",
       });
-
     } catch {
-      alert(
-        "Failed to load profile"
-      );
+      alert("Failed to load profile");
     }
   }
 
@@ -53,14 +41,11 @@ export default function EditProfile() {
     setForm({
       ...form,
 
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
-  async function handleSubmit(
-    e
-  ) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     try {
@@ -70,14 +55,9 @@ export default function EditProfile() {
         form
       );
 
-      navigate(
-        "/feed"
-      );
-
+      navigate("/feed");
     } catch {
-      alert(
-        "Update failed"
-      );
+      alert("Update failed");
     }
   }
 
@@ -92,15 +72,9 @@ export default function EditProfile() {
           padding: "20px",
         }}
       >
-        <h1>
-          Edit Profile
-        </h1>
+        <h1>Edit Profile</h1>
 
-        <form
-          onSubmit={
-            handleSubmit
-          }
-        >
+        <form onSubmit={handleSubmit}>
           <textarea
             name="bio"
             placeholder="Bio"
@@ -141,9 +115,7 @@ export default function EditProfile() {
           <br />
           <br />
 
-          <button>
-            Save
-          </button>
+          <button>Save</button>
         </form>
       </div>
     </div>

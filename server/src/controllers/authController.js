@@ -3,14 +3,9 @@ const prisma = require("../config/db");
 
 exports.register = async (req, res) => {
   try {
-    const {
-      username,
-      email,
-      password,
-    } = req.body;
+    const { username, email, password } = req.body;
 
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {

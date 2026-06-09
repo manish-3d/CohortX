@@ -7,30 +7,21 @@ const {
   uploadAvatar,
 } = require("../controllers/userController");
 const upload = require("../config/upload");
-const {isAuthenticated,} = require("../middleware/authMiddleware");
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 router.get("/search", searchUsers);
 
-router.get(
-  "/:username",
-  getProfile
-);
+router.get("/:username", getProfile);
 
-router.put(
-  "/profile/edit",
-  isAuthenticated,
-  updateProfile
-);
+router.put("/profile/edit", isAuthenticated, updateProfile);
 router.post(
   "/avatar",
 
   isAuthenticated,
 
-  upload.single(
-    "avatar"
-  ),
+  upload.single("avatar"),
 
   uploadAvatar
 );

@@ -1,237 +1,104 @@
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
-import {
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import Navbar
-from "../components/Navbar";
+import Navbar from "../components/Navbar";
 
-import api
-from "../services/api";
+import api from "../services/api";
 
 export default function CreateStory() {
-
   const navigate = useNavigate();
 
-  const [media, setMedia] =
-    useState(null);
+  const [media, setMedia] = useState(null);
 
-  const [caption, setCaption] =
-    useState("");
+  const [caption, setCaption] = useState("");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(
-    e
-  ) {
-
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!media) {
-      return alert(
-        "Select media"
-      );
+      return alert("Select media");
     }
 
     try {
+      setLoading(true);
 
-      setLoading(
-        true
-      );
+      const form = new FormData();
 
-      const form =
-        new FormData();
+      form.append("media", media);
 
-      form.append(
-        "media",
-        media
-      );
+      form.append("caption", caption);
 
-      form.append(
-        "caption",
-        caption
-      );
+      await api.post("/stories", form);
 
-      await api.post(
-        "/stories",
-        form
-      );
+      alert("Story posted");
 
-      alert(
-        "Story posted"
-      );
+      navigate("/feed");
+    } catch (err) {
+      console.log(err);
 
-      navigate(
-        "/feed"
-      );
-
+      alert(err.response?.data?.message || "Upload failed");
+    } finally {
+      setLoading(false);
     }
-
-    catch (
-      err
-    ) {
-
-      console.log(
-        err
-      );
-
-      alert(
-        err.response
-          ?.data
-          ?.message ||
-        "Upload failed"
-      );
-
-    }
-
-    finally {
-
-      setLoading(
-        false
-      );
-
-    }
-
   }
 
   return (
-
     <>
-
       <Navbar />
 
       <div
-
         style={{
+          maxWidth: "520px",
 
-          maxWidth:
-            "520px",
+          margin: "40px auto",
 
-          margin:
-            "40px auto",
+          background: "rgba(255,255,255,.94)",
 
-          background:
-            "rgba(255,255,255,.94)",
+          backdropFilter: "blur(18px)",
 
-          backdropFilter:
-            "blur(18px)",
+          padding: "28px",
 
-          padding:
-            "28px",
+          borderRadius: "18px",
 
-          borderRadius:
-            "18px",
+          border: "1px solid rgba(255,255,255,.75)",
 
-          border:
-            "1px solid rgba(255,255,255,.75)",
-
-          boxShadow:
-            "0 24px 70px rgba(15,23,42,.18)",
-
+          boxShadow: "0 24px 70px rgba(15,23,42,.18)",
         }}
-
       >
+        <h1>New Story</h1>
 
-        <h1>
-          New Story
-        </h1>
-
-        <form
-          onSubmit={
-            handleSubmit
-          }
-        >
-
+        <form onSubmit={handleSubmit}>
           <input
-
             type="file"
-
-            accept=
-              "image/*,video/*"
-
-            onChange={
-              (
-                e
-              ) =>
-
-                setMedia(
-                  e.target
-                  .files[0]
-                )
-            }
-
+            accept="image/*,video/*"
+            onChange={(e) => setMedia(e.target.files[0])}
           />
 
           <br />
           <br />
 
           <textarea
-
-            placeholder=
-              "Caption"
-
-            value={
-              caption
-            }
-
-            onChange={
-              (
-                e
-              ) =>
-
-                setCaption(
-                  e.target
-                  .value
-                )
-            }
-
+            placeholder="Caption"
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
             style={{
+              width: "100%",
 
-              width:
-                "100%",
-
-              minHeight:
-                "120px",
-
+              minHeight: "120px",
             }}
-
           />
 
           <br />
           <br />
 
-          <button
-
-            type="submit"
-
-          >
-
-            {
-
-              loading
-
-              ?
-
-              "Uploading..."
-
-              :
-
-              "Post Story"
-
-            }
-
+          <button type="submit">
+            {loading ? "Uploading..." : "Post Story"}
           </button>
-
         </form>
-
       </div>
-
     </>
-
   );
-
 }

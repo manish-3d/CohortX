@@ -2,59 +2,34 @@ import { useState } from "react";
 
 import api from "../services/api";
 
-export default function FollowButton({
-  userId,
-}) {
-  const [following, setFollowing] =
-    useState(false);
+export default function FollowButton({ userId }) {
+  const [following, setFollowing] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleFollow() {
     try {
       setLoading(true);
 
       if (following) {
-        await api.delete(
-          `/users/${userId}/follow`
-        );
+        await api.delete(`/users/${userId}/follow`);
 
         setFollowing(false);
-
       } else {
-        await api.post(
-          `/users/${userId}/follow`
-        );
+        await api.post(`/users/${userId}/follow`);
 
         setFollowing(true);
       }
-
     } catch {
-      alert(
-        "Action failed"
-      );
-
+      alert("Action failed");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <button
-      onClick={
-        handleFollow
-      }
-
-      disabled={
-        loading
-      }
-    >
-      {loading
-        ? "Loading..."
-        : following
-        ? "Following"
-        : "Follow"}
+    <button onClick={handleFollow} disabled={loading}>
+      {loading ? "Loading..." : following ? "Following" : "Follow"}
     </button>
   );
 }

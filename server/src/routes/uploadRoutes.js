@@ -1,34 +1,17 @@
-const express =
-require(
-"express"
-);
+const express = require("express");
 
-const {
-uploadImage
+const { uploadImage } = require("../controllers/uploadController");
 
-} =
-require(
-"../controllers/uploadController"
-);
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-const {
-isAuthenticated
-
-} =
-require(
-"../middleware/authMiddleware"
-);
-
-const router =
-express.Router();
+const router = express.Router();
 
 router.post(
-"/image",
+  "/image",
 
-isAuthenticated,
+  isAuthenticated,
 
-uploadImage
+  uploadImage
 );
 
-module.exports =
-router;
+module.exports = router;

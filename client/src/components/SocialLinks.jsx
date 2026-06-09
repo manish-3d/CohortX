@@ -12,22 +12,13 @@ function ensureUrl(url) {
 
 function getHost(url) {
   try {
-    return new URL(
-      ensureUrl(url)
-    ).hostname.replace(
-      /^www\./,
-      ""
-    );
+    return new URL(ensureUrl(url)).hostname.replace(/^www\./, "");
   } catch {
     return url;
   }
 }
 
-export default function SocialLinks({
-  githubUsername,
-  linkedinUrl,
-  xUrl,
-}) {
+export default function SocialLinks({ githubUsername, linkedinUrl, xUrl }) {
   const links = [
     githubUsername && {
       label: "GitHub",
@@ -52,25 +43,19 @@ export default function SocialLinks({
 
   return (
     <div className="social-links">
-      {links.map(
-        (link) => (
-          <a
-            key={link.label}
-            className="social-chip"
-            href={link.href}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="social-label">
-              {link.label}
-            </span>
+      {links.map((link) => (
+        <a
+          key={link.label}
+          className="social-chip"
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="social-label">{link.label}</span>
 
-            <span className="social-value">
-              {link.value}
-            </span>
-          </a>
-        )
-      )}
+          <span className="social-value">{link.value}</span>
+        </a>
+      ))}
     </div>
   );
 }

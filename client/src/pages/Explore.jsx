@@ -7,11 +7,9 @@ import ProjectCard from "../components/ProjectCard";
 import PageLoader from "../components/PageLoader";
 
 export default function Explore() {
-  const [projects, setProjects] =
-    useState([]);
+  const [projects, setProjects] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProjects();
@@ -19,20 +17,11 @@ export default function Explore() {
 
   async function loadProjects() {
     try {
-      const res =
-        await api.get(
-          "/projects/explore"
-        );
+      const res = await api.get("/projects/explore");
 
-      setProjects(
-        res.data
-      );
-
+      setProjects(res.data);
     } catch {
-      alert(
-        "Explore failed"
-      );
-
+      alert("Explore failed");
     } finally {
       setLoading(false);
     }
@@ -59,23 +48,14 @@ export default function Explore() {
           padding: "20px",
         }}
       >
-        <h1>
-          Explore
-        </h1>
+        <h1>Explore</h1>
 
         {projects.length ? (
-          projects.map(
-            (project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-              />
-            )
-          )
+          projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))
         ) : (
-          <p>
-            No projects found
-          </p>
+          <p>No projects found</p>
         )}
       </div>
     </div>

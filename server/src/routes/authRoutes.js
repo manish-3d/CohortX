@@ -1,11 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 
-const {
-  register,
-  logout,
-  me,
-} = require("../controllers/authController");
+const { register, logout, me } = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -28,7 +24,7 @@ router.post("/login", (req, res, next) => {
         return next(err);
       }
 
-      return res.status(200).json({user,});
+      return res.status(200).json({ user });
     });
   })(req, res, next);
 });

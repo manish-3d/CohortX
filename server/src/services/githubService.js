@@ -1,25 +1,16 @@
-const axios =
-  require("axios");
+const axios = require("axios");
 
-async function getGithubUser(
-  username
-) {
-  const profile =
-    await axios.get(
-      `https://api.github.com/users/${username}`
-    );
+async function getGithubUser(username) {
+  const profile = await axios.get(`https://api.github.com/users/${username}`);
 
-  const contributions =
-    await axios.get(
-      `https://github-contributions-api.jogruber.de/v4/${username}`
-    );
+  const contributions = await axios.get(
+    `https://github-contributions-api.jogruber.de/v4/${username}`
+  );
 
   return {
-    profile:
-      profile.data,
+    profile: profile.data,
 
-    contributions:
-      contributions.data,
+    contributions: contributions.data,
   };
 }
 

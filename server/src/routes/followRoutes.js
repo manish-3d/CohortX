@@ -1,64 +1,49 @@
-const express =
-require(
-"express"
-);
+const express = require("express");
 
 const {
-followUser,
+  followUser,
 
-unfollowUser,
+  unfollowUser,
 
-getFollowers,
+  getFollowers,
 
-getFollowing
+  getFollowing,
+} = require("../controllers/followController");
 
-} =
-require(
-"../controllers/followController"
-);
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-const {
-isAuthenticated
-
-} =
-require(
-"../middleware/authMiddleware"
-);
-
-const router =
-express.Router();
+const router = express.Router();
 
 router.post(
-"/:id/follow",
+  "/:id/follow",
 
-isAuthenticated,
+  isAuthenticated,
 
-followUser
+  followUser
 );
 
 router.delete(
-"/:id/follow",
+  "/:id/follow",
 
-isAuthenticated,
+  isAuthenticated,
 
-unfollowUser
+  unfollowUser
 );
 
 router.get(
-"/:id/followers",
+  "/:id/followers",
 
-isAuthenticated,
+  isAuthenticated,
 
-getFollowers
+  getFollowers
 );
 
 router.get(
-"/:id/following",
+  "/:id/following",
 
-isAuthenticated,
+  isAuthenticated,
 
-getFollowing
+  getFollowing
 );
 
-module.exports =
-router;
+module.exports = router;

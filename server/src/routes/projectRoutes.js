@@ -6,37 +6,22 @@ const {
   getProject,
   updateProject,
   deleteProject,
-  exploreProjects
+  exploreProjects,
 } = require("../controllers/projectController");
 
-const upload= require("../config/upload");
-const {
-  isAuthenticated,
-} = require("../middleware/authMiddleware");
+const upload = require("../config/upload");
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 router.get("/", getProjects);
-router.get("/explore",isAuthenticated, exploreProjects);
+router.get("/explore", isAuthenticated, exploreProjects);
 router.get("/:id", isAuthenticated, getProject);
 
-router.post(
-  "/",
-  isAuthenticated,
-  upload.single("media"),
-  createProject
-);
+router.post("/", isAuthenticated, upload.single("media"), createProject);
 
-router.put(
-  "/:id",
-  isAuthenticated,
-  updateProject
-);
+router.put("/:id", isAuthenticated, updateProject);
 
-router.delete(
-  "/:id",
-  isAuthenticated,
-  deleteProject
-);
+router.delete("/:id", isAuthenticated, deleteProject);
 
 module.exports = router;

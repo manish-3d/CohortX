@@ -1,54 +1,31 @@
+const router = require("express").Router();
 
-const router =
-  require("express")
-    .Router();
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-const {
-  isAuthenticated,
-} =
-  require(
-    "../middleware/authMiddleware"
-  );
-
-const upload =
-  require(
-    "../config/upload"
-  );
+const upload = require("../config/upload");
 
 const {
-
   createStory,
 
   getStories,
-
-} =
-require(
-  "../controllers/storyController"
-);
+} = require("../controllers/storyController");
 
 router.post(
-
   "/",
 
   isAuthenticated,
 
-  upload.single(
-    "media"
-  ),
+  upload.single("media"),
 
   createStory
-
 );
 
 router.get(
-
   "/",
 
   isAuthenticated,
 
   getStories
-
 );
 
-module.exports =
-  router;
+module.exports = router;

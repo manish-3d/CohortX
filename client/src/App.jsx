@@ -1,12 +1,7 @@
-
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
+import Notifications from "./pages/Notifications";
 import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 
@@ -24,42 +19,22 @@ import Live from "./pages/Live";
 import WatchLive from "./pages/WatchLive";
 
 import Chat from "./pages/Chat";
+import EditProject from "./pages/EditProject";
 
-import ProtectedRoute
-from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-
   return (
-
     <Routes>
-
       {/* PUBLIC */}
 
-      <Route
-        path="/login"
-        element={
-          <Login />
-        }
-      />
+      <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/register"
-        element={
-          <Register />
-        }
-      />
+      <Route path="/register" element={<Register />} />
 
       {/* DEFAULT */}
 
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to="/feed"
-          />
-        }
-      />
+      <Route path="/" element={<Navigate to="/feed" />} />
 
       {/* PROTECTED */}
 
@@ -98,12 +73,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-  path="/projects/edit/:id"
-  element={
-    <EditProject />
-  }
-/>
+      <Route path="/projects/edit/:id" element={<EditProject />} />
 
       <Route
         path="/search"
@@ -133,6 +103,14 @@ function App() {
       />
 
       <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/projects/:id"
         element={
           <ProtectedRoute>
@@ -140,14 +118,14 @@ function App() {
           </ProtectedRoute>
         }
       />
-      < Route  
-      path="/project/edit/:id" 
-      elemetnt = {
-        <ProtectedRoute>
-         <EditProject/>
-        </ProtectedRoute>
-      }
-        />
+      <Route
+        path="/project/edit/:id"
+        elemetnt={
+          <ProtectedRoute>
+            <EditProject />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/chat"
         element={
@@ -174,14 +152,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-      path = "/project/edit/:id"
-      element = {
-       <ProtectedRoutes>
-        <Delete/>
-      </ProtectedRoutes>
-      }
-      />
 
       <Route
         path="/watch/:room"
@@ -191,11 +161,8 @@ function App() {
           </ProtectedRoute>
         }
       />
-
     </Routes>
-
   );
-
 }
 
 export default App;

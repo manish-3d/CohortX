@@ -1,93 +1,68 @@
-const prisma =
-  require("../config/db");
+const prisma = require("../config/db");
 
-exports.getFeed =
-  async (
-    req,
-    res
-  ) => {
-    try {
+exports.getFeed = async (req, res) => {
+  try {
+    const following = await prisma.follow.findMany({
+      where: {
+        followerId: req.user.id,
+      },
 
-      const following =
-        await prisma.follow.findMany({
+      select: {
+        followingId: true,
+      },
+    });
+
+    const ids = following.map((f) => f.followingId);
+
+    const projects = await prisma.project.findMany({
+      where: ids.length
+        ? {
+            authorId: {
+              in: ids,
+            },
+          }
+        : {},
+
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
+
+        likes: {
           where: {
-            followerId:
-              req.user.id,
+            userId: req.user.id,
           },
 
           select: {
-            followingId:
-              true,
+            userId: true,
           },
-        });
+        },
+      },
 
-      const ids =
-        following.map(
-          (f) =>
-            f.followingId
-        );
+      orderBy: {
+        createdAt: "desc",
+      },
 
-      const projects =
-        await prisma.project.findMany({
-          where:
-            ids.length
-              ? {
-                  authorId: {
-                    in: ids,
-                  },
-                }
-              : {},
+      take: 20,
+    });
 
-          include: {
-            author: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-              },
-            },
+    return res.json(projects);
+  } catch (err) {
+    console.log(err);
 
-            _count: {
-              select: {
-                likes: true,
-                comments: true,
-              },
-            },
-
-            likes: {
-              where: {
-                userId:
-                  req.user.id,
-              },
-
-              select: {
-                userId: true,
-              },
-            },
-          },
-
-          orderBy: {
-            createdAt:
-              "desc",
-          },
-
-          take: 20,
-        });
-
-      return res.json(
-        projects
-      );
-
-    } catch (err) {
-
-      console.log(err);
-
-      return res
-        .status(500)
-        .json({
-          message:
-            "Failed to load feed",
-        });
-
-    }
-  };
+    return res.status(500).json({
+      message: "Failed to load feed",
+    });
+  }
+};

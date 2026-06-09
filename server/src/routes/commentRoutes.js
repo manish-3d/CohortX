@@ -1,50 +1,37 @@
-const express =
-require("express");
+const express = require("express");
 
 const {
-createComment,
+  createComment,
 
-getComments,
+  getComments,
 
-deleteComment,
+  deleteComment,
+} = require("../controllers/commentController");
 
-} =
-require(
-"../controllers/commentController"
-);
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-const {
-isAuthenticated,
-
-} =
-require(
-"../middleware/authMiddleware"
-);
-
-const router =
-express.Router();
+const router = express.Router();
 
 router.post(
-"/:id/comments",
+  "/:id/comments",
 
-isAuthenticated,
+  isAuthenticated,
 
-createComment
+  createComment
 );
 
 router.get(
-"/:id/comments",
+  "/:id/comments",
 
-getComments
+  getComments
 );
 
 router.delete(
-"/comments/:id",
+  "/comments/:id",
 
-isAuthenticated,
+  isAuthenticated,
 
-deleteComment
+  deleteComment
 );
 
-module.exports =
-router;
+module.exports = router;

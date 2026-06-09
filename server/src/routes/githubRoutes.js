@@ -1,23 +1,13 @@
-const express =
-require(
-"express"
-);
+const express = require("express");
 
-const router =
-express.Router();
+const router = express.Router();
 
-const {
-getGithubProfile
-}=
-require(
-"../controllers/githubController"
-);
+const { getGithubProfile } = require("../controllers/githubController");
 
 router.get(
-"/:username",
+  "/:username",
 
-getGithubProfile
+  getGithubProfile
 );
 
-module.exports =
-router;
+module.exports = router;

@@ -1,188 +1,73 @@
+const prisma = require("../config/db");
 
-const prisma =
-  require("../config/db");
-
-exports.createStory =
-  async (
-    req,
-    res
-  ) => {
-
-    try {
-
-      if (
-        !req.file
-      ) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "Story media is required",
-          });
-      }
-
-      const mediaUrl =
-        `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-
-      const mediaType =
-        req.file
-          .mimetype
-          .startsWith(
-            "video"
-          )
-
-          ?
-
-          "video"
-
-          :
-
-          "image";
-
-      const story =
-        await prisma.story.create({
-
-          data: {
-
-            mediaUrl,
-
-            mediaType,
-
-            caption:
-              req.body
-                .caption ||
-
-              null,
-
-            expiresAt:
-              new Date(
-
-                Date.now()
-
-                +
-
-                24 *
-
-                60 *
-
-                60 *
-
-                1000
-
-              ),
-
-            userId:
-              req.user.id,
-
-          },
-
-        });
-
-      return res
-        .status(201)
-        .json(
-          story
-        );
-
+exports.createStory = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Story media is required",
+      });
     }
 
-    catch (
-      err
-    ) {
+    const mediaUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
-      console.log(
-        err
-      );
+    const mediaType = req.file.mimetype.startsWith("video") ? "video" : "image";
 
-      return res
-        .status(500)
-        .json({
+    const story = await prisma.story.create({
+      data: {
+        mediaUrl,
 
-          message:
-            "Story upload failed",
+        mediaType,
 
-        });
+        caption: req.body.caption || null,
 
-    }
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
 
-  };
+        userId: req.user.id,
+      },
+    });
 
-exports.getStories =
-  async (
-    req,
-    res
-  ) => {
+    return res.status(201).json(story);
+  } catch (err) {
+    console.log(err);
 
-    try {
+    return res.status(500).json({
+      message: "Story upload failed",
+    });
+  }
+};
 
-      const stories =
-        await prisma.story.findMany({
+exports.getStories = async (req, res) => {
+  try {
+    const stories = await prisma.story.findMany({
+      where: {
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
 
-          where: {
+      include: {
+        user: {
+          select: {
+            id: true,
 
-            expiresAt: {
+            username: true,
 
-              gt:
-                new Date(),
-
-            },
-
+            avatar: true,
           },
+        },
+      },
 
-          include: {
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-            user: {
+    return res.json(stories);
+  } catch (err) {
+    console.log(err);
 
-              select: {
-
-                id:
-                  true,
-
-                username:
-                  true,
-
-                avatar:
-                  true,
-
-              },
-
-            },
-
-          },
-
-          orderBy: {
-
-            createdAt:
-              "desc",
-
-          },
-
-        });
-
-      return res
-        .json(
-          stories
-        );
-
-    }
-
-    catch (
-      err
-    ) {
-
-      console.log(
-        err
-      );
-
-      return res
-        .status(500)
-        .json({
-
-          message:
-            "Failed to fetch stories",
-
-        });
-
-    }
-
-  };
+    return res.status(500).json({
+      message: "Failed to fetch stories",
+    });
+  }
+};

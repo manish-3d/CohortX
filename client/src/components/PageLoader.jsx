@@ -13,9 +13,7 @@ export default function PageLoader({
     >
       <span className="loader-spinner" />
 
-      <p>
-        {text}
-      </p>
+      <p>{text}</p>
     </div>
   );
 }

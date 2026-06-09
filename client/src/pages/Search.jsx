@@ -7,11 +7,9 @@ import api from "../services/api";
 import Navbar from "../components/Navbar";
 
 export default function Search() {
-  const [query, setQuery] =
-    useState("");
+  const [query, setQuery] = useState("");
 
-  const [users, setUsers] =
-    useState([]);
+  const [users, setUsers] = useState([]);
 
   async function handleSearch() {
     if (!query.trim()) {
@@ -19,19 +17,11 @@ export default function Search() {
     }
 
     try {
-      const res =
-        await api.get(
-          `/users/search?q=${query}`
-        );
+      const res = await api.get(`/users/search?q=${query}`);
 
-      setUsers(
-        res.data
-      );
-
+      setUsers(res.data);
     } catch {
-      alert(
-        "Search failed"
-      );
+      alert("Search failed");
     }
   }
 
@@ -46,9 +36,7 @@ export default function Search() {
           padding: "20px",
         }}
       >
-        <h1>
-          Discover Builders
-        </h1>
+        <h1>Discover Builders</h1>
 
         <div
           style={{
@@ -58,46 +46,24 @@ export default function Search() {
         >
           <input
             placeholder="Search users"
-
             value={query}
-
-            onChange={(e) =>
-              setQuery(
-                e.target.value
-              )
-            }
+            onChange={(e) => setQuery(e.target.value)}
           />
 
-          <button
-            onClick={
-              handleSearch
-            }
-          >
-            Search
-          </button>
+          <button onClick={handleSearch}>Search</button>
         </div>
 
         <br />
 
-        {users.map(
-          (user) => (
-            <div
-              key={user.id}
-            >
-              <Link
-                to={`/profile/${user.username}`}
-              >
-                @{user.username}
-              </Link>
+        {users.map((user) => (
+          <div key={user.id}>
+            <Link to={`/profile/${user.username}`}>@{user.username}</Link>
 
-              <p>
-                {user.bio}
-              </p>
+            <p>{user.bio}</p>
 
-              <hr />
-            </div>
-          )
-        )}
+            <hr />
+          </div>
+        ))}
       </div>
     </div>
   );

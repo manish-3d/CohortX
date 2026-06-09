@@ -1,70 +1,29 @@
-const cloudinary =
-require(
-"../config/cloudinary"
-);
+const cloudinary = require("../config/cloudinary");
 
-exports.uploadImage =
-async (
-req,
-res
-)=>{
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.files) {
+      return res.status(400).json({
+        message: "No image",
+      });
+    }
 
-try{
+    const result = await cloudinary.uploader.upload(
+      req.files.image.tempFilePath,
 
-if(
-!req.files
-){
+      {
+        folder: "cohortx",
+      }
+    );
 
-return res
-.status(400)
-.json({
+    res.json({
+      url: result.secure_url,
+    });
+  } catch (err) {
+    console.log(err);
 
-message:
-"No image"
-
-});
-
-}
-
-const result =
-await cloudinary
-.uploader.upload(
-
-req.files.image
-.tempFilePath,
-
-{
-
-folder:
-"cohortx"
-
-}
-
-);
-
-res.json({
-
-url:
-result.secure_url
-
-});
-
-}
-
-catch(err){
-
-console.log(
-err
-);
-
-res.status(500)
-.json({
-
-message:
-"Upload failed"
-
-});
-
-}
-
+    res.status(500).json({
+      message: "Upload failed",
+    });
+  }
 };

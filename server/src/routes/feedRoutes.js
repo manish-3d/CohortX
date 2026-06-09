@@ -1,34 +1,17 @@
-const express =
-require(
-"express"
-);
+const express = require("express");
 
-const {
-getFeed
+const { getFeed } = require("../controllers/feedController");
 
-} =
-require(
-"../controllers/feedController"
-);
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-const {
-isAuthenticated
-
-} =
-require(
-"../middleware/authMiddleware"
-);
-
-const router =
-express.Router();
+const router = express.Router();
 
 router.get(
-"/",
+  "/",
 
-isAuthenticated,
+  isAuthenticated,
 
-getFeed
+  getFeed
 );
 
-module.exports =
-router;
+module.exports = router;

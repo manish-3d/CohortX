@@ -1,59 +1,30 @@
-const multer =
-  require("multer");
+const multer = require("multer");
 
-const fs =
-  require("fs");
+const fs = require("fs");
 
-const path =
-  require("path");
+const path = require("path");
 
-const uploadDir =
-  path.join(
-    __dirname,
-    "../../uploads"
-  );
+const uploadDir = path.join(__dirname, "../../uploads");
 
-fs.mkdirSync(
-  uploadDir,
-  {
-    recursive: true,
-  }
-);
+fs.mkdirSync(uploadDir, {
+  recursive: true,
+});
 
-const storage =
-  multer.diskStorage({
-    destination(
-      req,
-      file,
-      cb
-    ) {
-      cb(
-        null,
-        uploadDir
-      );
-    },
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, uploadDir);
+  },
 
-    filename(
-      req,
-      file,
-      cb
-    ) {
-      cb(
-        null,
+  filename(req, file, cb) {
+    cb(
+      null,
 
-        Date.now() +
-          path.extname(
-            file.originalname
-          )
-      );
-    },
-  });
+      Date.now() + path.extname(file.originalname)
+    );
+  },
+});
 
-function fileFilter(
-  req,
-  file,
-  cb
-) {
+function fileFilter(req, file, cb) {
   const allowed = [
     "image/jpeg",
     "image/png",
@@ -62,34 +33,19 @@ function fileFilter(
     "video/webm",
   ];
 
-  if (
-    allowed.includes(
-      file.mimetype
-    )
-  ) {
-    cb(
-      null,
-      true
-    );
+  if (allowed.includes(file.mimetype)) {
+    cb(null, true);
   } else {
-    cb(
-      new Error(
-        "Invalid file"
-      )
-    );
+    cb(new Error("Invalid file"));
   }
 }
 
-module.exports =
-  multer({
-    storage,
+module.exports = multer({
+  storage,
 
-    fileFilter,
+  fileFilter,
 
-    limits: {
-      fileSize:
-        50 *
-        1024 *
-        1024,
-    },
-  });
+  limits: {
+    fileSize: 50 * 1024 * 1024,
+  },
+});

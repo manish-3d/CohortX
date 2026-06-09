@@ -1,36 +1,13 @@
-const router =
-require(
-"express"
-)
-.Router();
+const router = require("express").Router();
 
 const {
+  startConversation,
+  listConversations,
+} = require("../controllers/conversationController");
+const { isAuthenticated } = require("../middleware/authMiddleware");
 
-startConversation,
-listConversations,
+router.get("/", isAuthenticated, listConversations);
 
-}=
-require(
-"../controllers/conversationController"
-);
-const {
-  isAuthenticated,
-} =
-require(
-  "../middleware/authMiddleware"
-);
+router.post("/", isAuthenticated, startConversation);
 
-router.get(
-  "/",
-  isAuthenticated,
-  listConversations
-);
-
-router.post(
-"/",
-isAuthenticated,
-startConversation
-);
-
-module.exports =
-router;
+module.exports = router;

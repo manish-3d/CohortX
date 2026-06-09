@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Link,
-} from "react-router-dom";
-import {
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../services/api";
 
@@ -18,23 +13,17 @@ import PageLoader from "../components/PageLoader";
 import SocialLinks from "../components/SocialLinks";
 
 export default function Profile() {
-  const { username } =
-    useParams();
+  const { username } = useParams();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [profile, setProfile] =
-    useState(null);
+  const [profile, setProfile] = useState(null);
 
-  const [followModal, setFollowModal] =
-    useState(null);
+  const [followModal, setFollowModal] = useState(null);
 
-  const [followUsers, setFollowUsers] =
-    useState([]);
+  const [followUsers, setFollowUsers] = useState([]);
 
-  const [followLoading, setFollowLoading] =
-    useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -42,61 +31,34 @@ export default function Profile() {
 
   async function loadProfile() {
     try {
-      const res =
-        await api.get(
-          `/users/${username}`
-        );
+      const res = await api.get(`/users/${username}`);
 
-      setProfile(
-        res.data
-      );
-
+      setProfile(res.data);
     } catch {
-      alert(
-        "Failed to load profile"
-      );
+      alert("Failed to load profile");
     }
   }
 
   async function openFollowList(type) {
     try {
-      setFollowModal(
-        type
-      );
+      setFollowModal(type);
 
-      setFollowLoading(
-        true
-      );
+      setFollowLoading(true);
 
-      const res =
-        await api.get(
-          `/users/${profile.id}/${type}`
-        );
+      const res = await api.get(`/users/${profile.id}/${type}`);
 
-      setFollowUsers(
-        res.data
-      );
-
+      setFollowUsers(res.data);
     } catch {
-      alert(
-        "Failed to load users"
-      );
-
+      alert("Failed to load users");
     } finally {
-      setFollowLoading(
-        false
-      );
+      setFollowLoading(false);
     }
   }
 
   function visitUser(user) {
-    setFollowModal(
-      null
-    );
+    setFollowModal(null);
 
-    navigate(
-      `/profile/${user.username}`
-    );
+    navigate(`/profile/${user.username}`);
   }
 
   if (!profile) {
@@ -115,36 +77,25 @@ export default function Profile() {
 
       <div
         style={{
-          maxWidth:
-            "900px",
+          maxWidth: "900px",
 
-          margin:
-            "40px auto",
+          margin: "40px auto",
 
-          padding:
-            "20px",
+          padding: "20px",
         }}
       >
         <div
           style={{
-            display:
-              "flex",
+            display: "flex",
 
-            alignItems:
-              "center",
+            alignItems: "center",
 
-            gap:
-              "30px",
+            gap: "30px",
 
-            marginBottom:
-              "30px",
+            marginBottom: "30px",
           }}
         >
-          <AvatarUpload
-            avatar={
-              profile.avatar
-            }
-          />
+          <AvatarUpload avatar={profile.avatar} />
 
           <div
             style={{
@@ -153,17 +104,13 @@ export default function Profile() {
           >
             <div
               style={{
-                display:
-                  "flex",
+                display: "flex",
 
-                alignItems:
-                  "center",
+                alignItems: "center",
 
-                gap:
-                  "20px",
+                gap: "20px",
 
-                marginBottom:
-                  "10px",
+                marginBottom: "10px",
               }}
             >
               <h1
@@ -174,127 +121,71 @@ export default function Profile() {
                 @{profile.username}
               </h1>
 
-              <FollowButton
-                userId={
-                  profile.id
-                }
-              />
-<Link
+              <FollowButton userId={profile.id} />
+              <Link
+                to={`/chat/${profile.id}`}
+                style={{
+                  display: "inline-block",
 
-to={
+                  marginLeft: "12px",
 
-`/chat/${profile.id}`
+                  padding: "10px 18px",
 
-}
+                  background: "#111",
 
-style={{
+                  color: "white",
 
-display:
-"inline-block",
-
-marginLeft:
-"12px",
-
-padding:
-"10px 18px",
-
-background:
-"#111",
-
-color:
-"white",
-
-borderRadius:
-"10px",
-
-}}
-
->
-
-Message
-
-</Link>
+                  borderRadius: "10px",
+                }}
+              >
+                Message
+              </Link>
             </div>
 
-            <p>
-              {profile.bio}
-            </p>
+            <p>{profile.bio}</p>
 
             <div
               style={{
-                display:
-                  "flex",
+                display: "flex",
 
-                gap:
-                  "20px",
+                gap: "20px",
               }}
             >
               <button
                 type="button"
-
-                onClick={() =>
-                  openFollowList(
-                    "followers"
-                  )
-                }
-
+                onClick={() => openFollowList("followers")}
                 style={{
-                  border:
-                    "none",
+                  border: "none",
 
-                  background:
-                    "transparent",
-                    color: "black",
+                  background: "transparent",
+                  color: "black",
 
-                  padding:
-                    0,
+                  padding: 0,
 
-                  cursor:
-                    "pointer",
+                  cursor: "pointer",
 
-                  font:
-                    "inherit",
+                  font: "inherit",
                 }}
               >
-                Followers:
-                {" "}
-                {
-                  profile._count
-                    ?.followers || 0
-                }
+                Followers: {profile._count?.followers || 0}
               </button>
 
               <button
                 type="button"
-
-                onClick={() =>
-                  openFollowList(
-                    "following"
-                  )
-                }
-
+                onClick={() => openFollowList("following")}
                 style={{
-                  border:
-                    "none",
+                  border: "none",
 
-                  background:
-                    "transparent",
+                  background: "transparent",
 
-                  padding:
-                    0,
+                  padding: 0,
 
-                  cursor:
-                    "pointer",
+                  cursor: "pointer",
                   color: "black",
-                  font:"inherit",
+                  font: "inherit",
                 }}
               >
-                Following:
-                {" "}
-                {
-                  profile._count
-                    ?.following || 0
-                }
+                Following: {profile._count?.following || 0}
               </button>
             </div>
           </div>
@@ -303,137 +194,81 @@ Message
         <hr />
 
         <SocialLinks
-          githubUsername={
-            profile.githubUsername
-          }
-
-          linkedinUrl={
-            profile.linkedinUrl
-          }
-
-          xUrl={
-            profile.xUrl
-          }
+          githubUsername={profile.githubUsername}
+          linkedinUrl={profile.linkedinUrl}
+          xUrl={profile.xUrl}
         />
 
         {profile.githubUsername && (
-          <GithubStats
-            username={
-              profile.githubUsername
-            }
-          />
+          <GithubStats username={profile.githubUsername} />
         )}
 
         <hr />
 
-        <h2>
-          Projects
-        </h2>
+        <h2>Projects</h2>
 
         {profile.projects?.length ? (
-          profile.projects.map(
-            (
-              project
-            ) => (
-              <ProjectCard
-                key={
-                  project.id
-                }
-
-                project={
-                  project
-                }
-              />
-            )
-          )
+          profile.projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))
         ) : (
-          <p>
-            No projects yet
-          </p>
+          <p>No projects yet</p>
         )}
       </div>
 
       {followModal && (
         <div
-          onClick={() =>
-            setFollowModal(
-              null
-            )
-          }
-
+          onClick={() => setFollowModal(null)}
           style={{
-            position:
-              "fixed",
+            position: "fixed",
 
-            inset:
-              0,
+            inset: 0,
 
-            background:
-              "rgba(0,0,0,.45)",
+            background: "rgba(0,0,0,.45)",
 
-            display:
-              "flex",
+            display: "flex",
 
-            alignItems:
-              "center",
+            alignItems: "center",
 
-            justifyContent:
-              "center",
+            justifyContent: "center",
 
-            zIndex:
-              50,
+            zIndex: 50,
           }}
         >
           <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-
+            onClick={(e) => e.stopPropagation()}
             style={{
-              width:
-                "420px",
+              width: "420px",
 
-              maxWidth:
-                "calc(100vw - 32px)",
+              maxWidth: "calc(100vw - 32px)",
 
-              maxHeight:
-                "70vh",
+              maxHeight: "70vh",
 
-              overflow:
-                "auto",
+              overflow: "auto",
 
-              background:
-                "#fff",
+              background: "#fff",
 
-              borderRadius:
-                "14px",
+              borderRadius: "14px",
 
-              boxShadow:
-                "0 18px 60px rgba(0,0,0,.22)",
+              boxShadow: "0 18px 60px rgba(0,0,0,.22)",
             }}
           >
             <div
               style={{
-                display:
-                  "flex",
+                display: "flex",
 
-                alignItems:
-                  "center",
+                alignItems: "center",
 
-                justifyContent:
-                  "space-between",
+                justifyContent: "space-between",
 
-                padding:
-                  "16px 18px",
+                padding: "16px 18px",
 
-                borderBottom:
-                  "1px solid #eee",
+                borderBottom: "1px solid #eee",
               }}
             >
               <strong
                 style={{
-                  textTransform:
-                    "capitalize",
+                  textTransform: "capitalize",
                 }}
               >
                 {followModal}
@@ -441,25 +276,15 @@ Message
 
               <button
                 type="button"
-
-                onClick={() =>
-                  setFollowModal(
-                    null
-                  )
-                }
-
+                onClick={() => setFollowModal(null)}
                 style={{
-                  border:
-                    "none",
+                  border: "none",
 
-                  background:
-                    "transparent",
+                  background: "transparent",
 
-                  cursor:
-                    "pointer",
+                  cursor: "pointer",
 
-                  fontSize:
-                    "22px",
+                  fontSize: "22px",
                 }}
               >
                 x
@@ -469,122 +294,80 @@ Message
             {followLoading ? (
               <div
                 style={{
-                  padding:
-                    "22px",
+                  padding: "22px",
                 }}
               >
                 Loading...
               </div>
             ) : followUsers.length ? (
-              followUsers.map(
-                (user) => (
-                  <button
-                    key={
-                      user.id
-                    }
+              followUsers.map((user) => (
+                <button
+                  key={user.id}
+                  type="button"
+                  onClick={() => visitUser(user)}
+                  style={{
+                    width: "100%",
 
-                    type="button"
+                    display: "flex",
 
-                    onClick={() =>
-                      visitUser(
-                        user
-                      )
-                    }
+                    alignItems: "center",
 
+                    gap: "14px",
+
+                    padding: "14px 18px",
+
+                    border: "none",
+
+                    borderBottom: "1px solid #f1f1f1",
+
+                    background: "transparent",
+
+                    cursor: "pointer",
+
+                    textAlign: "left",
+                  }}
+                >
+                  <img
+                    src={user.avatar || "https://placehold.co/44"}
+                    alt="avatar"
                     style={{
-                      width:
-                        "100%",
+                      width: "44px",
 
-                      display:
-                        "flex",
+                      height: "44px",
 
-                      alignItems:
-                        "center",
+                      borderRadius: "50%",
 
-                      gap:
-                        "14px",
+                      objectFit: "cover",
 
-                      padding:
-                        "14px 18px",
-
-                      border:
-                        "none",
-
-                      borderBottom:
-                        "1px solid #f1f1f1",
-
-                      background:
-                        "transparent",
-
-                      cursor:
-                        "pointer",
-
-                      textAlign:
-                        "left",
+                      background: "#eee",
                     }}
-                  >
-                    <img
-                      src={
-                        user.avatar ||
-                        "https://placehold.co/44"
-                      }
+                  />
 
-                      alt="avatar"
+                  <div>
+                    <strong>@{user.username}</strong>
 
-                      style={{
-                        width:
-                          "44px",
+                    {user.bio && (
+                      <div
+                        style={{
+                          color: "#666",
 
-                        height:
-                          "44px",
+                          fontSize: "14px",
 
-                        borderRadius:
-                          "50%",
-
-                        objectFit:
-                          "cover",
-
-                        background:
-                          "#eee",
-                      }}
-                    />
-
-                    <div>
-                      <strong>
-                        @
-                        {
-                          user.username
-                        }
-                      </strong>
-
-                      {user.bio && (
-                        <div
-                          style={{
-                            color:
-                              "#666",
-
-                            fontSize:
-                              "14px",
-
-                            marginTop:
-                              "3px",
-                          }}
-                        >
-                          {user.bio}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                )
-              )
+                          marginTop: "3px",
+                        }}
+                      >
+                        {user.bio}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
             ) : (
               <div
                 style={{
-                  padding:
-                    "22px",
+                  padding: "22px",
 
-                  color:
-                    "#666",
+                  color: "#666",
                 }}
               >
                 No users yet

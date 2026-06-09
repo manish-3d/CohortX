@@ -5,17 +5,12 @@ import api from "../services/api";
 import GithubHeatmap from "./GithubHeatmap";
 import PageLoader from "./PageLoader";
 
-export default function GithubStats({
-  username,
-}) {
-  const [heatmap, setHeatmap] =
-    useState([]);
+export default function GithubStats({ username }) {
+  const [heatmap, setHeatmap] = useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [open, setOpen] =
-    useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -27,127 +22,76 @@ export default function GithubStats({
     try {
       setLoading(true);
 
-      const res =
-        await api.get(
-          `/github/${username}`
-        );
+      const res = await api.get(`/github/${username}`);
 
-      setHeatmap(
-        res.data.heatmap || []
-      );
-
+      setHeatmap(res.data.heatmap || []);
     } catch {
-
-      alert(
-        "Failed to load activity"
-      );
-
+      alert("Failed to load activity");
     } finally {
-
       setLoading(false);
-
     }
   }
 
   return (
     <>
-      <button
-        onClick={() =>
-          setOpen(
-            true
-          )
-        }
-      >
-        View Contributions
-      </button>
+      <button onClick={() => setOpen(true)}>View Contributions</button>
 
       {open && (
         <div
           style={{
-            position:
-              "fixed",
+            position: "fixed",
 
             inset: 0,
 
-            background:
-              "rgba(0,0,0,.6)",
+            background: "rgba(0,0,0,.6)",
 
-            display:
-              "flex",
+            display: "flex",
 
-            justifyContent:
-              "center",
+            justifyContent: "center",
 
-            alignItems:
-              "center",
+            alignItems: "center",
 
-            zIndex:
-              1000,
+            zIndex: 1000,
           }}
         >
           <div
             style={{
-              width:
-                "850px",
+              width: "850px",
 
-              background:
-                "#fff",
+              background: "#fff",
 
-              borderRadius:
-                "18px",
+              borderRadius: "18px",
 
-              padding:
-                "30px",
+              padding: "30px",
 
-              position:
-                "relative",
+              position: "relative",
 
-              boxShadow:
-                "0 20px 50px rgba(0,0,0,.2)",
+              boxShadow: "0 20px 50px rgba(0,0,0,.2)",
             }}
           >
             <button
-              onClick={() =>
-                setOpen(
-                  false
-                )
-              }
-
+              onClick={() => setOpen(false)}
               style={{
-                position:
-                  "absolute",
+                position: "absolute",
 
-                right:
-                  "20px",
+                right: "20px",
 
-                top:
-                  "20px",
+                top: "20px",
               }}
             >
               ✕
             </button>
 
-            <h2>
-              Contribution Activity
-            </h2>
+            <h2>Contribution Activity</h2>
 
-            <p>
-              @{username}
-            </p>
+            <p>@{username}</p>
 
             <br />
 
             {loading ? (
-              <PageLoader
-                text="Loading contributions..."
-                minHeight="260px"
-              />
+              <PageLoader text="Loading contributions..." minHeight="260px" />
             ) : (
-              <GithubHeatmap
-                data={
-                  heatmap
-                }
-              />
+              <GithubHeatmap data={heatmap} />
             )}
           </div>
         </div>

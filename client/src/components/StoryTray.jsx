@@ -1,45 +1,24 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import api
-from "../services/api";
+import api from "../services/api";
 
 export default function StoryTray() {
-  const [stories, setStories] =
-    useState([]);
+  const [stories, setStories] = useState([]);
 
-  const [activeIndex, setActiveIndex] =
-    useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
 
-  const activeStory =
-    activeIndex === null
-      ? null
-      : stories[activeIndex];
+  const activeStory = activeIndex === null ? null : stories[activeIndex];
 
   function closeStory() {
-    setActiveIndex(
-      null
-    );
+    setActiveIndex(null);
   }
 
   function showPrevious() {
-    setActiveIndex(
-      (index) =>
-        index > 0
-          ? index - 1
-          : stories.length - 1
-    );
+    setActiveIndex((index) => (index > 0 ? index - 1 : stories.length - 1));
   }
 
   function showNext() {
-    setActiveIndex(
-      (index) =>
-        index < stories.length - 1
-          ? index + 1
-          : 0
-    );
+    setActiveIndex((index) => (index < stories.length - 1 ? index + 1 : 0));
   }
 
   useEffect(() => {
@@ -48,19 +27,11 @@ export default function StoryTray() {
 
   async function loadStories() {
     try {
-      const res =
-        await api.get(
-          "/stories"
-        );
+      const res = await api.get("/stories");
 
-      setStories(
-        res.data
-      );
-
+      setStories(res.data);
     } catch (err) {
-      console.log(
-        err
-      );
+      console.log(err);
     }
   }
 
@@ -72,327 +43,210 @@ export default function StoryTray() {
     <>
       <div
         style={{
-          display:
-            "flex",
+          display: "flex",
 
-          gap:
-            "18px",
+          gap: "18px",
 
-          overflowX:
-            "auto",
+          overflowX: "auto",
 
-          padding:
-            "10px 0 26px",
+          padding: "10px 0 26px",
 
-          marginBottom:
-            "14px",
+          marginBottom: "14px",
         }}
       >
-        {stories.map(
-          (story, index) => (
-            <button
-              key={
-                story.id
-              }
+        {stories.map((story, index) => (
+          <button
+            key={story.id}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            style={{
+              border: "none",
 
-              type="button"
+              background: "transparent",
 
-              onClick={() =>
-                setActiveIndex(
-                  index
-                )
-              }
+              cursor: "pointer",
 
+              padding: 0,
+
+              width: "92px",
+
+              flex: "0 0 auto",
+            }}
+          >
+            <img
+              src={story.user?.avatar || "https://placehold.co/76"}
+              alt="story"
               style={{
-                border:
-                  "none",
+                width: "76px",
 
-                background:
-                  "transparent",
+                height: "76px",
 
-                cursor:
-                  "pointer",
+                borderRadius: "50%",
 
-                padding:
-                  0,
+                objectFit: "cover",
 
-                width:
-                  "92px",
+                padding: "4px",
 
-                flex:
-                  "0 0 auto",
+                border: "3px solid #111",
+
+                background: "#fff",
+              }}
+            />
+
+            <div
+              style={{
+                marginTop: "8px",
+
+                fontSize: "13px",
+
+                fontWeight: "600",
+
+                overflow: "hidden",
+
+                textOverflow: "ellipsis",
+
+                whiteSpace: "nowrap",
               }}
             >
-              <img
-                src={
-                  story.user
-                    ?.avatar ||
-                  "https://placehold.co/76"
-                }
-
-                alt="story"
-
-                style={{
-                  width:
-                    "76px",
-
-                  height:
-                    "76px",
-
-                  borderRadius:
-                    "50%",
-
-                  objectFit:
-                    "cover",
-
-                  padding:
-                    "4px",
-
-                  border:
-                    "3px solid #111",
-
-                  background:
-                    "#fff",
-                }}
-              />
-
-              <div
-                style={{
-                  marginTop:
-                    "8px",
-
-                  fontSize:
-                    "13px",
-
-                  fontWeight:
-                    "600",
-
-                  overflow:
-                    "hidden",
-
-                  textOverflow:
-                    "ellipsis",
-
-                  whiteSpace:
-                    "nowrap",
-                }}
-              >
-                @
-                {
-                  story.user
-                    ?.username
-                }
-              </div>
-            </button>
-          )
-        )}
+              @{story.user?.username}
+            </div>
+          </button>
+        ))}
       </div>
 
       {activeStory && (
         <div
           onClick={closeStory}
-
           style={{
-            position:
-              "fixed",
+            position: "fixed",
 
-            inset:
-              0,
+            inset: 0,
 
-            zIndex:
-              100,
+            zIndex: 100,
 
-            background:
-              "#000",
+            background: "#000",
 
-            display:
-              "flex",
+            display: "flex",
 
-            alignItems:
-              "stretch",
+            alignItems: "stretch",
 
-            justifyContent:
-              "center",
+            justifyContent: "center",
 
-            padding:
-              0,
+            padding: 0,
           }}
         >
           <div
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-
+            onClick={(e) => e.stopPropagation()}
             style={{
-              width:
-                "min(500px, 100vw)",
+              width: "min(500px, 100vw)",
 
-              height:
-                "100vh",
+              height: "100vh",
 
-              color:
-                "#fff",
+              color: "#fff",
 
-              position:
-                "relative",
+              position: "relative",
 
-              display:
-                "flex",
+              display: "flex",
 
-              flexDirection:
-                "column",
+              flexDirection: "column",
 
-              justifyContent:
-                "center",
+              justifyContent: "center",
             }}
           >
             <div
               style={{
-                position:
-                  "absolute",
+                position: "absolute",
 
-                top:
-                  0,
+                top: 0,
 
-                left:
-                  0,
+                left: 0,
 
-                right:
-                  0,
+                right: 0,
 
-                zIndex:
-                  2,
+                zIndex: 2,
 
-                padding:
-                  "14px 16px 18px",
+                padding: "14px 16px 18px",
 
-                background:
-                  "linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,0))",
+                background: "linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,0))",
               }}
             >
               <div
                 style={{
-                  display:
-                    "flex",
+                  display: "flex",
 
-                  gap:
-                    "4px",
+                  gap: "4px",
 
-                  marginBottom:
-                    "14px",
+                  marginBottom: "14px",
                 }}
               >
-                {stories.map(
-                  (story, index) => (
-                    <div
-                      key={
-                        story.id
-                      }
+                {stories.map((story, index) => (
+                  <div
+                    key={story.id}
+                    style={{
+                      flex: 1,
 
-                      style={{
-                        flex:
-                          1,
+                      height: "3px",
 
-                        height:
-                          "3px",
+                      borderRadius: "999px",
 
-                        borderRadius:
-                          "999px",
-
-                        background:
-                          index <= activeIndex
-                            ? "#fff"
-                            : "rgba(255,255,255,.35)",
-                      }}
-                    />
-                  )
-                )}
+                      background:
+                        index <= activeIndex ? "#fff" : "rgba(255,255,255,.35)",
+                    }}
+                  />
+                ))}
               </div>
 
               <div
                 style={{
-                display:
-                  "flex",
+                  display: "flex",
 
-                alignItems:
-                  "center",
+                  alignItems: "center",
 
-                gap:
-                  "10px",
+                  gap: "10px",
 
-                marginBottom:
-                  0,
+                  marginBottom: 0,
                 }}
               >
                 <img
-                  src={
-                    activeStory.user
-                      ?.avatar ||
-                    "https://placehold.co/42"
-                  }
-
+                  src={activeStory.user?.avatar || "https://placehold.co/42"}
                   alt="avatar"
-
                   style={{
-                    width:
-                      "42px",
+                    width: "42px",
 
-                    height:
-                      "42px",
+                    height: "42px",
 
-                    borderRadius:
-                      "50%",
+                    borderRadius: "50%",
 
-                    objectFit:
-                      "cover",
+                    objectFit: "cover",
 
-                    border:
-                      "2px solid #fff",
+                    border: "2px solid #fff",
                   }}
                 />
 
-                <strong>
-                  @
-                  {
-                    activeStory.user
-                      ?.username
-                  }
-                </strong>
+                <strong>@{activeStory.user?.username}</strong>
 
                 <button
                   type="button"
-
                   onClick={closeStory}
-
                   aria-label="Close story"
-
                   style={{
-                    marginLeft:
-                      "auto",
+                    marginLeft: "auto",
 
-                    width:
-                      "36px",
+                    width: "36px",
 
-                    height:
-                      "36px",
+                    height: "36px",
 
-                    border:
-                      "none",
+                    border: "none",
 
-                    background:
-                      "rgba(255,255,255,.14)",
+                    background: "rgba(255,255,255,.14)",
 
-                    borderRadius:
-                      "50%",
+                    borderRadius: "50%",
 
-                    color:
-                      "#fff",
+                    color: "#fff",
 
-                    cursor:
-                      "pointer",
+                    cursor: "pointer",
 
-                    fontSize:
-                      "24px",
+                    fontSize: "24px",
                   }}
                 >
                   x
@@ -402,53 +256,37 @@ export default function StoryTray() {
 
             <button
               type="button"
-
               onClick={(e) => {
                 e.stopPropagation();
                 showPrevious();
               }}
-
               aria-label="Previous story"
-
               style={{
-                position:
-                  "absolute",
+                position: "absolute",
 
-                left:
-                  "12px",
+                left: "12px",
 
-                top:
-                  "50%",
+                top: "50%",
 
-                zIndex:
-                  2,
+                zIndex: 2,
 
-                transform:
-                  "translateY(-50%)",
+                transform: "translateY(-50%)",
 
-                width:
-                  "40px",
+                width: "40px",
 
-                height:
-                  "40px",
+                height: "40px",
 
-                border:
-                  "none",
+                border: "none",
 
-                borderRadius:
-                  "50%",
+                borderRadius: "50%",
 
-                background:
-                  "rgba(255,255,255,.16)",
+                background: "rgba(255,255,255,.16)",
 
-                color:
-                  "#fff",
+                color: "#fff",
 
-                cursor:
-                  "pointer",
+                cursor: "pointer",
 
-                fontSize:
-                  "26px",
+                fontSize: "26px",
               }}
             >
               ‹
@@ -456,53 +294,37 @@ export default function StoryTray() {
 
             <button
               type="button"
-
               onClick={(e) => {
                 e.stopPropagation();
                 showNext();
               }}
-
               aria-label="Next story"
-
               style={{
-                position:
-                  "absolute",
+                position: "absolute",
 
-                right:
-                  "12px",
+                right: "12px",
 
-                top:
-                  "50%",
+                top: "50%",
 
-                zIndex:
-                  2,
+                zIndex: 2,
 
-                transform:
-                  "translateY(-50%)",
+                transform: "translateY(-50%)",
 
-                width:
-                  "40px",
+                width: "40px",
 
-                height:
-                  "40px",
+                height: "40px",
 
-                border:
-                  "none",
+                border: "none",
 
-                borderRadius:
-                  "50%",
+                borderRadius: "50%",
 
-                background:
-                  "rgba(255,255,255,.16)",
+                background: "rgba(255,255,255,.16)",
 
-                color:
-                  "#fff",
+                color: "#fff",
 
-                cursor:
-                  "pointer",
+                cursor: "pointer",
 
-                fontSize:
-                  "26px",
+                fontSize: "26px",
               }}
             >
               ›
@@ -510,62 +332,42 @@ export default function StoryTray() {
 
             <div
               style={{
-                width:
-                  "100%",
+                width: "100%",
 
-                height:
-                  "100%",
+                height: "100%",
 
-                display:
-                  "flex",
+                display: "flex",
 
-                alignItems:
-                  "center",
+                alignItems: "center",
 
-                justifyContent:
-                  "center",
+                justifyContent: "center",
 
-                background:
-                  "#000",
+                background: "#000",
               }}
             >
-              {activeStory.mediaType ===
-              "video" ? (
+              {activeStory.mediaType === "video" ? (
                 <video
                   controls
                   autoPlay
-                  src={
-                    activeStory.mediaUrl
-                  }
-
+                  src={activeStory.mediaUrl}
                   style={{
-                    width:
-                      "100%",
+                    width: "100%",
 
-                    height:
-                      "100%",
+                    height: "100%",
 
-                    objectFit:
-                      "contain",
+                    objectFit: "contain",
                   }}
                 />
               ) : (
                 <img
-                  src={
-                    activeStory.mediaUrl
-                  }
-
+                  src={activeStory.mediaUrl}
                   alt="story"
-
                   style={{
-                    width:
-                      "100%",
+                    width: "100%",
 
-                    height:
-                      "100%",
+                    height: "100%",
 
-                    objectFit:
-                      "contain",
+                    objectFit: "contain",
                   }}
                 />
               )}
@@ -574,40 +376,28 @@ export default function StoryTray() {
             {activeStory.caption && (
               <p
                 style={{
-                  position:
-                    "absolute",
+                  position: "absolute",
 
-                  left:
-                    "18px",
+                  left: "18px",
 
-                  right:
-                    "18px",
+                  right: "18px",
 
-                  bottom:
-                    "18px",
+                  bottom: "18px",
 
-                  zIndex:
-                    2,
+                  zIndex: 2,
 
-                  margin:
-                    0,
+                  margin: 0,
 
-                  padding:
-                    "12px 14px",
+                  padding: "12px 14px",
 
-                  borderRadius:
-                    "12px",
+                  borderRadius: "12px",
 
-                  background:
-                    "rgba(0,0,0,.52)",
+                  background: "rgba(0,0,0,.52)",
 
-                  color:
-                    "#fff",
+                  color: "#fff",
                 }}
               >
-                {
-                  activeStory.caption
-                }
+                {activeStory.caption}
               </p>
             )}
           </div>

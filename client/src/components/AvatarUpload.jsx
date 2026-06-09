@@ -2,117 +2,73 @@ import { useRef } from "react";
 
 import api from "../services/api";
 
-export default function AvatarUpload({
-  avatar,
-}) {
-  const inputRef =
-    useRef();
+export default function AvatarUpload({ avatar }) {
+  const inputRef = useRef();
 
-  async function upload(
-    e
-  ) {
-    const file =
-      e.target.files?.[0];
+  async function upload(e) {
+    const file = e.target.files?.[0];
 
     if (!file) {
       return;
     }
 
-    const form =
-      new FormData();
+    const form = new FormData();
 
-    form.append(
-      "avatar",
-      file
-    );
+    form.append("avatar", file);
 
     try {
-      await api.post(
-        "/users/avatar",
-        form
-      );
+      await api.post("/users/avatar", form);
 
       window.location.reload();
-
     } catch {
-
-      alert(
-        "Upload failed"
-      );
-
+      alert("Upload failed");
     }
   }
 
   return (
     <div
       style={{
-        position:
-          "relative",
+        position: "relative",
 
-        width:
-          "150px",
+        width: "150px",
 
-        marginBottom:
-          "20px",
+        marginBottom: "20px",
       }}
     >
       <img
-        src={
-          avatar ||
-          "https://placehold.co/150"
-        }
-
+        src={avatar || "https://placehold.co/150"}
         alt="avatar"
-
         style={{
-          width:
-            "150px",
+          width: "150px",
 
-          height:
-            "150px",
+          height: "150px",
 
-          borderRadius:
-            "50%",
+          borderRadius: "50%",
 
-          objectFit:
-            "cover",
+          objectFit: "cover",
 
-          border:
-            "3px solid white",
+          border: "3px solid white",
         }}
       />
 
       <button
-        onClick={() =>
-          inputRef
-            .current
-            .click()
-        }
-
+        onClick={() => inputRef.current.click()}
         style={{
-          position:
-            "absolute",
+          position: "absolute",
 
-          right:
-            "8px",
+          right: "8px",
 
-          bottom:
-            "8px",
+          bottom: "8px",
 
-          width:
-            "40px",
+          width: "40px",
 
-          height:
-            "40px",
+          height: "40px",
 
-          borderRadius:
-            "50%",
+          borderRadius: "50%",
 
-          fontSize:
-            "18px",
+          fontSize: "18px",
 
-          padding:
-            0,
+          padding: 0,
         }}
       >
         ⚙️
@@ -120,18 +76,10 @@ export default function AvatarUpload({
 
       <input
         type="file"
-
-        ref={
-          inputRef
-        }
-
+        ref={inputRef}
         hidden
-
         accept="image/*"
-
-        onChange={
-          upload
-        }
+        onChange={upload}
       />
     </div>
   );

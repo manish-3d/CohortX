@@ -1,566 +1,275 @@
-import {
-  useRef,
-  useState,
-} from "react";
+import { useRef, useState } from "react";
 
-import {
-  io,
-} from "socket.io-client";
+import { io } from "socket.io-client";
 
-import AppLayout
-from "../layout/AppLayout";
+import AppLayout from "../layout/AppLayout";
 
-const socket =
-  io(
-    "http://localhost:5000"
-  );
+const socket = io("http://localhost:5000");
 
 export default function Live() {
+  const videoRef = useRef(null);
 
-  const videoRef =
-    useRef(
-      null
-    );
+  const peer = useRef(null);
 
-  const peer =
-    useRef(
-      null
-    );
+  const [viewerCount, setViewerCount] = useState(1);
 
-  const [
-    viewerCount,
-    setViewerCount,
-  ] =
-    useState(
-      1
-    );
-
-  const [
-    title,
-    setTitle,
-  ] =
-    useState(
-      "My Live Stream"
-    );
+  const [title, setTitle] = useState("My Live Stream");
 
   async function startLive() {
-
     try {
+      setViewerCount(1);
 
-      setViewerCount(
-        1
-      );
+      const room = "room-1";
 
-      const room =
-        "room-1";
+      socket.emit("join-stream", room);
 
-      socket.emit(
-        "join-stream",
-        room
-      );
+      console.log("joined room");
 
-      console.log(
-        "joined room"
-      );
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
 
-      const stream =
+        audio: true,
+      });
 
-        await navigator
-        .mediaDevices
-        .getUserMedia({
+      videoRef.current.srcObject = stream;
 
-          video:
-            true,
-
-          audio:
-            true,
-
-        });
-
-      videoRef
-        .current
-        .srcObject =
-        stream;
-
-      peer.current =
-        new RTCPeerConnection();
+      peer.current = new RTCPeerConnection();
 
       stream
         .getTracks()
-        .forEach(
+        .forEach((track) => peer.current.addTrack(track, stream));
 
-          track =>
+      peer.current.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit(
+            "candidate",
 
-            peer
-              .current
-              .addTrack(
-                track,
-                stream
-              )
+            {
+              room,
 
-        );
-
-      peer.current
-        .onicecandidate = (
-
-          event
-
-        ) => {
-
-          if (
-            event.candidate
-          ) {
-
-            socket.emit(
-
-              "candidate",
-
-              {
-
-                room,
-
-                candidate:
-                  event.candidate,
-
-              }
-
-            );
-
-          }
-
-        };
+              candidate: event.candidate,
+            }
+          );
+        }
+      };
 
       socket.on(
-
         "answer",
 
-        async (
-          data
-        ) => {
+        async (data) => {
+          console.log("answer received");
 
-          console.log(
-            "answer received"
-          );
-
-          await peer
-            .current
-            .setRemoteDescription(
-              data.answer
-            );
-
+          await peer.current.setRemoteDescription(data.answer);
         }
-
       );
 
       socket.on(
-
         "candidate",
 
-        async (
-          data
-        ) => {
-
-          if (
-            data.candidate
-          ) {
-
-            await peer
-              .current
-              .addIceCandidate(
-                data.candidate
-              );
-
+        async (data) => {
+          if (data.candidate) {
+            await peer.current.addIceCandidate(data.candidate);
           }
-
         }
-
       );
 
-      console.log(
-        "creating offer"
-      );
+      console.log("creating offer");
 
-      const offer =
+      const offer = await peer.current.createOffer();
 
-        await peer
-          .current
-          .createOffer();
-
-      await peer
-        .current
-        .setLocalDescription(
-          offer
-        );
+      await peer.current.setLocalDescription(offer);
 
       socket.emit(
-
         "offer",
 
         {
-
           room,
 
           offer,
-
         }
-
       );
 
-      console.log(
-        "offer sent"
-      );
+      console.log("offer sent");
+    } catch (err) {
+      console.log(err);
 
+      alert("Failed to start live");
     }
-
-    catch (
-      err
-    ) {
-
-      console.log(
-        err
-      );
-
-      alert(
-        "Failed to start live"
-      );
-
-    }
-
   }
 
   return (
-
     <AppLayout>
-
       <div
-
         style={{
+          maxWidth: "1100px",
 
-          maxWidth:
-            "1100px",
+          margin: "30px auto",
 
-          margin:
-            "30px auto",
-
-          padding:
-            "24px",
-
+          padding: "24px",
         }}
-
       >
-
         {/* HEADER */}
 
         <div
-
           style={{
+            display: "flex",
 
-            display:
-              "flex",
+            justifyContent: "space-between",
 
-            justifyContent:
-              "space-between",
+            alignItems: "center",
 
-            alignItems:
-              "center",
-
-            marginBottom:
-              "24px",
-
+            marginBottom: "24px",
           }}
-
         >
-
           <div>
-
             <div
-
               style={{
+                display: "flex",
 
-                display:
-                  "flex",
+                alignItems: "center",
 
-                alignItems:
-                  "center",
-
-                gap:
-                  "12px",
-
+                gap: "12px",
               }}
-
             >
-
               <div
-
                 style={{
+                  width: "12px",
 
-                  width:
-                    "12px",
+                  height: "12px",
 
-                  height:
-                    "12px",
+                  background: "#ef4444",
 
-                  background:
-                    "#ef4444",
-
-                  borderRadius:
-                    "50%",
-
+                  borderRadius: "50%",
                 }}
-
               />
 
               <h1
-
                 style={{
+                  margin: 0,
 
-                  margin:
-                    0,
-
-                  fontSize:
-                    "34px",
-
+                  fontSize: "34px",
                 }}
-
               >
-
                 LIVE
-
               </h1>
-
             </div>
 
             <input
-
-              value={
-                title
-              }
-
-              onChange={
-                (
-                  e
-                ) =>
-
-                  setTitle(
-                    e
-                    .target
-                    .value
-                  )
-              }
-
-              placeholder=
-                "Stream title"
-
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Stream title"
               style={{
+                marginTop: "16px",
 
-                marginTop:
-                  "16px",
-
-                maxWidth:
-                  "350px",
-
+                maxWidth: "350px",
               }}
-
             />
 
             <p
-
               style={{
+                marginTop: "10px",
 
-                marginTop:
-                  "10px",
-
-                color:
-                  "#666",
-
+                color: "#666",
               }}
-
             >
-
-              👁️
-              {" "}
-              {
-                viewerCount
-              }
-              {" "}
-              viewers
-
+              👁️ {viewerCount} viewers
             </p>
-
           </div>
 
           <div
-
             style={{
+              background: "#fee2e2",
 
-              background:
-                "#fee2e2",
+              color: "#dc2626",
 
-              color:
-                "#dc2626",
+              padding: "10px 18px",
 
-              padding:
-                "10px 18px",
+              borderRadius: "999px",
 
-              borderRadius:
-                "999px",
-
-              fontWeight:
-                "700",
-
+              fontWeight: "700",
             }}
-
           >
-
             🔴 LIVE
-
           </div>
-
         </div>
 
         {/* VIDEO */}
 
         <div
-
           style={{
+            background: "#000",
 
-            background:
-              "#000",
+            borderRadius: "24px",
 
-            borderRadius:
-              "24px",
+            overflow: "hidden",
 
-            overflow:
-              "hidden",
-
-            position:
-              "relative",
-
+            position: "relative",
           }}
-
         >
-
           <video
-
-            ref={
-              videoRef
-            }
-
+            ref={videoRef}
             autoPlay
-
             muted
-
             playsInline
-
             style={{
+              width: "100%",
 
-              width:
-                "100%",
+              display: "block",
 
-              display:
-                "block",
+              maxHeight: "720px",
 
-              maxHeight:
-                "720px",
-
-              objectFit:
-                "cover",
-
+              objectFit: "cover",
             }}
-
           />
 
           <div
-
             style={{
+              position: "absolute",
 
-              position:
-                "absolute",
+              top: "20px",
 
-              top:
-                "20px",
+              left: "20px",
 
-              left:
-                "20px",
+              background: "rgba(0,0,0,.6)",
 
-              background:
-                "rgba(0,0,0,.6)",
+              color: "white",
 
-              color:
-                "white",
+              padding: "10px 18px",
 
-              padding:
-                "10px 18px",
-
-              borderRadius:
-                "999px",
-
+              borderRadius: "999px",
             }}
-
           >
-
             ● LIVE
-
           </div>
-
         </div>
 
         {/* CONTROLS */}
 
         <div
-
           style={{
+            display: "flex",
 
-            display:
-              "flex",
+            gap: "14px",
 
-            gap:
-              "14px",
-
-            marginTop:
-              "24px",
-
+            marginTop: "24px",
           }}
-
         >
-
           <button
-
-            onClick={
-              startLive
-            }
-
+            onClick={startLive}
             style={{
+              background: "#ef4444",
 
-              background:
-                "#ef4444",
+              padding: "14px 28px",
 
-              padding:
-                "14px 28px",
-
-              borderRadius:
-                "14px",
-
+              borderRadius: "14px",
             }}
-
           >
-
             Start Stream
-
           </button>
 
-          <button>
-
-            Share Stream
-
-          </button>
-
+          <button>Share Stream</button>
         </div>
-
       </div>
-
     </AppLayout>
-
   );
-
 }

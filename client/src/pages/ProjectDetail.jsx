@@ -1,39 +1,21 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  useParams,
-} from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-import api
-from "../services/api";
+import api from "../services/api";
 
-import Navbar
-from "../components/Navbar";
+import Navbar from "../components/Navbar";
 
-import PageLoader
-from "../components/PageLoader";
+import PageLoader from "../components/PageLoader";
 
-import ProjectCard
-from "../components/ProjectCard";
+import ProjectCard from "../components/ProjectCard";
 
 export default function ProjectDetail() {
-  const { id } =
-    useParams();
+  const { id } = useParams();
 
-  const [
-    project,
-    setProject,
-  ] =
-    useState(null);
+  const [project, setProject] = useState(null);
 
-  const [
-    loading,
-    setLoading,
-  ] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProject();
@@ -41,32 +23,17 @@ export default function ProjectDetail() {
 
   async function loadProject() {
     try {
-      setLoading(
-        true
-      );
+      setLoading(true);
 
-      const res =
-        await api.get(
-          `/projects/${id}`
-        );
+      const res = await api.get(`/projects/${id}`);
 
-      setProject(
-        res.data
-      );
-
+      setProject(res.data);
     } catch (err) {
-      console.log(
-        err
-      );
+      console.log(err);
 
-      alert(
-        "Failed to load project"
-      );
-
+      alert("Failed to load project");
     } finally {
-      setLoading(
-        false
-      );
+      setLoading(false);
     }
   }
 
@@ -86,25 +53,14 @@ export default function ProjectDetail() {
 
       <div
         style={{
-          maxWidth:
-            "900px",
+          maxWidth: "900px",
 
-          margin:
-            "40px auto",
+          margin: "40px auto",
 
-          padding:
-            "20px",
+          padding: "20px",
         }}
       >
-        {project ? (
-          <ProjectCard
-            project={project}
-          />
-        ) : (
-          <p>
-            Project not found
-          </p>
-        )}
+        {project ? <ProjectCard project={project} /> : <p>Project not found</p>}
       </div>
     </div>
   );

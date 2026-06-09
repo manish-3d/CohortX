@@ -1,38 +1,29 @@
 import { useState } from "react";
 
-import {
-  Link,
-  useNavigate,
-} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 
 export default function Register() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [form, setForm] =
-    useState({
-      username: "",
-      email: "",
-      password: "",
-    });
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setForm({
       ...form,
 
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
-  async function handleSubmit(
-    e
-  ) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     try {
@@ -44,24 +35,11 @@ export default function Register() {
         form
       );
 
-      navigate(
-        "/login"
-      );
-
+      navigate("/login");
     } catch (err) {
-
-      alert(
-        err.response
-          ?.data
-          ?.message ||
-
-        "Registration failed"
-      );
-
+      alert(err.response?.data?.message || "Registration failed");
     } finally {
-
       setLoading(false);
-
     }
   }
 
@@ -75,28 +53,14 @@ export default function Register() {
         borderRadius: "10px",
       }}
     >
-      <h1>
-        Register
-      </h1>
+      <h1>Register</h1>
 
-      <form
-        onSubmit={
-          handleSubmit
-        }
-      >
+      <form onSubmit={handleSubmit}>
         <input
           name="username"
-
           placeholder="Username"
-
-          value={
-            form.username
-          }
-
-          onChange={
-            handleChange
-          }
-
+          value={form.username}
+          onChange={handleChange}
           required
         />
 
@@ -105,19 +69,10 @@ export default function Register() {
 
         <input
           type="email"
-
           name="email"
-
           placeholder="Email"
-
-          value={
-            form.email
-          }
-
-          onChange={
-            handleChange
-          }
-
+          value={form.email}
+          onChange={handleChange}
           required
         />
 
@@ -126,50 +81,25 @@ export default function Register() {
 
         <input
           type="password"
-
           name="password"
-
           placeholder="Password"
-
-          value={
-            form.password
-          }
-
-          onChange={
-            handleChange
-          }
-
+          value={form.password}
+          onChange={handleChange}
           required
         />
 
         <br />
         <br />
 
-        <button
-          type="submit"
-
-          disabled={
-            loading
-          }
-        >
-          {loading
-            ? "Creating..."
-            : "Register"}
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Register"}
         </button>
       </form>
 
       <br />
 
       <p>
-        Already have account?
-
-        {" "}
-
-        <Link
-          to="/login"
-        >
-          Login
-        </Link>
+        Already have account? <Link to="/login">Login</Link>
       </p>
     </div>
   );
