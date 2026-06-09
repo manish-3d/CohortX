@@ -1,58 +1,35 @@
+import { useState } from "react";
 
-import {
-  useState,
-} from "react";
+import { useNavigate } from "react-router-dom";
 
-import {
-  useNavigate,
-} from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-import {
-  useAuth,
-} from "../context/AuthContext";
+import api from "../services/api";
 
-import api
-from "../services/api";
+import LikeButton from "./LikeButton";
 
-import LikeButton
-from "./LikeButton";
+import CommentSection from "./CommentSection";
 
-import CommentSection
-from "./CommentSection";
+export default function ProjectCard({ project }) {
+  const navigate = useNavigate();
 
-export default function ProjectCard({
-  project,
-}) {
-  const navigate =
-    useNavigate();
+  const { user } = useAuth();
 
-  const { user } =
-    useAuth();
-
-  const [open, setOpen] =
-    useState(false);
+  const [open, setOpen] = useState(false);
 
   async function handleDelete() {
-    const ok =
-      window.confirm(
-        "Delete project?"
-      );
+    const ok = window.confirm("Delete project?");
 
     if (!ok) {
       return;
     }
 
     try {
-      await api.delete(
-        `/projects/${project.id}`
-      );
+      await api.delete(`/projects/${project.id}`);
 
       window.location.reload();
-
     } catch {
-      alert(
-        "Delete failed"
-      );
+      alert("Delete failed");
     }
   }
 
@@ -69,17 +46,12 @@ export default function ProjectCard({
       <div
         style={{
           display: "flex",
-          justifyContent:
-            "space-between",
+          justifyContent: "space-between",
           padding: "18px",
         }}
       >
         <div
-          onClick={() =>
-            navigate(
-              `/profile/${project.author?.username}`
-            )
-          }
+          onClick={() => navigate(`/profile/${project.author?.username}`)}
           style={{
             display: "flex",
             gap: "14px",
@@ -87,64 +59,41 @@ export default function ProjectCard({
           }}
         >
           <img
-            src={
-              project.author
-                ?.avatar
-            }
+            src={project.author?.avatar}
             alt="avatar"
             style={{
               width: "52px",
               height: "52px",
-              borderRadius:
-                "50%",
-              objectFit:
-                "cover",
+              borderRadius: "50%",
+              objectFit: "cover",
             }}
           />
 
           <div>
             <div
               style={{
-                fontWeight:
-                  "700",
+                fontWeight: "700",
               }}
             >
-              @
-              {
-                project.author
-                  ?.username
-              }
+              @{project.author?.username}
             </div>
 
-            <div>
-              {new Date(
-                project.createdAt
-              ).toLocaleDateString()}
-            </div>
+            <div>{new Date(project.createdAt).toLocaleDateString()}</div>
           </div>
         </div>
 
-        {user?.id ===
-          project.authorId && (
+        {user?.id === project.authorId && (
           <div
             style={{
-              position:
-                "relative",
+              position: "relative",
             }}
           >
             <button
-              onClick={() =>
-                setOpen(
-                  !open
-                )
-              }
+              onClick={() => setOpen(!open)}
               style={{
-                background:
-                  "transparent",
-                color:
-                  "#111",
-                fontSize:
-                  "24px",
+                background: "transparent",
+                color: "#111",
+                fontSize: "24px",
                 padding: 0,
               }}
             >
@@ -154,51 +103,33 @@ export default function ProjectCard({
             {open && (
               <div
                 style={{
-                  position:
-                    "absolute",
+                  position: "absolute",
                   top: "110%",
                   right: 0,
-                  background:
-                    "#fff",
-                  border:
-                    "1px solid #ddd",
-                  borderRadius:
-                    "12px",
-                  overflow:
-                    "hidden",
-                  minWidth:
-                    "120px",
+                  background: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  minWidth: "120px",
                 }}
               >
                 <button
-                  onClick={() =>
-                    navigate(
-                      `/projects/edit/${project.id}`
-                    )
-                  }
+                  onClick={() => navigate(`/projects/edit/${project.id}`)}
                   style={{
-                    width:
-                      "100%",
-                    background:
-                      "white",
-                    color:
-                      "black",
+                    width: "100%",
+                    background: "white",
+                    color: "black",
                   }}
                 >
                   Edit
                 </button>
 
                 <button
-                  onClick={
-                    handleDelete
-                  }
+                  onClick={handleDelete}
                   style={{
-                    width:
-                      "100%",
-                    background:
-                      "white",
-                    color:
-                      "red",
+                    width: "100%",
+                    background: "white",
+                    color: "red",
                   }}
                 >
                   Delete
@@ -211,45 +142,30 @@ export default function ProjectCard({
 
       <div
         style={{
-          padding:
-            "20px",
+          padding: "20px",
         }}
       >
-        <h2>
-          {project.title}
-        </h2>
+        <h2>{project.title}</h2>
 
-        <p>
-          {
-            project.description
-          }
-        </p>
+        <p>{project.description}</p>
       </div>
 
-      {project.mediaType ===
-        "image" && (
+      {project.mediaType === "image" && (
         <img
-          src={
-            project.mediaUrl
-          }
+          src={project.mediaUrl}
           alt="project"
           style={{
-            width:
-              "100%",
+            width: "100%",
           }}
         />
       )}
 
-      {project.mediaType ===
-        "video" && (
+      {project.mediaType === "video" && (
         <video
           controls
-          src={
-            project.mediaUrl
-          }
+          src={project.mediaUrl}
           style={{
-            width:
-              "100%",
+            width: "100%",
           }}
         />
       )}
@@ -258,36 +174,19 @@ export default function ProjectCard({
         style={{
           display: "flex",
           gap: "18px",
-          padding:
-            "18px",
-          borderTop:
-            "1px solid #eee",
+          padding: "18px",
+          borderTop: "1px solid #eee",
         }}
       >
         <LikeButton
-          projectId={
-            project.id
-          }
-          initialLikes={
-            project._count
-              ?.likes || 0
-          }
-          initialLiked={
-            Boolean(
-              project.liked
-            )
-          }
+          projectId={project.id}
+          initialLikes={project._count?.likes || 0}
+          initialLiked={project.liked}
         />
 
         <CommentSection
-          projectId={
-            project.id
-          }
-          count={
-            project._count
-              ?.comments ||
-            0
-          }
+          projectId={project.id}
+          count={project._count?.comments || 0}
         />
       </div>
     </div>
