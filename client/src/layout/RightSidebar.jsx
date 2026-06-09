@@ -1,69 +1,210 @@
-import RightChatPanel
-from "../components/RightChatPanel";
+import { useEffect, useState } from "react";
 
-export default function RightSidebar(){
+import api from "../services/api";
 
-return(
+import RightChatPanel from "../components/RightChatPanel";
 
-<div
+export default function RightSidebar() {
+  const [notifications, setNotifications] = useState([]);
 
-style={{
+  const [unread, setUnread] = useState(0);
 
-padding:
-"24px",
+  const [showNotifications, setShowNotifications] = useState(false);
 
-borderLeft:
-"1px solid #e5e7eb",
+  useEffect(() => {
+    loadNotifications();
 
-background:
-"#ffffff",
+    loadUnread();
+  }, []);
 
-position:
-"sticky",
+  async function loadNotifications() {
+    try {
+      const res = await api.get("/notifications");
 
-top:
-0,
+      setNotifications(res.data.slice(0, 5));
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-height:
-"100vh",
+  async function loadUnread() {
+    try {
+      const res = await api.get("/notifications/count");
 
-overflow:
-"auto",
+      setUnread(res.data.count);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-}}
+  async function openNotifications() {
+    const opening = !showNotifications;
 
->
+    setShowNotifications(opening);
 
-<RightChatPanel />
+    if (opening) {
+      try {
+        await api.patch("/notifications/read-all");
 
-<h3>
+        setUnread(0);
 
-Live Now
+        setNotifications((prev) =>
+          prev.map((n) => ({
+            ...n,
 
-</h3>
+            isRead: true,
+          }))
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
 
-<p>
+  return (
+    <div
+      style={{
+        padding: "24px",
 
-Future Feature
+        borderLeft: "1px solid #e5e7eb",
 
-</p>
+        background: "#fff",
 
-<br/>
+        position: "sticky",
 
-<h3>
+        top: 0,
 
-Trending Projects
+        height: "100vh",
 
-</h3>
+        overflow: "auto",
+      }}
+    >
+      <div
+        style={{
+          marginBottom: "28px",
 
-<p>
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={openNotifications}
+          style={{
+            background: "#111827",
 
-Coming Soon
+            color: "white",
 
-</p>
+            border: "none",
 
-</div>
+            padding: "12px 18px",
 
-);
+            borderRadius: "999px",
 
+            cursor: "pointer",
+
+            fontWeight: "600",
+          }}
+        >
+          🔔
+          {unread > 0 && ` (${unread})`}
+        </button>
+
+        {showNotifications && (
+          <div
+            style={{
+              position: "absolute",
+
+              top: "60px",
+
+              right: 0,
+
+              width: "340px",
+
+              background: "white",
+
+              border: "1px solid #ddd",
+
+              borderRadius: "18px",
+
+              padding: "16px",
+
+              zIndex: 999,
+
+              boxShadow: "0 20px 60px rgba(0,0,0,.15)",
+            }}
+          >
+            <h4>Notifications</h4>
+
+            {notifications.length === 0 ? (
+              <p>No notifications</p>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n.id}
+                  style={{
+                    display: "flex",
+
+                    gap: "12px",
+
+                    padding: "14px",
+
+                    marginBottom: "10px",
+
+                    borderRadius: "14px",
+
+                    background: n.isRead ? "white" : "#eff6ff",
+
+                    border: "1px solid #eee",
+                  }}
+                >
+                  <img
+                    src={n.user?.avatar}
+                    alt="avatar"
+                    style={{
+                      width: "42px",
+
+                      height: "42px",
+
+                      borderRadius: "50%",
+
+                      objectFit: "cover",
+                    }}
+                  />
+
+                  <div>
+                    <div>{n.message}</div>
+
+                    <div
+                      style={{
+                        fontSize: "12px",
+
+                        color: "#777",
+
+                        marginTop: "4px",
+                      }}
+                    >
+                      {new Date(n.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      <RightChatPanel />
+
+      <br />
+
+      <h3>Live Now</h3>
+
+      <p>Future Feature</p>
+
+      <br />
+
+      <h3>Trending Projects</h3>
+
+      <p>Coming Soon</p>
+    </div>
+  );
 }
