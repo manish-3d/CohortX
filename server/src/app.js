@@ -4,6 +4,7 @@ const session = require("express-session");
 const passport = require("./config/passport");
 const storyRoutes = require("./routes/storyRoutes");
 const authRoutes = require("./routes/authRoutes");
+const liveRoutes = require("./routes/liveRoutes");
 const userRoutes = require("./routes/userRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const likeRoutes = require("./routes/likeRoutes");
@@ -85,4 +86,5 @@ app.get("/", (req, res) => {
 app.use("/messages", messageRoutes);
 app.use("/conversations", conversationRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/live", liveRoutes);
 module.exports = app;

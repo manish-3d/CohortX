@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
+  id    String @id @default(cuid())
+  lives Live[]
 
   username String @unique
   email    String @unique
   password String
 
-  bio    String?
-  avatar String?
+  bio          String?
+  avatar       String?
   notification Notification[]
-  
+
   githubUsername String?
   linkedinUrl    String?
   xUrl           String?
@@ -149,11 +150,36 @@ model ConversationParticipant {
   @@id([conversationId, userId])
   @@index([userId])
 }
-model Notification{
-  id String @id @default(cuid())
-  message String 
-  isRead Boolean @default(false)
+
+model Notification {
+  id        String   @id @default(cuid())
+  message   String
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
-  userId String
-  user User @relation(fields :[userId],references:[id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Live {
+  id String @id @default(cuid())
+
+  title String
+
+  description String?
+
+  hostId String
+
+  zoomMeetingId String?
+
+  zoomJoinUrl String?
+
+  recordingUrl String?
+
+  isLive Boolean @default(true)
+
+  startedAt DateTime @default(now())
+
+  endedAt DateTime?
+
+  host User @relation(fields: [hostId], references: [id])
 }

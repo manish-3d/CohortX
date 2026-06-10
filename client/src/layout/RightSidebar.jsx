@@ -8,15 +8,24 @@ export default function RightSidebar() {
   const [notifications, setNotifications] = useState([]);
 
   const [unread, setUnread] = useState(0);
-
+  const [lives, setLives] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-
+  const [liveLoading, setLiveLoading] = useState(false);
   useEffect(() => {
     loadNotifications();
 
     loadUnread();
+    loadLives();
   }, []);
+  async function loadLives() {
+    try {
+      const res = await api.get("/live");
 
+      setLives(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   async function loadNotifications() {
     try {
       const res = await api.get("/notifications");
@@ -26,7 +35,34 @@ export default function RightSidebar() {
       console.log(err);
     }
   }
+  async function startLive() {
+    try {
+      const title = prompt("Live title");
 
+      if (!title) {
+        return;
+      }
+
+      const description = prompt("Description");
+
+      setLiveLoading(true);
+
+      await api.post("/live/start", {
+        title,
+        description,
+      });
+
+      await loadLives();
+
+      alert("Live started");
+    } catch (err) {
+      console.log(err);
+
+      alert("Failed");
+    } finally {
+      setLiveLoading(false);
+    }
+  }
   async function loadUnread() {
     try {
       const res = await api.get("/notifications/count");
@@ -195,16 +231,137 @@ export default function RightSidebar() {
       <RightChatPanel />
 
       <br />
+      <div
+        style={{
+          marginTop: "30px",
 
-      <h3>Live Now</h3>
+          background: "#fff",
 
-      <p>Future Feature</p>
+          border: "1px solid #eee",
 
-      <br />
+          borderRadius: "20px",
 
-      <h3>Trending Projects</h3>
+          padding: "18px",
+        }}
+      >
+        <button
+          onClick={startLive}
+          disabled={liveLoading}
+          style={{
+            width: "100%",
 
-      <p>Coming Soon</p>
+            background: "#000000",
+
+            color: "white",
+
+            border: "none",
+
+            padding: "14px",
+
+            borderRadius: "14px",
+
+            fontWeight: "700",
+
+            cursor: "pointer",
+
+            opacity: liveLoading ? 0.7 : 1,
+          }}
+        >
+          {liveLoading ? "Starting..." : " Go Live"}
+        </button>
+        <div
+          style={{
+            marginTop: "20px",
+          }}
+        >
+          <h4>Live Now</h4>
+
+          {lives.length === 0 ? (
+            <p>No active lives</p>
+          ) : (
+            lives.map((live) => (
+              <div
+                key={live.id}
+                style={{
+                  padding: "12px 0",
+
+                  borderBottom: "1px solid #eee",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+
+                    gap: "10px",
+
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src={live.host.avatar}
+                    alt="avatar"
+                    style={{
+                      width: "40px",
+
+                      height: "40px",
+
+                      borderRadius: "50%",
+
+                      objectFit: "cover",
+                    }}
+                  />
+
+                  <div>
+                    <div>{live.host.username}</div>
+
+                    <div
+                      style={{
+                        fontSize: "13px",
+
+                        color: "#777",
+                      }}
+                    >
+                      {live.title}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (live.zoomJoinUrl) {
+                      window.open(
+                        live.zoomJoinUrl,
+
+                        "_blank"
+                      );
+                    } else {
+                      alert("Zoom not attached yet");
+                    }
+                  }}
+                  style={{
+                    marginTop: "10px",
+
+                    width: "100%",
+
+                    padding: "10px",
+
+                    border: "none",
+
+                    borderRadius: "10px",
+
+                    background: "#111",
+
+                    color: "white",
+
+                    cursor: "pointer",
+                  }}
+                >
+                  Join
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

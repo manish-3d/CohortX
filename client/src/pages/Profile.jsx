@@ -14,6 +14,7 @@ import SocialLinks from "../components/SocialLinks";
 
 export default function Profile() {
   const { username } = useParams();
+  const [liveLoading, setLiveLoading] = useState(false);
 
   const navigate = useNavigate();
 
