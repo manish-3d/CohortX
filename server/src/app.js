@@ -16,6 +16,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const githubRoutes = require("./routes/githubRoutes");
 const path = require("path");
 const app = express();
+const webhookRoutes = require("./routes/webhookRoutes");
 const uploadsPath = path.join(__dirname, "../uploads");
 const conversationRoutes = require("./routes/conversationRoutes");
 const messageRoutes = require("./routes/messageRoutes");
@@ -69,6 +70,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", authRoutes);
+app.use("/webhooks", webhookRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/projects", likeRoutes);

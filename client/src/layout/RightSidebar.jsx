@@ -1,47 +1,59 @@
 import { useEffect, useState } from "react";
-
 import api from "../services/api";
-
 import RightChatPanel from "../components/RightChatPanel";
 
 export default function RightSidebar() {
   const [notifications, setNotifications] = useState([]);
-
+  const [selectedLive, setSelectedLive] = useState(null);
   const [unread, setUnread] = useState(0);
   const [lives, setLives] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [liveLoading, setLiveLoading] = useState(false);
+
   useEffect(() => {
     loadNotifications();
-
     loadUnread();
     loadLives();
-  }, []);
-  async function loadLives() {
-    try {
-      const res = await api.get("/live");
 
-      setLives(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+    const interval = setInterval(() => {
+      loadLives();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   async function loadNotifications() {
     try {
       const res = await api.get("/notifications");
-
       setNotifications(res.data.slice(0, 5));
     } catch (err) {
       console.log(err);
     }
   }
+
+  async function loadUnread() {
+    try {
+      const res = await api.get("/notifications/count");
+      setUnread(res.data.count);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function loadLives() {
+    try {
+      const res = await api.get("/live");
+      setLives(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async function startLive() {
     try {
       const title = prompt("Live title");
 
-      if (!title) {
-        return;
-      }
+      if (!title) return;
 
       const description = prompt("Description");
 
@@ -57,115 +69,101 @@ export default function RightSidebar() {
       alert("Live started");
     } catch (err) {
       console.log(err);
-
       alert("Failed");
     } finally {
       setLiveLoading(false);
     }
   }
-  async function loadUnread() {
-    try {
-      const res = await api.get("/notifications/count");
 
-      setUnread(res.data.count);
+  async function endLive(id) {
+    try {
+      await api.patch(`/live/${id}/end`);
+      loadLives();
     } catch (err) {
       console.log(err);
     }
   }
 
   async function openNotifications() {
-    const opening = !showNotifications;
+    setShowNotifications(!showNotifications);
 
-    setShowNotifications(opening);
+    if (!showNotifications) {
+      setUnread(0);
 
-    if (opening) {
+      setNotifications((prev) =>
+        prev.map((n) => ({
+          ...n,
+          isRead: true,
+        }))
+      );
+    }
+  }
+
+  async function joinLive() {
+    try {
+      window.open(selectedLive.zoomJoinUrl, "_blank");
+
       try {
-        await api.patch("/notifications/read-all");
+        await api.patch(`/live/${selectedLive.id}/view`, {
+          change: 1,
+        });
 
-        setUnread(0);
-
-        setNotifications((prev) =>
-          prev.map((n) => ({
-            ...n,
-
-            isRead: true,
-          }))
-        );
+        await loadLives();
       } catch (err) {
-        console.log(err);
+        console.log("viewer failed", err);
       }
+    } catch (err) {
+      console.log(err);
+
+      alert("Failed to join");
     }
   }
 
   return (
     <div
       style={{
-        padding: "24px",
-
-        borderLeft: "1px solid #e5e7eb",
-
-        background: "#fff",
-
+        padding: 24,
+        background: "#000",
+        color: "#fff",
+        borderLeft: "1px solid #202020",
         position: "sticky",
-
         top: 0,
-
         height: "100vh",
-
         overflow: "auto",
       }}
     >
       <div
         style={{
-          marginBottom: "28px",
-
+          marginBottom: 30,
           position: "relative",
         }}
       >
         <button
           onClick={openNotifications}
           style={{
-            background: "#111827",
-
-            color: "white",
-
-            border: "none",
-
+            background: "#171717",
+            color: "#fff",
+            border: "1px solid #2b2b2b",
             padding: "12px 18px",
-
-            borderRadius: "999px",
-
+            borderRadius: 999,
             cursor: "pointer",
-
-            fontWeight: "600",
           }}
         >
-          🔔
-          {unread > 0 && ` (${unread})`}
+          Notification {unread > 0 && `(${unread})`}
         </button>
 
         {showNotifications && (
           <div
             style={{
               position: "absolute",
-
-              top: "60px",
-
+              top: 60,
               right: 0,
-
-              width: "340px",
-
-              background: "white",
-
-              border: "1px solid #ddd",
-
-              borderRadius: "18px",
-
-              padding: "16px",
-
+              width: 340,
+              background: "#111",
+              border: "1px solid #222",
+              borderRadius: 20,
+              padding: 16,
               zIndex: 999,
-
-              boxShadow: "0 20px 60px rgba(0,0,0,.15)",
             }}
           >
             <h4>Notifications</h4>
@@ -178,31 +176,20 @@ export default function RightSidebar() {
                   key={n.id}
                   style={{
                     display: "flex",
-
-                    gap: "12px",
-
-                    padding: "14px",
-
-                    marginBottom: "10px",
-
-                    borderRadius: "14px",
-
-                    background: n.isRead ? "white" : "#eff6ff",
-
-                    border: "1px solid #eee",
+                    gap: 12,
+                    marginBottom: 12,
+                    padding: 12,
+                    borderRadius: 16,
+                    background: n.isRead ? "#171717" : "#202020",
                   }}
                 >
                   <img
                     src={n.user?.avatar}
-                    alt="avatar"
+                    alt=""
                     style={{
-                      width: "42px",
-
-                      height: "42px",
-
+                      width: 42,
+                      height: 42,
                       borderRadius: "50%",
-
-                      objectFit: "cover",
                     }}
                   />
 
@@ -211,11 +198,8 @@ export default function RightSidebar() {
 
                     <div
                       style={{
-                        fontSize: "12px",
-
-                        color: "#777",
-
-                        marginTop: "4px",
+                        fontSize: 12,
+                        color: "#888",
                       }}
                     >
                       {new Date(n.createdAt).toLocaleString()}
@@ -230,18 +214,13 @@ export default function RightSidebar() {
 
       <RightChatPanel />
 
-      <br />
       <div
         style={{
-          marginTop: "30px",
-
-          background: "#fff",
-
-          border: "1px solid #eee",
-
-          borderRadius: "20px",
-
-          padding: "18px",
+          marginTop: 30,
+          background: "#0f0f0f",
+          border: "1px solid #232323",
+          borderRadius: 22,
+          padding: 20,
         }}
       >
         <button
@@ -249,119 +228,173 @@ export default function RightSidebar() {
           disabled={liveLoading}
           style={{
             width: "100%",
-
-            background: "#000000",
-
-            color: "white",
-
+            padding: 14,
             border: "none",
-
-            padding: "14px",
-
-            borderRadius: "14px",
-
-            fontWeight: "700",
-
+            borderRadius: 14,
+            background: "#fff",
+            color: "#000",
             cursor: "pointer",
-
-            opacity: liveLoading ? 0.7 : 1,
+            fontWeight: 700,
           }}
         >
-          {liveLoading ? "Starting..." : " Go Live"}
+          {liveLoading ? "Starting..." : "🔴 Go Live"}
         </button>
-        <div
+
+        <h4
           style={{
-            marginTop: "20px",
+            marginTop: 24,
           }}
         >
-          <h4>Live Now</h4>
+          LIVE NOW
+        </h4>
 
-          {lives.length === 0 ? (
-            <p>No active lives</p>
-          ) : (
-            lives.map((live) => (
+        {lives.length === 0 ? (
+          <p
+            style={{
+              color: "#888",
+            }}
+          >
+            No active lives
+          </p>
+        ) : (
+          lives.map((live) => (
+            <div
+              key={live.id}
+              style={{
+                background: "#151515",
+                padding: 16,
+                borderRadius: 18,
+                marginBottom: 12,
+              }}
+            >
               <div
-                key={live.id}
                 style={{
-                  padding: "12px 0",
-
-                  borderBottom: "1px solid #eee",
+                  display: "flex",
+                  gap: 10,
                 }}
               >
-                <div
+                <img
+                  src={live.host.avatar}
+                  alt=""
                   style={{
-                    display: "flex",
-
-                    gap: "10px",
-
-                    alignItems: "center",
+                    width: 42,
+                    height: 42,
+                    borderRadius: "50%",
                   }}
-                >
-                  <img
-                    src={live.host.avatar}
-                    alt="avatar"
+                />
+
+                <div>
+                  <div>{live.host.username}</div>
+
+                  <div>{live.title}</div>
+
+                  <div
                     style={{
-                      width: "40px",
-
-                      height: "40px",
-
-                      borderRadius: "50%",
-
-                      objectFit: "cover",
+                      color: "#ef4444",
+                      fontSize: 12,
                     }}
-                  />
+                  >
+                    🔴 LIVE
+                  </div>
 
-                  <div>
-                    <div>{live.host.username}</div>
-
-                    <div
-                      style={{
-                        fontSize: "13px",
-
-                        color: "#777",
-                      }}
-                    >
-                      {live.title}
-                    </div>
+                  <div
+                    style={{
+                      color: "#888",
+                      fontSize: 12,
+                    }}
+                  >
+                    👁 {live.viewerCount || 0} watching
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    if (live.zoomJoinUrl) {
-                      window.open(
-                        live.zoomJoinUrl,
-
-                        "_blank"
-                      );
-                    } else {
-                      alert("Zoom not attached yet");
-                    }
-                  }}
-                  style={{
-                    marginTop: "10px",
-
-                    width: "100%",
-
-                    padding: "10px",
-
-                    border: "none",
-
-                    borderRadius: "10px",
-
-                    background: "#111",
-
-                    color: "white",
-
-                    cursor: "pointer",
-                  }}
-                >
-                  Join
-                </button>
               </div>
-            ))
-          )}
-        </div>
+
+              <button
+                onClick={() => setSelectedLive(live)}
+                style={{
+                  width: "100%",
+                  marginTop: 12,
+                  padding: 10,
+                  border: "none",
+                  borderRadius: 12,
+                  background: "#2a2a2a",
+                  color: "#fff",
+                }}
+              >
+                View
+              </button>
+
+              <button
+                onClick={() => endLive(live.id)}
+                style={{
+                  width: "100%",
+                  marginTop: 8,
+                  padding: 10,
+                  border: "1px solid #303030",
+                  background: "#1a1a1a",
+                  color: "#fff",
+                  borderRadius: 12,
+                }}
+              >
+                End Live
+              </button>
+            </div>
+          ))
+        )}
       </div>
+
+      {selectedLive && (
+        <div
+          onClick={() => setSelectedLive(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 430,
+              background: "#111",
+              color: "#fff",
+              padding: 24,
+              borderRadius: 22,
+            }}
+          >
+            <img
+              src={selectedLive.host.avatar}
+              alt=""
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: "50%",
+              }}
+            />
+
+            <h2>{selectedLive.title}</h2>
+
+            <p>{selectedLive.description}</p>
+
+            <button
+              onClick={() => joinLive()}
+              style={{
+                width: "100%",
+                padding: "14px",
+                border: "none",
+                borderRadius: "14px",
+                background: "#2b2b2b",
+                color: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              Join Live
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
