@@ -165,6 +165,8 @@ model Live {
 
   title String
 
+  viewerCount Int @default(0)
+
   description String?
 
   hostId String
