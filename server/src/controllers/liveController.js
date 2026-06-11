@@ -1,17 +1,16 @@
 const prisma = require("../config/db");
+
 const { createMeeting } = require("../services/zoomService");
+
 exports.startLive = async (req, res) => {
   try {
-    const {
-      title,
+    const { title, description } = req.body;
 
-      description,
-    } = req.body;
     const zoom = await createMeeting({
       title,
-
       description,
     });
+
     const live = await prisma.live.create({
       data: {
         title,
@@ -24,7 +23,9 @@ exports.startLive = async (req, res) => {
 
         zoomJoinUrl: zoom.joinUrl,
 
-        recordingUrl: l,
+        recordingUrl: null,
+
+        viewerCount: 0,
 
         isLive: true,
 
@@ -34,6 +35,8 @@ exports.startLive = async (req, res) => {
       include: {
         host: {
           select: {
+            id: true,
+
             username: true,
 
             avatar: true,
@@ -53,6 +56,41 @@ exports.startLive = async (req, res) => {
     });
   }
 };
+
+exports.updateViewer = async (req, res) => {
+  try {
+    const { change } = req.body;
+
+    const updated = await prisma.live.update({
+      where: {
+        id: req.params.id,
+      },
+
+      data: {
+        viewerCount: {
+          increment: Number(change),
+        },
+      },
+
+      select: {
+        id: true,
+
+        viewerCount: true,
+      },
+    });
+
+    console.log("VIEWERS:", updated.viewerCount);
+
+    return res.json(updated);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+};
+
 exports.getLives = async (req, res) => {
   try {
     const lives = await prisma.live.findMany({

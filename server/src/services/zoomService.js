@@ -6,17 +6,25 @@ async function getZoomAccessToken() {
       `${process.env.ZOOM_CLIENT_ID}:${process.env.ZOOM_CLIENT_SECRET}`
     ).toString("base64");
 
-    const res = await axios.post("https://zoom.us/oauth/token", null, {
-      params: {
-        grant_type: "account_credentials",
+    const body = new URLSearchParams();
 
-        account_id: process.env.ZOOM_ACCOUNT_ID,
-      },
+    body.append("grant_type", "account_credentials");
 
-      headers: {
-        Authorization: `Basic ${auth}`,
-      },
-    });
+    body.append("account_id", process.env.ZOOM_ACCOUNT_ID);
+
+    const res = await axios.post(
+      "https://zoom.us/oauth/token",
+
+      body.toString(),
+
+      {
+        headers: {
+          Authorization: `Basic ${auth}`,
+
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
     console.log("TOKEN OK");
 
@@ -24,7 +32,7 @@ async function getZoomAccessToken() {
   } catch (err) {
     console.log("TOKEN ERROR ↓");
 
-    console.log(err.response?.data);
+    console.log(err.response?.data || err.message);
 
     throw err;
   }
@@ -72,7 +80,7 @@ async function createMeeting({ title, description }) {
   } catch (err) {
     console.log("MEETING ERROR ↓");
 
-    console.log(err.response?.data);
+    console.log(err.response?.data || err.message);
 
     throw err;
   }
