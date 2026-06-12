@@ -45,6 +45,33 @@ exports.startLive = async (req, res) => {
       },
     });
 
+    const followers = await prisma.follow.findMany({
+      where: {
+        followingId: req.user.id,
+      },
+    });
+    console.log("FOLLOWERS ↓");
+    console.log(followers);
+
+    if (followers.length) {
+      try {
+        await prisma.notification.createMany({
+          data: followers.map((follower) => ({
+            userId: follower.followerId,
+
+            type: "INFO",
+
+            message: `${live.host.username} started a live session`,
+
+            link: `/live/${live.id}`,
+          })),
+        });
+      } catch (err) {
+        console.log("NOTIFICATION ERROR ↓");
+
+        console.log(err.message);
+      }
+    }
     return res.status(201).json(live);
   } catch (err) {
     console.log("FULL ERROR ↓");
@@ -122,7 +149,6 @@ exports.getLives = async (req, res) => {
     });
   }
 };
-
 exports.endLive = async (req, res) => {
   try {
     const live = await prisma.live.findUnique({
@@ -151,18 +177,31 @@ exports.endLive = async (req, res) => {
       data: {
         isLive: false,
 
+        viewerCount: 0,
+
         endedAt: new Date(),
+      },
+
+      include: {
+        host: true,
       },
     });
 
-    return res.json(updated);
+    return res.json({
+      success: true,
+
+      live: updated,
+    });
   } catch (err) {
+    console.log("END LIVE ERROR ↓");
+
+    console.log(err);
+
     return res.status(500).json({
       error: err.message,
     });
   }
 };
-
 exports.attachRecording = async (req, res) => {
   try {
     const { recordingUrl } = req.body;
