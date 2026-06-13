@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
 import { useAuth } from "../context/AuthContext";
-import LeftSidebar from "../layout/LeftSidebar";
+import LeftSidebar from "../layout/components/LeftSidebar";
 import api from "../services/api";
 
 import "./Chat.css";

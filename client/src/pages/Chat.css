@@ -1,6 +1,6 @@
 .chat-page {
   min-height: 100vh;
-  background: #fafafa;
+  background: #ffffff;
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
 }
@@ -11,7 +11,7 @@
   min-height: 620px;
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
-  background: #fff;
+  background: #ffffff;
   border-left: 1px solid #dbdbdb;
   overflow: hidden;
 }
