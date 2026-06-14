@@ -11,9 +11,10 @@ model User {
   id    String @id @default(cuid())
   lives Live[]
 
-  username String @unique
-  email    String @unique
-  password String
+  username String  @unique
+  email    String  @unique
+  password String?
+  githubId String? @unique
 
   bio          String?
   avatar       String?
@@ -156,6 +157,8 @@ model Notification {
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  type      String   @default("INFO")
+  link      String?
   userId    String
   user      User     @relation(fields: [userId], references: [id])
 }
