@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Notifications from "./pages/Notifications";
 import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
+import OAuthSuccess from "./pages/OAuthSuccess";
 
 import Explore from "./pages/Explore";
 import Search from "./pages/Search";
@@ -55,7 +56,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route
         path="/profile/edit"
         element={
