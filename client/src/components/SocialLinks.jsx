@@ -10,30 +10,45 @@ function ensureUrl(url) {
   return `https://${url}`;
 }
 
-function getHost(url) {
-  try {
-    return new URL(ensureUrl(url)).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
-
-export default function SocialLinks({ githubUsername, linkedinUrl, xUrl }) {
+export default function SocialLinks({
+  githubUsername,
+  linkedinUrl,
+  xUrl,
+  leetcodeUrl,
+}) {
   const links = [
     githubUsername && {
-      label: "GitHub",
-      value: `@${githubUsername}`,
+      label: "GitHub Heatmap",
+
       href: `https://github.com/${githubUsername}`,
+
+      heatmap: `https://github.com/users/${githubUsername}/contributions`,
+
+      icon: "devicon-github-original",
     },
+
     linkedinUrl && {
       label: "LinkedIn",
-      value: getHost(linkedinUrl),
+
       href: ensureUrl(linkedinUrl),
+
+      icon: "devicon-linkedin-plain",
     },
+
     xUrl && {
       label: "X",
-      value: getHost(xUrl),
+
       href: ensureUrl(xUrl),
+
+      icon: "devicon-twitter-original",
+    },
+
+    leetcodeUrl && {
+      label: "LeetCode",
+
+      href: ensureUrl(leetcodeUrl),
+
+      icon: "devicon-devicon-plain",
     },
   ].filter(Boolean);
 
@@ -42,18 +57,65 @@ export default function SocialLinks({ githubUsername, linkedinUrl, xUrl }) {
   }
 
   return (
-    <div className="social-links">
+    <div
+      style={{
+        display: "flex",
+        gap: 12,
+        flexWrap: "wrap",
+      }}
+    >
       {links.map((link) => (
         <a
           key={link.label}
-          className="social-chip"
-          href={link.href}
+          href={link.heatmap || link.href}
           target="_blank"
           rel="noreferrer"
-        >
-          <span className="social-label">{link.label}</span>
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
 
-          <span className="social-value">{link.value}</span>
+            padding: "12px 18px",
+
+            background: "rgba(255,255,255,.65)",
+
+            color: "#111",
+
+            borderRadius: 999,
+
+            border: "1px solid rgba(255,255,255,.9)",
+
+            backdropFilter: "blur(18px)",
+
+            textDecoration: "none",
+
+            fontWeight: 700,
+
+            boxShadow: "0 10px 40px rgba(29,155,240,.08)",
+
+            transition: ".22s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-4px)";
+
+            e.currentTarget.style.boxShadow =
+              "0 18px 50px rgba(29,155,240,.18)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+
+            e.currentTarget.style.boxShadow =
+              "0 10px 40px rgba(29,155,240,.08)";
+          }}
+        >
+          <i
+            className={link.icon}
+            style={{
+              fontSize: 20,
+            }}
+          />
+
+          {link.label}
         </a>
       ))}
     </div>

@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+import { MessageCircle, Sparkles } from "lucide-react";
 
 import api from "../services/api";
 
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
 import FollowButton from "../components/FollowButton";
-import GithubStats from "../components/GithubStats";
 import AvatarUpload from "../components/AvatarUpload";
 import PageLoader from "../components/PageLoader";
 import SocialLinks from "../components/SocialLinks";
 
 export default function Profile() {
   const { username } = useParams();
-  const [liveLoading, setLiveLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -73,147 +72,286 @@ export default function Profile() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "100vh",
+
+        background: `
+          radial-gradient(
+            circle at top,
+            rgba(29,155,240,.24),
+            transparent 36%
+          ),
+
+          linear-gradient(
+            180deg,
+            #ffffff,
+            #f7fbff,
+            #eef8ff
+          )
+        `,
+      }}
+    >
       <Navbar />
 
       <div
         style={{
-          maxWidth: "900px",
+          maxWidth: 1100,
 
-          margin: "40px auto",
+          margin: "0 auto",
 
-          padding: "20px",
+          padding: "40px 24px 90px",
         }}
       >
         <div
           style={{
-            display: "flex",
+            overflow: "hidden",
 
-            alignItems: "center",
+            borderRadius: 40,
 
-            gap: "30px",
+            background: "rgba(255,255,255,.72)",
 
-            marginBottom: "30px",
+            backdropFilter: "blur(40px)",
+
+            boxShadow: "0 30px 90px rgba(29,155,240,.08)",
           }}
         >
-          <AvatarUpload avatar={profile.avatar} />
+          <div
+            style={{
+              height: 220,
+
+              background: "linear-gradient(135deg,#1d9bf0,#7cc8ff)",
+            }}
+          />
 
           <div
             style={{
-              flex: 1,
+              padding: "0 50px 50px",
+
+              marginTop: -80,
             }}
           >
             <div
               style={{
                 display: "flex",
 
-                alignItems: "center",
+                gap: 36,
 
-                gap: "20px",
+                flexWrap: "wrap",
 
-                marginBottom: "10px",
+                alignItems: "flex-start",
               }}
             >
-              <h1
+              <AvatarUpload avatar={profile.avatar} />
+
+              <div
                 style={{
-                  margin: 0,
+                  flex: 1,
                 }}
               >
-                @{profile.username}
-              </h1>
+                <div
+                  style={{
+                    display: "flex",
 
-              <FollowButton userId={profile.id} />
-              <Link
-                to={`/chat/${profile.id}`}
-                style={{
-                  display: "inline-block",
+                    alignItems: "center",
 
-                  marginLeft: "12px",
+                    gap: 12,
 
-                  padding: "10px 18px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <h1
+                    style={{
+                      margin: 0,
 
-                  background: "#111",
+                      fontSize: 54,
+                    }}
+                  >
+                    @{profile.username}
+                  </h1>
 
-                  color: "white",
+                  <div
+                    style={{
+                      background: "#fff",
 
-                  borderRadius: "10px",
-                }}
-              >
-                Message
-              </Link>
-            </div>
+                      color: "#1d9bf0",
 
-            <p>{profile.bio}</p>
+                      padding: "10px 16px",
 
-            <div
-              style={{
-                display: "flex",
+                      borderRadius: 999,
 
-                gap: "20px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => openFollowList("followers")}
-                style={{
-                  border: "none",
+                      display: "flex",
 
-                  background: "transparent",
-                  color: "black",
+                      alignItems: "center",
 
-                  padding: 0,
+                      gap: 8,
+                    }}
+                  >
+                    <Sparkles size={16} />
+                    Builder
+                  </div>
+                </div>
 
-                  cursor: "pointer",
+                <p
+                  style={{
+                    color: "#64748b",
 
-                  font: "inherit",
-                }}
-              >
-                Followers: {profile._count?.followers || 0}
-              </button>
+                    margin: "14px 0 26px",
+                  }}
+                >
+                  {profile.bio || "Building CohortX"}
+                </p>
 
-              <button
-                type="button"
-                onClick={() => openFollowList("following")}
-                style={{
-                  border: "none",
+                <div
+                  style={{
+                    display: "flex",
 
-                  background: "transparent",
+                    flexDirection: "column",
 
-                  padding: 0,
+                    gap: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
 
-                  cursor: "pointer",
-                  color: "black",
-                  font: "inherit",
-                }}
-              >
-                Following: {profile._count?.following || 0}
-              </button>
+                      gap: 12,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <FollowButton background="none" userId={profile.id} />
+
+                    <Link
+                      to={`/chat/${profile.id}`}
+                      style={{
+                        height: 50,
+
+                        padding: "0 22px",
+
+                        display: "flex",
+
+                        alignItems: "center",
+
+                        gap: 10,
+
+                        color: "#0a0a0a",
+
+                        borderRadius: 999,
+
+                        textDecoration: "none",
+                      }}
+                    >
+                      <MessageCircle size={18} />
+                    </Link>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+
+                      gap: 12,
+
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <button
+                      onClick={() => openFollowList("followers")}
+                      style={{
+                        border: 0,
+
+                        background: "#000000",
+
+                        padding: "12px 18px",
+
+                        borderRadius: 999,
+
+                        cursor: "pointer",
+
+                        fontWeight: 700,
+                      }}
+                    >
+                      {profile._count?.followers}
+
+                      <span
+                        style={{
+                          marginLeft: 8,
+                        }}
+                      >
+                        Followers
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => openFollowList("following")}
+                      style={{
+                        border: 0,
+
+                        background: "#000000",
+
+                        padding: "12px 18px",
+
+                        borderRadius: 999,
+
+                        cursor: "pointer",
+
+                        fontWeight: 700,
+                      }}
+                    >
+                      {profile._count?.following}
+
+                      <span
+                        style={{
+                          marginLeft: 8,
+                        }}
+                      >
+                        Following
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <hr />
+        <div
+          style={{
+            marginTop: 40,
+          }}
+        >
+          <SocialLinks
+            githubUsername={profile.githubUsername}
+            linkedinUrl={profile.linkedinUrl}
+            xUrl={profile.xUrl}
+          />
+        </div>
 
-        <SocialLinks
-          githubUsername={profile.githubUsername}
-          linkedinUrl={profile.linkedinUrl}
-          xUrl={profile.xUrl}
-        />
-
-        {profile.githubUsername && (
-          <GithubStats username={profile.githubUsername} />
-        )}
-
-        <hr />
-
-        <h2>Projects</h2>
+        <h2
+          style={{
+            margin: "50px 0 24px",
+          }}
+        >
+          Projects
+        </h2>
 
         {profile.projects?.length ? (
           profile.projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))
         ) : (
-          <p>No projects yet</p>
+          <div
+            style={{
+              background: "#fff",
+
+              padding: 40,
+
+              borderRadius: 30,
+
+              textAlign: "center",
+            }}
+          >
+            No projects yet
+          </div>
         )}
       </div>
 
@@ -229,19 +367,17 @@ export default function Profile() {
 
             display: "flex",
 
-            alignItems: "center",
-
             justifyContent: "center",
 
-            zIndex: 50,
+            alignItems: "center",
+
+            zIndex: 999,
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              width: "420px",
-
-              maxWidth: "calc(100vw - 32px)",
+              width: 430,
 
               maxHeight: "70vh",
 
@@ -249,130 +385,55 @@ export default function Profile() {
 
               background: "#fff",
 
-              borderRadius: "14px",
+              borderRadius: 30,
 
-              boxShadow: "0 18px 60px rgba(0,0,0,.22)",
+              padding: 24,
             }}
           >
-            <div
-              style={{
-                display: "flex",
-
-                alignItems: "center",
-
-                justifyContent: "space-between",
-
-                padding: "16px 18px",
-
-                borderBottom: "1px solid #eee",
-              }}
-            >
-              <strong
-                style={{
-                  textTransform: "capitalize",
-                }}
-              >
-                {followModal}
-              </strong>
-
-              <button
-                type="button"
-                onClick={() => setFollowModal(null)}
-                style={{
-                  border: "none",
-
-                  background: "transparent",
-
-                  cursor: "pointer",
-
-                  fontSize: "22px",
-                }}
-              >
-                x
-              </button>
-            </div>
+            <h2>{followModal}</h2>
 
             {followLoading ? (
-              <div
-                style={{
-                  padding: "22px",
-                }}
-              >
-                Loading...
-              </div>
-            ) : followUsers.length ? (
+              <div>Loading...</div>
+            ) : (
               followUsers.map((user) => (
                 <button
                   key={user.id}
-                  type="button"
                   onClick={() => visitUser(user)}
                   style={{
                     width: "100%",
 
                     display: "flex",
 
+                    gap: 14,
+
                     alignItems: "center",
 
-                    gap: "14px",
+                    border: 0,
 
-                    padding: "14px 18px",
+                    padding: 14,
 
-                    border: "none",
+                    borderRadius: 20,
 
-                    borderBottom: "1px solid #f1f1f1",
-
-                    background: "transparent",
+                    background: "#fff",
 
                     cursor: "pointer",
-
-                    textAlign: "left",
                   }}
                 >
                   <img
-                    src={user.avatar || "https://placehold.co/44"}
-                    alt="avatar"
+                    src={user.avatar}
+                    alt=""
                     style={{
-                      width: "44px",
+                      width: 46,
 
-                      height: "44px",
+                      height: 46,
 
                       borderRadius: "50%",
-
-                      objectFit: "cover",
-
-                      background: "#eee",
                     }}
                   />
 
-                  <div>
-                    <strong>@{user.username}</strong>
-
-                    {user.bio && (
-                      <div
-                        style={{
-                          color: "#666",
-
-                          fontSize: "14px",
-
-                          marginTop: "3px",
-                        }}
-                      >
-                        {user.bio}
-                      </div>
-                    )}
-                  </div>
+                  <strong>@{user.username}</strong>
                 </button>
               ))
-            ) : (
-              <div
-                style={{
-                  padding: "22px",
-
-                  color: "#666",
-                }}
-              >
-                No users yet
-              </div>
             )}
           </div>
         </div>

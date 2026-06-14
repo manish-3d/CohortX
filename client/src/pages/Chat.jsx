@@ -420,7 +420,7 @@ export default function Chat() {
                   <img src={avatarFor(person)} alt="" />
 
                   <span>
-                    <strong>@{person.username}</strong>
+                    <strong>@{person.username}-</strong>
 
                     <small>{person.bio || "Start a conversation"}</small>
                   </span>

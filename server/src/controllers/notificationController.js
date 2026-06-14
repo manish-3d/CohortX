@@ -6,7 +6,6 @@ exports.getNotifications = async (req, res) => {
       where: {
         userId: req.user.id,
       },
-
       include: {
         user: {
           select: {
@@ -21,6 +20,7 @@ exports.getNotifications = async (req, res) => {
         createdAt: "desc",
       },
     });
+    console.log("NOTIFICATIONS ↓", notifications);
 
     return res.json(notifications);
   } catch (err) {

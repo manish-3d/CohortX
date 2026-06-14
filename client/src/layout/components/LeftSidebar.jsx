@@ -16,7 +16,7 @@ import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 
 export default function LeftSidebar() {
-  const { user, setUser } = useAuth();
+  const { user, logout } = useAuth();
 
   const location = useLocation();
 
@@ -26,7 +26,7 @@ export default function LeftSidebar() {
     try {
       await api.post("/auth/logout");
 
-      setUser(null);
+      logout();
 
       navigate("/login");
     } catch {
@@ -68,9 +68,9 @@ export default function LeftSidebar() {
     },
 
     {
-      label: "Discover",
+      label: "Story",
 
-      to: "/search",
+      to: "/story/create",
 
       icon: Sparkles,
     },

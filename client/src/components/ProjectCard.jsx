@@ -36,9 +36,10 @@ export default function ProjectCard({ project }) {
   return (
     <div
       style={{
-        background: "#fff",
-        border: "1px solid #eee",
+        background: "#ffffff",
+        border: "1px solid #000000",
         borderRadius: "18px",
+        color: "#000000",
         overflow: "hidden",
         marginBottom: "28px",
       }}

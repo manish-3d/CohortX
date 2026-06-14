@@ -41,15 +41,25 @@ export default function AppLayout({ children }) {
 
       <main
         style={{
-          minWidth: 0,
+          minHeight: "100vh",
 
-          display: "flex",
+          background: `
+      radial-gradient(
+        circle at top,
+        rgba(27, 161, 244, 0.16),
+        transparent 65%
+      ),
 
-          flexDirection: "column",
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f5fbff 30%,
+        #edf8ff 70%,
+        #ffffff 100%
+      )
+    `,
 
-          padding: "0 28px 40px",
-
-          overflowX: "hidden",
+          overflow: "hidden",
         }}
       >
         <div
@@ -57,10 +67,8 @@ export default function AppLayout({ children }) {
             position: "sticky",
 
             top: 0,
-
+            borderRadius: 22,
             zIndex: 50,
-
-            background: "#f7f9fa",
 
             paddingTop: 20,
 

@@ -129,7 +129,7 @@ export default function RightSidebar() {
 
         padding: 18,
 
-        background: "#fafafa",
+        background: "#ffffff",
 
         display: "flex",
 
@@ -144,13 +144,11 @@ export default function RightSidebar() {
         style={{
           background: "#fff",
 
-          border: "1px solid #ececec",
+          border: "1px solid #000000",
 
           borderRadius: 28,
 
           overflow: "hidden",
-
-          boxShadow: "0 10px 40px rgba(0,0,0,.04)",
 
           marginBottom: 28,
         }}
@@ -164,10 +162,11 @@ export default function RightSidebar() {
 
             border: 0,
 
-            background: "#000",
+            background: "#ffffff",
 
-            color: "#fff",
+            color: "#000000",
 
+            bordercolor: "black",
             display: "flex",
 
             justifyContent: "space-between",
@@ -182,13 +181,12 @@ export default function RightSidebar() {
           <div
             style={{
               display: "flex",
-
               alignItems: "center",
 
               gap: 12,
             }}
           >
-            <Bell size={20} color="#1d9bf0" />
+            <Bell size={20} color="#000000" />
             Notifications
           </div>
 
@@ -333,8 +331,6 @@ export default function RightSidebar() {
           borderRadius: 28,
 
           overflow: "hidden",
-
-          boxShadow: "0 10px 40px rgba(0,0,0,.04)",
         }}
       >
         <button
@@ -406,7 +402,7 @@ export default function RightSidebar() {
 
       <div
         style={{
-          background: "#fff",
+          background: "rgb(255, 255, 255)",
 
           borderRadius: 28,
 
@@ -454,7 +450,7 @@ export default function RightSidebar() {
             alignItems: "center",
 
             gap: 10,
-
+            width: "100%",
             marginTop: 24,
 
             fontWeight: 800,
@@ -471,7 +467,7 @@ export default function RightSidebar() {
               marginTop: 14,
 
               background: "#fafafa",
-
+              border: "1px solid #000000",
               borderRadius: 18,
 
               padding: 14,
@@ -514,30 +510,116 @@ export default function RightSidebar() {
                 </small>
               </div>
             </div>
-
-            <button
-              onClick={() => setSelectedLive(live)}
+            <div
               style={{
-                width: "100%",
-
+                display: "flex",
+                gap: 8,
                 marginTop: 12,
+                flexWrap: "wrap",
               }}
             >
-              <Play size={16} />
-              View
-            </button>
+              <button
+                onClick={() => setSelectedLive(live)}
+                style={{
+                  width: "fit-content",
 
-            <button
-              onClick={() => endLive(live.id)}
-              style={{
-                width: "100%",
+                  maxWidth: "100%",
 
-                marginTop: 8,
-              }}
-            >
-              <Square size={16} />
-              End
-            </button>
+                  minHeight: 34,
+
+                  padding: "8px 14px",
+
+                  marginTop: 8,
+
+                  border: "none",
+
+                  borderRadius: 999,
+
+                  background: "#000000",
+
+                  color: "#ffffff",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent: "center",
+
+                  gap: 6,
+
+                  fontSize: "clamp(12px,1vw,13px)",
+
+                  fontWeight: 700,
+
+                  cursor: "pointer",
+
+                  flexWrap: "nowrap",
+
+                  whiteSpace: "nowrap",
+
+                  transition: ".2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <Play size={12} />
+                View
+              </button>
+
+              <button
+                onClick={() => endLive(live.id)}
+                style={{
+                  width: "fit-content",
+
+                  maxWidth: "100%",
+
+                  minHeight: 34,
+
+                  padding: "8px 14px",
+
+                  marginTop: 8,
+
+                  borderRadius: 999,
+
+                  background: "#000000",
+
+                  color: "#ffffff",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent: "center",
+
+                  gap: 6,
+
+                  fontSize: "clamp(12px,1vw,13px)",
+
+                  fontWeight: 700,
+
+                  cursor: "pointer",
+
+                  flexWrap: "nowrap",
+
+                  whiteSpace: "nowrap",
+
+                  transition: ".2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <Square size={12} />
+                End
+              </button>
+            </div>
           </div>
         ))}
       </div>

@@ -195,9 +195,23 @@ exports.updateProject = async (req, res) => {
 
 exports.deleteProject = async (req, res) => {
   try {
+    const id = req.params.id;
+
+    await prisma.like.deleteMany({
+      where: {
+        projectId: id,
+      },
+    });
+
+    await prisma.comment.deleteMany({
+      where: {
+        projectId: id,
+      },
+    });
+
     await prisma.project.delete({
       where: {
-        id: req.params.id,
+        id,
       },
     });
 
@@ -205,6 +219,8 @@ exports.deleteProject = async (req, res) => {
       message: "Deleted",
     });
   } catch (err) {
+    console.log(err);
+
     res.status(500).json({
       error: err.message,
     });

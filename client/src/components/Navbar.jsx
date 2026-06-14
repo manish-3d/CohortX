@@ -17,13 +17,13 @@ export default function Navbar() {
     return null;
   }
 
-  const { user, setUser } = auth;
+  const { user, logout } = auth;
 
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
 
-      setUser(null);
+      logout();
 
       navigate("/login");
     } catch {
