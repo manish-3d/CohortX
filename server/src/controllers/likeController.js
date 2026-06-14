@@ -108,6 +108,8 @@ exports.toggleProjectLike = async (req, res) => {
           userId: project.authorId,
 
           message: `${req.user.username} liked your project`,
+
+          link: `/projects/${projectId}`,
         },
       });
     }

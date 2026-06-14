@@ -1,6 +1,7 @@
 import { Bell, Radio, Eye, Play, Square, Video, X } from "lucide-react";
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { MessageCircle, ChevronDown } from "lucide-react";
 
@@ -9,6 +10,8 @@ import api from "../../services/api";
 import RightChatPanel from "../../components/RightChatPanel";
 
 export default function RightSidebar() {
+  const navigate = useNavigate();
+
   const [notifications, setNotifications] = useState([]);
 
   const [selectedLive, setSelectedLive] = useState(null);
@@ -90,17 +93,49 @@ export default function RightSidebar() {
 
   function openNotifications() {
     setShowNotifications(!showNotifications);
+  }
 
-    if (!showNotifications) {
-      setUnread(0);
+  async function markRead(id) {
+    const wasUnread = notifications.some(
+      (notification) => notification.id === id && !notification.isRead
+    );
 
-      setNotifications((prev) =>
-        prev.map((n) => ({
-          ...n,
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? {
+              ...notification,
+              isRead: true,
+            }
+          : notification
+      )
+    );
 
-          isRead: true,
-        }))
-      );
+    if (wasUnread) {
+      setUnread((count) => Math.max(0, count - 1));
+    }
+
+    try {
+      await api.patch(`/notifications/${id}/read`);
+    } catch {}
+  }
+
+  function openNotification(notification) {
+    markRead(notification.id);
+
+    if (notification.link) {
+      navigate(notification.link);
+    }
+  }
+
+  function openActorProfile(notification, event) {
+    event.stopPropagation();
+
+    const actor = notification.actor || notification.user;
+
+    if (actor?.username) {
+      markRead(notification.id);
+      navigate(`/profile/${actor.username}`);
     }
   }
 
@@ -269,54 +304,88 @@ export default function RightSidebar() {
                 No notifications
               </div>
             ) : (
-              notifications.map((n) => (
-                <div
-                  key={n.id}
-                  style={{
-                    display: "flex",
+              notifications.map((n) => {
+                const actor = n.actor || n.user;
 
-                    gap: 12,
-
-                    padding: 14,
-
-                    borderRadius: 18,
-
-                    background: "#fafafa",
-                  }}
-                >
-                  <img
-                    src={n.user?.avatar}
-                    alt=""
+                return (
+                  <div
+                    key={n.id}
+                    onClick={() => openNotification(n)}
                     style={{
-                      width: 46,
+                      display: "flex",
 
-                      height: 46,
+                      gap: 12,
 
-                      borderRadius: "50%",
+                      padding: 14,
 
-                      objectFit: "cover",
+                      border: n.isRead
+                        ? "1px solid #f1f5f9"
+                        : "1px solid #93c5fd",
+
+                      borderRadius: 18,
+
+                      background: n.isRead ? "#fafafa" : "#eff6ff",
+
+                      cursor: n.link ? "pointer" : "default",
                     }}
-                  />
-
-                  <div>
-                    <div
+                  >
+                    <button
+                      type="button"
+                      onClick={(event) => openActorProfile(n, event)}
+                      disabled={!actor?.username}
                       style={{
-                        fontWeight: 600,
+                        width: 46,
+
+                        height: 46,
+
+                        padding: 0,
+
+                        border: "none",
+
+                        borderRadius: "50%",
+
+                        background: "transparent",
+
+                        cursor: actor?.username ? "pointer" : "default",
+
+                        flex: "0 0 auto",
                       }}
                     >
-                      {n.message}
+                      <img
+                        src={actor?.avatar || "/default-avatar.png"}
+                        alt={actor?.username || "User avatar"}
+                        style={{
+                          width: 46,
+
+                          height: 46,
+
+                          borderRadius: "50%",
+
+                          objectFit: "cover",
+                        }}
+                      />
+                    </button>
+
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: n.isRead ? 600 : 800,
+                        }}
+                      >
+                        {n.message}
+                      </div>
+
+                      <small
+                        style={{
+                          color: "#6b7280",
+                        }}
+                      >
+                        {new Date(n.createdAt).toLocaleDateString()}
+                      </small>
                     </div>
-
-                    <small
-                      style={{
-                        color: "#6b7280",
-                      }}
-                    >
-                      {new Date(n.createdAt).toLocaleDateString()}
-                    </small>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

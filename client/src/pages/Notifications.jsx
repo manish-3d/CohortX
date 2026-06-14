@@ -18,8 +18,6 @@ export default function Notifications() {
     try {
       const res = await api.get("/notifications");
 
-      console.log("NOTIFICATIONS ↓", res.data);
-
       setNotifications(
         Array.isArray(res.data) ? res.data : res.data.notifications || []
       );
@@ -32,9 +30,39 @@ export default function Notifications() {
     }
   }
 
+  async function markRead(id) {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id
+          ? {
+              ...notification,
+              isRead: true,
+            }
+          : notification
+      )
+    );
+
+    try {
+      await api.patch(`/notifications/${id}/read`);
+    } catch {}
+  }
+
   function handleClick(item) {
+    markRead(item.id);
+
     if (item.link) {
       navigate(item.link);
+    }
+  }
+
+  function openActorProfile(item, event) {
+    event.stopPropagation();
+
+    const actor = item.actor || item.user;
+
+    if (actor?.username) {
+      markRead(item.id);
+      navigate(`/profile/${actor.username}`);
     }
   }
 
@@ -60,72 +88,97 @@ export default function Notifications() {
         ) : notifications.length === 0 ? (
           <p>No notifications yet</p>
         ) : (
-          notifications.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => handleClick(item)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                padding: "18px",
-                marginBottom: "14px",
-                border: "1px solid #eee",
-                borderRadius: "14px",
-                background: "#fff",
-                cursor: item.link ? "pointer" : "default",
-              }}
-            >
-              <img
-                src={item.user?.avatar || "/default-avatar.png"}
-                alt=""
-                style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
+          notifications.map((item) => {
+            const actor = item.actor || item.user;
 
+            return (
               <div
+                key={item.id}
+                onClick={() => handleClick(item)}
                 style={{
-                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  padding: "18px",
+                  marginBottom: "14px",
+                  border: item.isRead
+                    ? "1px solid #e5e7eb"
+                    : "1px solid #93c5fd",
+                  borderRadius: "14px",
+                  background: item.isRead ? "#fff" : "#eff6ff",
+                  boxShadow: item.isRead
+                    ? "none"
+                    : "0 10px 30px rgba(29,155,240,.12)",
+                  cursor: item.link ? "pointer" : "default",
                 }}
               >
-                <div
+                <button
+                  type="button"
+                  onClick={(event) => openActorProfile(item, event)}
+                  disabled={!actor?.username}
                   style={{
-                    fontWeight: 600,
-                    marginBottom: "4px",
-                  }}
-                >
-                  {item.user?.username || "Unknown User"}
-                </div>
-
-                <div>{item.message}</div>
-
-                <div
-                  style={{
-                    marginTop: "6px",
-                    color: "#888",
-                    fontSize: "13px",
-                  }}
-                >
-                  {new Date(item.createdAt).toLocaleString()}
-                </div>
-              </div>
-
-              {!item.isRead && (
-                <div
-                  style={{
-                    width: "10px",
-                    height: "10px",
+                    width: "52px",
+                    height: "52px",
+                    padding: 0,
+                    border: "none",
                     borderRadius: "50%",
-                    background: "#2563eb",
+                    background: "transparent",
+                    cursor: actor?.username ? "pointer" : "default",
+                    flex: "0 0 auto",
                   }}
-                />
-              )}
-            </div>
-          ))
+                >
+                  <img
+                    src={actor?.avatar || "/default-avatar.png"}
+                    alt={actor?.username || "User avatar"}
+                    style={{
+                      width: "52px",
+                      height: "52px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </button>
+
+                <div
+                  style={{
+                    flex: 1,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {actor?.username || "Unknown User"}
+                  </div>
+
+                  <div>{item.message}</div>
+
+                  <div
+                    style={{
+                      marginTop: "6px",
+                      color: "#888",
+                      fontSize: "13px",
+                    }}
+                  >
+                    {new Date(item.createdAt).toLocaleString()}
+                  </div>
+                </div>
+
+                {!item.isRead && (
+                  <div
+                    style={{
+                      width: "10px",
+                      height: "10px",
+                      borderRadius: "50%",
+                      background: "#2563eb",
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </AppLayout>
