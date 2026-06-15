@@ -1,271 +1,189 @@
-import { Bell, Radio, Eye, Play, Square, Video, X } from "lucide-react";
-
+import {
+  Bell,
+  Radio,
+  Eye,
+  Play,
+  Square,
+  Video,
+  X,
+  MessageCircle,
+  ChevronDown,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { MessageCircle, ChevronDown } from "lucide-react";
-
 import api from "../../services/api";
-
 import RightChatPanel from "../../components/RightChatPanel";
 
 export default function RightSidebar() {
   const navigate = useNavigate();
-
   const [notifications, setNotifications] = useState([]);
-
   const [selectedLive, setSelectedLive] = useState(null);
-
   const [unread, setUnread] = useState(0);
-
   const [lives, setLives] = useState([]);
-
   const [showNotifications, setShowNotifications] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [liveLoading, setLiveLoading] = useState(false);
 
   useEffect(() => {
     loadNotifications();
-
     loadUnread();
-
     loadLives();
-
     const interval = setInterval(loadLives, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
   async function loadNotifications() {
     try {
       const res = await api.get("/notifications");
-
       setNotifications(res.data.slice(0, 5));
     } catch {}
   }
-
   async function loadUnread() {
     try {
       const res = await api.get("/notifications/count");
-
       setUnread(res.data.count);
     } catch {}
   }
-
   async function loadLives() {
     try {
       const res = await api.get("/live");
-
       setLives(res.data);
     } catch {}
   }
-
   async function startLive() {
     try {
       const title = prompt("Live title");
-
       if (!title) return;
-
       const description = prompt("Description");
-
       setLiveLoading(true);
-
-      await api.post("/live/start", {
-        title,
-        description,
-      });
-
+      await api.post("/live/start", { title, description });
       loadLives();
-
       alert("Live started");
     } finally {
       setLiveLoading(false);
     }
   }
-
   async function endLive(id) {
     try {
       await api.patch(`/live/${id}/end`);
-
       loadLives();
     } catch {}
   }
 
-  function openNotifications() {
-    setShowNotifications(!showNotifications);
-  }
-
   async function markRead(id) {
-    const wasUnread = notifications.some(
-      (notification) => notification.id === id && !notification.isRead
-    );
-
+    const wasUnread = notifications.some((n) => n.id === id && !n.isRead);
     setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id
-          ? {
-              ...notification,
-              isRead: true,
-            }
-          : notification
-      )
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
-
-    if (wasUnread) {
-      setUnread((count) => Math.max(0, count - 1));
-    }
-
+    if (wasUnread) setUnread((c) => Math.max(0, c - 1));
     try {
       await api.patch(`/notifications/${id}/read`);
     } catch {}
   }
 
-  function openNotification(notification) {
-    markRead(notification.id);
-
-    if (notification.link) {
-      navigate(notification.link);
-    }
+  function openNotification(n) {
+    markRead(n.id);
+    if (n.link) navigate(n.link);
   }
 
-  function openActorProfile(notification, event) {
-    event.stopPropagation();
-
-    const actor = notification.actor || notification.user;
-
+  function openActorProfile(n, e) {
+    e.stopPropagation();
+    const actor = n.actor || n.user;
     if (actor?.username) {
-      markRead(notification.id);
+      markRead(n.id);
       navigate(`/profile/${actor.username}`);
     }
   }
 
   async function joinLive() {
     try {
-      window.open(
-        selectedLive.zoomJoinUrl,
-
-        "_blank"
-      );
-
-      await api.patch(`/live/${selectedLive.id}/view`, {
-        change: 1,
-      });
-
+      window.open(selectedLive.zoomJoinUrl, "_blank");
+      await api.patch(`/live/${selectedLive.id}/view`, { change: 1 });
       loadLives();
     } catch {}
   }
+
+  const sectionStyle = {
+    borderRadius: "var(--radius-xl)",
+    overflow: "hidden",
+    background: "rgba(255,255,255,0.78)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: "1px solid rgba(29,155,240,0.13)",
+    boxShadow: "var(--shadow-sm)",
+    transition: "box-shadow 0.3s",
+  };
+
+  const panelHeaderStyle = (open) => ({
+    width: "100%",
+    padding: "16px 20px",
+    border: "none",
+    background: "transparent",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontWeight: 800,
+    fontSize: 14,
+    cursor: "pointer",
+    color: "var(--black)",
+    letterSpacing: "0.01em",
+    transition: "background 0.2s",
+  });
 
   return (
     <div
       style={{
         height: "100%",
-
-        overflow: "auto",
-
-        padding: 18,
-
-        background: "#ffffff",
-
+        overflowY: "auto",
+        padding: "20px 16px",
         display: "flex",
-
         flexDirection: "column",
-
-        gap: 22,
+        gap: 14,
       }}
     >
       {/* Notifications */}
-
-      <div
-        style={{
-          background: "#fff",
-
-          border: "1px solid #000000",
-
-          borderRadius: 28,
-
-          overflow: "hidden",
-
-          marginBottom: 28,
-        }}
-      >
+      <div className="fade-up d1" style={sectionStyle}>
         <button
-          onClick={openNotifications}
-          style={{
-            width: "100%",
-
-            padding: "20px",
-
-            border: 0,
-
-            background: "#ffffff",
-
-            color: "#000000",
-
-            bordercolor: "black",
-            display: "flex",
-
-            justifyContent: "space-between",
-
-            alignItems: "center",
-
-            fontWeight: 800,
-
-            fontSize: 16,
-          }}
+          onClick={() => setShowNotifications((v) => !v)}
+          style={panelHeaderStyle(showNotifications)}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(29,155,240,0.04)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "transparent")
+          }
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-
-              gap: 12,
-            }}
-          >
-            <Bell size={20} color="#000000" />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Bell size={17} color="var(--blue)" strokeWidth={2} />
             Notifications
           </div>
-
-          <div
-            style={{
-              display: "flex",
-
-              alignItems: "center",
-
-              gap: 12,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {!!unread && (
-              <div
+              <span
+                className="pulse-glow"
                 style={{
-                  minWidth: 24,
-
-                  height: 24,
-
-                  borderRadius: 999,
-
-                  background: "#1d9bf0",
-
+                  minWidth: 22,
+                  height: 22,
+                  borderRadius: "var(--radius-full)",
+                  background: "var(--blue)",
                   color: "#fff",
-
                   display: "grid",
-
                   placeItems: "center",
-
-                  fontSize: 12,
-
-                  fontWeight: 700,
+                  fontSize: 11,
+                  fontWeight: 800,
                 }}
               >
                 {unread}
-              </div>
+              </span>
             )}
-
             <ChevronDown
-              color="#fff"
+              size={16}
+              color="var(--muted)"
               style={{
-                transition: ".25s",
-
-                transform: showNotifications ? "rotate(180deg)" : "",
+                transition: "transform 0.3s var(--ease)",
+                transform: showNotifications
+                  ? "rotate(180deg)"
+                  : "rotate(0deg)",
               }}
             />
           </div>
@@ -273,115 +191,105 @@ export default function RightSidebar() {
 
         <div
           style={{
-            maxHeight: showNotifications ? "700px" : "0",
-
+            maxHeight: showNotifications ? "600px" : "0",
             opacity: showNotifications ? 1 : 0,
-
             overflow: "hidden",
-
-            transition: "all .35s ease",
+            transition: "max-height 0.4s var(--ease), opacity 0.3s",
           }}
         >
           <div
             style={{
-              padding: 16,
-
+              padding: "0 14px 14px",
               display: "flex",
-
               flexDirection: "column",
-
-              gap: 10,
+              gap: 8,
+              borderTop: "1px solid rgba(29,155,240,0.08)",
+              paddingTop: 12,
             }}
           >
             {notifications.length === 0 ? (
               <div
                 style={{
-                  color: "#6b7280",
-
-                  padding: 10,
+                  color: "var(--muted)",
+                  padding: "8px 4px",
+                  fontSize: 13,
                 }}
               >
-                No notifications
+                No notifications yet
               </div>
             ) : (
               notifications.map((n) => {
                 const actor = n.actor || n.user;
-
                 return (
                   <div
                     key={n.id}
                     onClick={() => openNotification(n)}
                     style={{
                       display: "flex",
-
-                      gap: 12,
-
-                      padding: 14,
-
+                      gap: 10,
+                      padding: "11px 12px",
+                      borderRadius: "var(--radius-md)",
+                      background: n.isRead
+                        ? "rgba(247,249,250,0.7)"
+                        : "rgba(29,155,240,0.07)",
                       border: n.isRead
-                        ? "1px solid #f1f5f9"
-                        : "1px solid #93c5fd",
-
-                      borderRadius: 18,
-
-                      background: n.isRead ? "#fafafa" : "#eff6ff",
-
+                        ? "1px solid rgba(29,155,240,0.06)"
+                        : "1px solid rgba(29,155,240,0.22)",
                       cursor: n.link ? "pointer" : "default",
+                      transition: "background 0.2s, transform 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (n.link)
+                        e.currentTarget.style.transform = "translateX(2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateX(0)";
                     }}
                   >
                     <button
                       type="button"
-                      onClick={(event) => openActorProfile(n, event)}
+                      onClick={(e) => openActorProfile(n, e)}
                       disabled={!actor?.username}
                       style={{
-                        width: 46,
-
-                        height: 46,
-
-                        padding: 0,
-
                         border: "none",
-
-                        borderRadius: "50%",
-
                         background: "transparent",
-
+                        padding: 0,
                         cursor: actor?.username ? "pointer" : "default",
-
-                        flex: "0 0 auto",
+                        flexShrink: 0,
                       }}
                     >
                       <img
                         src={actor?.avatar || "/default-avatar.png"}
-                        alt={actor?.username || "User avatar"}
+                        alt={actor?.username}
                         style={{
-                          width: 46,
-
-                          height: 46,
-
+                          width: 38,
+                          height: 38,
                           borderRadius: "50%",
-
                           objectFit: "cover",
+                          border: "1.5px solid rgba(29,155,240,0.2)",
                         }}
                       />
                     </button>
-
-                    <div>
+                    <div style={{ minWidth: 0 }}>
                       <div
                         style={{
-                          fontWeight: n.isRead ? 600 : 800,
+                          fontWeight: n.isRead ? 500 : 700,
+                          fontSize: 13,
+                          color: "var(--black)",
+                          lineHeight: 1.4,
                         }}
                       >
                         {n.message}
                       </div>
-
-                      <small
+                      <div
                         style={{
-                          color: "#6b7280",
+                          fontSize: 11,
+                          color: "var(--muted)",
+                          marginTop: 3,
                         }}
                       >
                         {new Date(n.createdAt).toLocaleDateString()}
-                      </small>
+                      </div>
                     </div>
                   </div>
                 );
@@ -391,56 +299,35 @@ export default function RightSidebar() {
         </div>
       </div>
 
-      <div
-        style={{
-          background: "#fff",
-
-          border: "1px solid #ececec",
-
-          borderRadius: 28,
-
-          overflow: "hidden",
-        }}
-      >
+      {/* Messages */}
+      <div className="fade-up d2" style={sectionStyle}>
         <button
-          onClick={() => setShowChat(!showChat)}
+          onClick={() => setShowChat((v) => !v)}
           style={{
-            width: "100%",
-
-            padding: "20px",
-
-            border: 0,
-
-            background: "#000000",
-
-            display: "flex",
-
-            justifyContent: "space-between",
-
-            alignItems: "center",
-
-            fontWeight: 800,
-
-            fontSize: 16,
+            ...panelHeaderStyle(showChat),
+            background: showChat ? "var(--black)" : "transparent",
+            color: showChat ? "#fff" : "var(--black)",
+            borderRadius: showChat
+              ? "var(--radius-xl) var(--radius-xl) 0 0"
+              : "var(--radius-xl)",
+            transition: "background 0.3s, color 0.3s, border-radius 0.3s",
+          }}
+          onMouseEnter={(e) => {
+            if (!showChat)
+              e.currentTarget.style.background = "rgba(15,20,25,0.06)";
+          }}
+          onMouseLeave={(e) => {
+            if (!showChat) e.currentTarget.style.background = "transparent";
           }}
         >
-          <div
-            style={{
-              display: "flex",
-
-              alignItems: "center",
-
-              gap: 12,
-            }}
-          >
-            <MessageCircle />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <MessageCircle size={17} strokeWidth={2} />
             Messages
           </div>
-
           <ChevronDown
+            size={16}
             style={{
-              transition: ".25s",
-
+              transition: "transform 0.3s var(--ease)",
               transform: showChat ? "rotate(180deg)" : "rotate(0deg)",
             }}
           />
@@ -448,314 +335,270 @@ export default function RightSidebar() {
 
         <div
           style={{
-            maxHeight: showChat ? "700px" : "0",
-
+            maxHeight: showChat ? "600px" : "0",
             opacity: showChat ? 1 : 0,
-
             overflow: "hidden",
-
-            transition: "all .35s ease",
+            transition: "max-height 0.4s var(--ease), opacity 0.3s",
           }}
         >
-          <div
-            style={{
-              padding: 16,
-            }}
-          >
+          <div style={{ padding: "14px" }}>
             <RightChatPanel />
           </div>
         </div>
       </div>
 
       {/* Live */}
-
-      <div
-        style={{
-          background: "rgb(255, 255, 255)",
-
-          borderRadius: 28,
-
-          padding: 20,
-
-          border: "1px solid #ececec",
-        }}
-      >
+      <div className="fade-up d3" style={{ ...sectionStyle, padding: 16 }}>
         <button
           onClick={startLive}
           disabled={liveLoading}
-          style={{
-            width: "100%",
-
-            height: 56,
-
-            border: 0,
-
-            borderRadius: 18,
-
-            background: "#1d9bf0",
-
-            color: "#fff",
-
-            fontWeight: 700,
-
-            display: "flex",
-
-            justifyContent: "center",
-
-            alignItems: "center",
-
-            gap: 10,
-          }}
+          className="solid-btn"
+          style={{ width: "100%", height: 50, fontSize: 14 }}
         >
-          <Video />
-
+          <Video size={16} />
           {liveLoading ? "Starting..." : "Go Live"}
         </button>
 
         <div
           style={{
             display: "flex",
-
             alignItems: "center",
-
-            gap: 10,
-            width: "100%",
-            marginTop: 24,
-
+            gap: 8,
+            marginTop: 18,
+            marginBottom: 12,
             fontWeight: 800,
+            fontSize: 13,
+            color: "var(--black)",
+            letterSpacing: "0.03em",
+            textTransform: "uppercase",
           }}
         >
-          <Radio />
+          <Radio size={14} color="var(--blue)" />
           Live Now
+          {lives.length > 0 && (
+            <span
+              style={{
+                marginLeft: "auto",
+                fontSize: 11,
+                fontWeight: 700,
+                background: "rgba(29,155,240,0.1)",
+                color: "var(--blue)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+              }}
+            >
+              {lives.length}
+            </span>
+          )}
         </div>
 
-        {lives.map((live) => (
-          <div
-            key={live.id}
-            style={{
-              marginTop: 14,
-
-              background: "#fafafa",
-              border: "1px solid #000000",
-              borderRadius: 18,
-
-              padding: 14,
-            }}
-          >
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {lives.map((live) => (
             <div
+              key={live.id}
               style={{
-                display: "flex",
-
-                gap: 12,
+                background: "rgba(247,249,250,0.8)",
+                border: "1px solid rgba(29,155,240,0.12)",
+                borderRadius: "var(--radius-lg)",
+                padding: 12,
+                transition: "box-shadow 0.25s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow = "var(--shadow-sm)")
+              }
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
             >
-              <img
-                src={live.host.avatar}
-                alt=""
-                style={{
-                  width: 48,
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <img
+                    src={live.host.avatar}
+                    alt=""
+                    style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: "50%",
+                      border: "2px solid rgba(29,155,240,0.3)",
+                    }}
+                  />
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      background: "#ef4444",
+                      border: "1.5px solid white",
+                    }}
+                  />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: 13,
+                      color: "var(--black)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {live.title}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      fontSize: 11,
+                      color: "var(--muted)",
+                      marginTop: 2,
+                    }}
+                  >
+                    <Eye size={11} />
+                    {live.viewerCount || 0} watching
+                  </div>
+                </div>
+              </div>
 
-                  height: 48,
-
-                  borderRadius: "50%",
-                }}
-              />
-
-              <div>
-                <div>{live.title}</div>
-
-                <small
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <button
+                  onClick={() => setSelectedLive(live)}
+                  className="solid-btn"
                   style={{
-                    display: "flex",
-
-                    gap: 6,
-
-                    alignItems: "center",
+                    flex: 1,
+                    height: 34,
+                    fontSize: 12,
+                    padding: "0 12px",
                   }}
                 >
-                  <Eye size={14} />
-
-                  {live.viewerCount || 0}
-                </small>
+                  <Play size={11} />
+                  Watch
+                </button>
+                <button
+                  onClick={() => endLive(live.id)}
+                  className="glass-btn"
+                  style={{
+                    flex: 1,
+                    height: 34,
+                    fontSize: 12,
+                    padding: "0 12px",
+                    color: "#ef4444",
+                    borderColor: "rgba(239,68,68,0.25)",
+                  }}
+                >
+                  <Square size={11} />
+                  End
+                </button>
               </div>
             </div>
+          ))}
+
+          {lives.length === 0 && (
             <div
               style={{
-                display: "flex",
-                gap: 8,
-                marginTop: 12,
-                flexWrap: "wrap",
+                textAlign: "center",
+                padding: "16px 0",
+                fontSize: 13,
+                color: "var(--muted)",
+                fontWeight: 500,
               }}
             >
-              <button
-                onClick={() => setSelectedLive(live)}
-                style={{
-                  width: "fit-content",
-
-                  maxWidth: "100%",
-
-                  minHeight: 34,
-
-                  padding: "8px 14px",
-
-                  marginTop: 8,
-
-                  border: "none",
-
-                  borderRadius: 999,
-
-                  background: "#000000",
-
-                  color: "#ffffff",
-
-                  display: "flex",
-
-                  alignItems: "center",
-
-                  justifyContent: "center",
-
-                  gap: 6,
-
-                  fontSize: "clamp(12px,1vw,13px)",
-
-                  fontWeight: 700,
-
-                  cursor: "pointer",
-
-                  flexWrap: "nowrap",
-
-                  whiteSpace: "nowrap",
-
-                  transition: ".2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <Play size={12} />
-                View
-              </button>
-
-              <button
-                onClick={() => endLive(live.id)}
-                style={{
-                  width: "fit-content",
-
-                  maxWidth: "100%",
-
-                  minHeight: 34,
-
-                  padding: "8px 14px",
-
-                  marginTop: 8,
-
-                  borderRadius: 999,
-
-                  background: "#000000",
-
-                  color: "#ffffff",
-
-                  display: "flex",
-
-                  alignItems: "center",
-
-                  justifyContent: "center",
-
-                  gap: 6,
-
-                  fontSize: "clamp(12px,1vw,13px)",
-
-                  fontWeight: 700,
-
-                  cursor: "pointer",
-
-                  flexWrap: "nowrap",
-
-                  whiteSpace: "nowrap",
-
-                  transition: ".2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <Square size={12} />
-                End
-              </button>
+              No active streams right now
             </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
 
+      {/* Live modal */}
       {selectedLive && (
         <div
           onClick={() => setSelectedLive(null)}
           style={{
             position: "fixed",
-
             inset: 0,
-
-            background: "rgba(0,0,0,.6)",
-
+            background: "rgba(15,20,25,0.55)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
             display: "flex",
-
             justifyContent: "center",
-
             alignItems: "center",
+            zIndex: 999,
+            animation: "fadeUp 0.25s var(--ease) both",
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            className="card"
             style={{
-              width: 420,
-
-              background: "#fff",
-
-              borderRadius: 30,
-
+              width: 400,
               padding: 28,
+              background: "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              position: "relative",
             }}
           >
             <button
               onClick={() => setSelectedLive(null)}
               style={{
-                float: "right",
-
-                border: 0,
-
-                background: "transparent",
+                position: "absolute",
+                top: 18,
+                right: 18,
+                border: "none",
+                background: "rgba(29,155,240,0.08)",
+                borderRadius: "50%",
+                width: 32,
+                height: 32,
+                display: "grid",
+                placeItems: "center",
+                cursor: "pointer",
+                color: "var(--muted)",
+                transition: "background 0.2s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(29,155,240,0.15)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(29,155,240,0.08)")
+              }
             >
-              <X />
+              <X size={15} />
             </button>
 
-            <h2>{selectedLive.title}</h2>
-
-            <p>{selectedLive.description}</p>
-
-            <button
-              onClick={joinLive}
+            <div
               style={{
-                width: "100%",
-
-                height: 54,
-
-                border: 0,
-
-                borderRadius: 18,
-
-                background: "#1d9bf0",
-
-                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                marginBottom: 16,
               }}
             >
-              Join Live
+              <Radio size={20} color="var(--blue)" />
+              <h2
+                style={{ fontSize: 18, fontWeight: 800, color: "var(--black)" }}
+              >
+                {selectedLive.title}
+              </h2>
+            </div>
+            <p
+              style={{
+                color: "var(--muted)",
+                fontSize: 14,
+                marginBottom: 22,
+                lineHeight: 1.6,
+              }}
+            >
+              {selectedLive.description}
+            </p>
+            <button
+              onClick={joinLive}
+              className="solid-btn"
+              style={{ width: "100%", height: 52 }}
+            >
+              <Play size={16} />
+              Join Stream
             </button>
           </div>
         </div>

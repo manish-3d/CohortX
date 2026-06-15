@@ -8,26 +8,19 @@ import {
   Plus,
   LogOut,
 } from "lucide-react";
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext";
-
 import api from "../../services/api";
 
 export default function LeftSidebar() {
   const { user, logout } = useAuth();
-
   const location = useLocation();
-
   const navigate = useNavigate();
 
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
-
       logout();
-
       navigate("/login");
     } catch {
       alert("Logout failed");
@@ -35,251 +28,178 @@ export default function LeftSidebar() {
   }
 
   const navItems = [
-    {
-      label: "Home",
-
-      to: "/feed",
-
-      icon: Home,
-    },
-
-    {
-      label: "Explore",
-
-      to: "/explore",
-
-      icon: Compass,
-    },
-
-    {
-      label: "Messages",
-
-      to: "/chat",
-
-      icon: MessageCircle,
-    },
-
-    {
-      label: "Go Live",
-
-      to: "/live",
-
-      icon: Radio,
-    },
-
-    {
-      label: "Story",
-
-      to: "/story/create",
-
-      icon: Sparkles,
-    },
-
-    {
-      label: "Profile",
-
-      to: `/profile/${user?.username}`,
-
-      icon: User,
-    },
+    { label: "Home", to: "/feed", icon: Home },
+    { label: "Explore", to: "/explore", icon: Compass },
+    { label: "Messages", to: "/chat", icon: MessageCircle },
+    { label: "Go Live", to: "/live", icon: Radio },
+    { label: "Story", to: "/story/create", icon: Sparkles },
+    { label: "Profile", to: `/profile/${user?.username}`, icon: User },
   ];
 
   return (
     <div
       style={{
         height: "100%",
-
-        background: "#fff",
-
-        padding: "36px 24px",
-
+        padding: "32px 20px",
         display: "flex",
-
         flexDirection: "column",
+        gap: 0,
       }}
     >
-      <div
-        style={{
-          paddingLeft: 14,
-
-          marginBottom: 42,
-        }}
-      >
+      {/* Logo */}
+      <div className="fade-up" style={{ paddingLeft: 16, marginBottom: 44 }}>
         <div
           style={{
-            fontSize: 34,
-
+            fontSize: 30,
             fontWeight: 900,
-
-            color: "#0f1419",
+            letterSpacing: "-1px",
+            background: "linear-gradient(135deg, #0f1419 30%, #1d9bf0 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            lineHeight: 1.1,
+            marginBottom: 6,
           }}
         >
           CohortX
         </div>
-
         <div
           style={{
-            color: "#536471",
-
-            marginTop: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
           }}
         >
-          Build. Share. Grow.
+          Build · Share · Grow
         </div>
+        {/* accent line */}
+        <div
+          style={{
+            marginTop: 14,
+            width: 40,
+            height: 3,
+            borderRadius: 99,
+            background: "linear-gradient(90deg, #1d9bf0, rgba(29,155,240,0))",
+          }}
+        />
       </div>
 
-      <div
-        style={{
-          display: "flex",
-
-          flexDirection: "column",
-
-          gap: 8,
-
-          flex: 1,
-        }}
+      {/* Nav */}
+      <nav
+        style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}
       >
-        {navItems.map((item) => {
+        {navItems.map((item, i) => {
           const active =
             location.pathname === item.to ||
-            location.pathname.startsWith(item.to);
-
+            location.pathname.startsWith(item.to + "/");
           const Icon = item.icon;
-
           return (
             <Link
               key={item.to}
               to={item.to}
-              style={{
-                display: "flex",
-
-                alignItems: "center",
-
-                gap: 18,
-
-                padding: "18px",
-
-                borderRadius: 22,
-
-                color: active ? "#fff" : "#111827",
-
-                background: active ? "#1d9bf0" : "transparent",
-
-                fontWeight: active ? 700 : 600,
-
-                transition: ".2s",
-              }}
+              className={`nav-link fade-up d${i + 1}${active ? " active" : ""}`}
             >
-              <Icon size={24} />
-
-              {item.label}
+              <Icon size={20} strokeWidth={active ? 2.5 : 1.8} />
+              <span>{item.label}</span>
+              {active && (
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.7)",
+                  }}
+                />
+              )}
             </Link>
           );
         })}
-      </div>
+      </nav>
 
+      {/* Create Button */}
       <button
         onClick={() => navigate("/create")}
-        style={{
-          width: "100%",
-
-          height: 58,
-
-          border: "none",
-
-          borderRadius: 22,
-
-          background: "#1d9bf0",
-
-          color: "#fff",
-
-          fontSize: 16,
-
-          fontWeight: 800,
-
-          display: "flex",
-
-          alignItems: "center",
-
-          justifyContent: "center",
-
-          gap: 10,
-
-          marginBottom: 18,
-        }}
+        className="solid-btn fade-up"
+        style={{ width: "100%", height: 54, marginBottom: 16, fontSize: 15 }}
       >
-        <Plus size={20} />
-        Create
+        <Plus size={18} strokeWidth={2.5} />
+        Create Post
       </button>
 
+      {/* User card */}
       <div
+        className="card fade-up"
         style={{
           display: "flex",
-
           gap: 12,
-
           alignItems: "center",
-
-          padding: 14,
-
-          borderRadius: 22,
-
-          background: "#f7f9fa",
+          padding: "12px 14px",
+          transition: "box-shadow 0.3s",
         }}
       >
-        <img
-          src={user?.avatar || "/default-avatar.png"}
-          alt=""
-          style={{
-            width: 52,
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <img
+            src={user?.avatar || "/default-avatar.png"}
+            alt={user?.username}
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid rgba(29,155,240,0.3)",
+            }}
+          />
+          {/* online dot */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: 1,
+              right: 1,
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              background: "#22c55e",
+              border: "2px solid white",
+            }}
+          />
+        </div>
 
-            height: 52,
-
-            borderRadius: "50%",
-
-            objectFit: "cover",
-          }}
-        />
-
-        <div
-          style={{
-            flex: 1,
-          }}
-        >
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
               fontWeight: 700,
+              fontSize: 14,
+              color: "var(--black)",
+              truncate: true,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
             @{user?.username}
           </div>
-
-          <div
-            style={{
-              color: "#536471",
-
-              fontSize: 13,
-            }}
-          >
+          <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>
             Builder
           </div>
         </div>
 
         <button
           onClick={handleLogout}
+          className="glass-btn"
           style={{
-            border: "none",
-
-            background: "transparent",
-
-            color: "#1d9bf0",
-
-            display: "flex",
-
-            alignItems: "center",
+            height: 36,
+            width: 36,
+            padding: 0,
+            borderRadius: "50%",
+            flexShrink: 0,
+            color: "var(--muted)",
           }}
+          title="Sign out"
         >
-          <LogOut size={18} />
+          <LogOut size={15} />
         </button>
       </div>
     </div>

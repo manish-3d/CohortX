@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Navbar from "../components/Navbar";
-
+import AppLayout from "../layout/AppLayout";
 import api from "../services/api";
 
 export default function CreateProject() {
@@ -17,7 +16,7 @@ export default function CreateProject() {
 
   const [media, setMedia] = useState(null);
 
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -70,13 +69,13 @@ export default function CreateProject() {
 
     height: 62,
 
-    border: "1px solid rgba(255,255,255,.9)",
+    border: "1px solid rgba(255,255,255,.95)",
 
     borderRadius: 22,
 
     padding: "0 22px",
 
-    background: "rgba(255,255,255,.55)",
+    background: "rgba(255,255,255,.72)",
 
     backdropFilter: "blur(20px)",
 
@@ -88,136 +87,138 @@ export default function CreateProject() {
   };
 
   return (
-    <>
-      <Navbar />
-
+    <AppLayout>
       <div
         style={{
-          maxWidth: 900,
+          maxWidth: 1080,
 
           margin: "40px auto",
 
-          padding: 36,
-
-          background: "rgba(255,255,255,.55)",
-
-          backdropFilter: "blur(30px)",
-
-          border: "1px solid rgba(0, 0, 0, 0.9)",
-
-          borderRadius: 36,
-
-          boxShadow: "0 30px 90px rgba(29,155,240,.08)",
+          padding: "0 24px",
         }}
       >
         <div
           style={{
-            marginBottom: 34,
+            display: "grid",
+
+            gridTemplateColumns: "220px 1fr",
+
+            gap: 36,
+
+            alignItems: "start",
           }}
         >
-          <div
-            style={{
-              display: "inline-flex",
-
-              padding: "10px 18px",
-
-              borderRadius: 999,
-
-              background: "#eef8ff",
-
-              color: "#1d9bf0",
-
-              fontWeight: 700,
-            }}
-          >
-            + Create Project
-          </div>
-
-          <h1
-            style={{
-              fontSize: 52,
-
-              margin: "18px 0 10px",
-            }}
-          >
-            Launch something beautiful
-          </h1>
-
-          <p
-            style={{
-              color: "#64748b",
-            }}
-          >
-            Share your work with the world.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit}>
           <label
             htmlFor="media"
             style={{
-              display: "block",
-
               cursor: "pointer",
             }}
           >
+            <input
+              hidden
+              id="media"
+              type="file"
+              accept="image/*,video/*"
+              onChange={handleMedia}
+            />
+
             <div
               onMouseEnter={() => setHover(true)}
               onMouseLeave={() => setHover(false)}
               style={{
                 width: "100%",
 
-                height: 420,
+                aspectRatio: "1 / 1",
 
-                borderRadius: 30,
+                borderRadius: 28,
 
                 overflow: "hidden",
 
-                background: "#f8fcff",
+                position: "relative",
 
-                border: hover ? "2px solid #1d9bf0" : "2px dashed #cde8ff",
+                transform: hover ? "translateY(-4px)" : "",
 
                 transition: ".25s",
 
-                transform: hover ? "scale(1.01)" : "scale(1)",
+                background: "rgba(255,255,255,.7)",
 
-                display: "flex",
+                backdropFilter: "blur(30px)",
 
-                justifyContent: "center",
+                border: hover
+                  ? "1px solid rgba(29,155,240,.45)"
+                  : "1px solid rgba(255,255,255,.95)",
 
-                alignItems: "center",
+                boxShadow: "0 20px 60px rgba(29,155,240,.08)",
               }}
             >
               {!preview ? (
                 <div
                   style={{
+                    position: "absolute",
+
+                    inset: 0,
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    justifyContent: "center",
+
+                    alignItems: "center",
+
                     textAlign: "center",
+
+                    height: "100%",
+
+                    transform: "translateY(-8px)",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: 74,
+                      fontSize: 64,
 
-                      marginBottom: 12,
+                      lineHeight: 1,
+
+                      marginBottom: 18,
+
+                      display: "flex",
+
+                      alignItems: "center",
+
+                      justifyContent: "center",
                     }}
                   >
-                    +ADD
+                    +
                   </div>
 
-                  <h2>Upload Project</h2>
+                  <h3
+                    style={{
+                      margin: "0 0 10px",
+
+                      fontSize: 32,
+
+                      fontWeight: 800,
+
+                      color: "#071326",
+                    }}
+                  >
+                    Add Cover
+                  </h3>
 
                   <p
                     style={{
                       color: "#64748b",
+
+                      fontSize: 15,
                     }}
                   >
-                    Image or video
+                    Click to upload
                   </p>
                 </div>
               ) : media?.type.startsWith("video") ? (
                 <video
-                  src={preview}
                   controls
+                  src={preview}
                   style={{
                     width: "100%",
 
@@ -239,97 +240,137 @@ export default function CreateProject() {
                   }}
                 />
               )}
+
+              {preview && (
+                <div
+                  style={{
+                    position: "absolute",
+
+                    left: 14,
+
+                    right: 14,
+
+                    bottom: 14,
+
+                    padding: 14,
+
+                    borderRadius: 18,
+
+                    background: "rgba(0,0,0,.18)",
+
+                    color: "#fff",
+
+                    backdropFilter: "blur(20px)",
+                  }}
+                >
+                  {form.title || "Project"}
+                </div>
+              )}
             </div>
           </label>
 
-          <input
-            hidden
-            id="media"
-            type="file"
-            accept="image/*,video/*"
-            onChange={handleMedia}
-          />
-
-          <div
-            style={{
-              display: "grid",
-
-              gap: 18,
-
-              marginTop: 26,
-            }}
-          >
-            <input
-              name="title"
-              placeholder="Project Title"
-              value={form.title}
-              onChange={handleChange}
-              style={input}
-            />
-
-            <textarea
-              name="description"
-              placeholder="Describe your project"
-              value={form.description}
-              onChange={handleChange}
+          <form onSubmit={handleSubmit}>
+            <h1
               style={{
-                ...input,
+                fontSize: 58,
 
-                minHeight: 180,
+                margin: "0 0 8px",
 
-                padding: 22,
-
-                resize: "vertical",
+                color: "#071326",
               }}
-            />
+            >
+              Create Project
+            </h1>
 
-            <input
-              name="githubUrl"
-              placeholder="GitHub URL"
-              value={form.githubUrl}
-              onChange={handleChange}
-              style={input}
-            />
+            <p
+              style={{
+                color: "#64748b",
 
-            <input
-              name="demoUrl"
-              placeholder="Live Demo URL"
-              value={form.demoUrl}
-              onChange={handleChange}
-              style={input}
-            />
-          </div>
+                marginBottom: 28,
+              }}
+            >
+              Share your work beautifully.
+            </p>
 
-          <button
-            disabled={loading}
-            style={{
-              width: "100%",
+            <div
+              style={{
+                display: "grid",
 
-              height: 68,
+                gap: 18,
+              }}
+            >
+              <input
+                name="title"
+                placeholder="Project title"
+                value={form.title}
+                onChange={handleChange}
+                style={input}
+              />
 
-              marginTop: 28,
+              <textarea
+                name="description"
+                placeholder="Describe project"
+                value={form.description}
+                onChange={handleChange}
+                style={{
+                  ...input,
 
-              border: 0,
+                  minHeight: 180,
 
-              borderRadius: 999,
+                  padding: 22,
 
-              background: "#1d9bf0",
+                  resize: "vertical",
+                }}
+              />
 
-              color: "#fff",
+              <input
+                name="githubUrl"
+                placeholder="GitHub URL"
+                value={form.githubUrl}
+                onChange={handleChange}
+                style={input}
+              />
 
-              fontWeight: 800,
+              <input
+                name="demoUrl"
+                placeholder="Live Demo URL"
+                value={form.demoUrl}
+                onChange={handleChange}
+                style={input}
+              />
+            </div>
 
-              fontSize: 16,
+            <button
+              disabled={loading}
+              style={{
+                width: "100%",
 
-              transition: ".25s",
+                height: 68,
 
-              boxShadow: "0 20px 60px rgba(29,155,240,.25)",
-            }}
-          >
-            {loading ? "Publishing..." : "Publish Project"}
-          </button>
-        </form>
+                marginTop: 28,
+
+                border: 0,
+
+                borderRadius: 999,
+
+                background: "#1d9bf0",
+
+                color: "#fff",
+
+                fontWeight: 800,
+
+                fontSize: 16,
+
+                cursor: "pointer",
+
+                boxShadow: "0 20px 60px rgba(29,155,240,.18)",
+              }}
+            >
+              {loading ? "Publishing..." : "Publish Project"}
+            </button>
+          </form>
+        </div>
       </div>
-    </>
+    </AppLayout>
   );
 }

@@ -2,18 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import AppLayout from "../layout/AppLayout";
-
 import api from "../services/api";
 
 export default function CreateStory() {
   const navigate = useNavigate();
 
   const [media, setMedia] = useState(null);
-
   const [preview, setPreview] = useState("");
-
   const [caption, setCaption] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   function handleMedia(e) {
@@ -30,19 +26,20 @@ export default function CreateStory() {
     e.preventDefault();
 
     if (!media) {
-      return alert("Select media");
+      alert("Select media");
+      return;
     }
 
     try {
       setLoading(true);
 
-      const form = new FormData();
+      const fd = new FormData();
 
-      form.append("media", media);
+      fd.append("media", media);
 
-      form.append("caption", caption);
+      fd.append("caption", caption);
 
-      await api.post("/stories", form);
+      await api.post("/stories", fd);
 
       navigate("/feed");
     } catch (err) {
@@ -56,206 +53,270 @@ export default function CreateStory() {
     <AppLayout>
       <div
         style={{
-          maxWidth: 760,
+          minHeight: "100vh",
 
-          margin: "40px auto",
-
-          padding: 34,
-
-          borderRadius: 36,
-
-          background: "rgba(255,255,255,.56)",
-
-          backdropFilter: "blur(30px)",
-
-          border: "1px solid rgba(255,255,255,.95)",
-
-          boxShadow: "0 30px 80px rgba(29,155,240,.08)",
+          padding: "40px 20px",
         }}
       >
-        <div
+        <form
+          onSubmit={handleSubmit}
           style={{
-            marginBottom: 28,
+            maxWidth: 1200,
+
+            margin: "0 auto",
+
+            display: "grid",
+
+            gridTemplateColumns: "1fr 420px",
+
+            gap: 40,
           }}
         >
           <div
             style={{
-              display: "inline-flex",
+              display: "flex",
 
-              padding: "10px 18px",
-
-              borderRadius: 999,
-
-              background: "#edf8ff",
-
-              color: "#1d9bf0",
-
-              fontWeight: 700,
+              justifyContent: "center",
             }}
           >
-            ✨ New Story
+            <label
+              style={{
+                cursor: "pointer",
+              }}
+            >
+              <input
+                hidden
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleMedia}
+              />
+
+              <div
+                style={{
+                  width: 360,
+
+                  aspectRatio: "9/16",
+
+                  borderRadius: 38,
+
+                  overflow: "hidden",
+
+                  position: "relative",
+
+                  background: "rgba(255,255,255,.06)",
+
+                  border: "1px solid rgba(255,255,255,.12)",
+
+                  backdropFilter: "blur(40px)",
+
+                  boxShadow: "0 60px 140px rgba(29,155,240,.16)",
+
+                  transition: ".35s",
+                }}
+              >
+                {!preview ? (
+                  <>
+                    <div
+                      style={{
+                        position: "absolute",
+
+                        inset: 0,
+
+                        background: `
+                        linear-gradient(
+                        180deg,
+                        rgba(29,155,240,.18),
+                        transparent
+                        )
+                      `,
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        position: "absolute",
+
+                        inset: 0,
+
+                        display: "grid",
+
+                        placeItems: "center",
+
+                        color: "#fff",
+                      }}
+                    >
+                      <div
+                        style={{
+                          textAlign: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "black",
+                            fontSize: 84,
+                          }}
+                        >
+                          ＋
+                        </div>
+
+                        <h2>Create Story</h2>
+
+                        <p
+                          style={{
+                            color: "#9fb3c8",
+                          }}
+                        >
+                          Tap to upload
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : media?.type.startsWith("video") ? (
+                  <video
+                    src={preview}
+                    controls
+                    style={{
+                      width: "100%",
+
+                      height: "100%",
+
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={preview}
+                    alt=""
+                    style={{
+                      width: "100%",
+
+                      height: "100%",
+
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+
+                {preview && (
+                  <div
+                    style={{
+                      position: "absolute",
+
+                      left: 20,
+
+                      right: 20,
+
+                      bottom: 24,
+
+                      padding: "18px 20px",
+
+                      color: "#fff",
+
+                      borderRadius: 22,
+
+                      backdropFilter: "blur(30px)",
+
+                      background: "rgba(0,0,0,.26)",
+                    }}
+                  >
+                    {caption || "Write something..."}
+                  </div>
+                )}
+              </div>
+            </label>
           </div>
 
-          <h1
+          <div
             style={{
-              fontSize: 48,
+              display: "flex",
 
-              margin: "18px 0 8px",
+              flexDirection: "column",
+
+              justifyContent: "center",
             }}
           >
-            Share Story
-          </h1>
+            <div
+              style={{
+                color: "black",
 
-          <p
-            style={{
-              color: "#64748b",
-            }}
-          >
-            Post moments for your audience.
-          </p>
-        </div>
+                fontSize: 58,
 
-        <form onSubmit={handleSubmit}>
-          <label
-            style={{
-              display: "block",
-
-              cursor: "pointer",
-            }}
-          >
-            <input
-              hidden
-              type="file"
-              accept="image/*,video/*"
-              onChange={handleMedia}
-            />
+                fontWeight: 900,
+              }}
+            >
+              Story Studio
+            </div>
 
             <div
               style={{
-                width: "100%",
+                color: "#8ea4bb",
 
-                height: 420,
+                marginTop: 14,
 
-                borderRadius: 30,
-
-                border: "2px dashed #b9def8",
-
-                background: "#f8fcff",
-
-                overflow: "hidden",
-
-                display: "flex",
-
-                justifyContent: "center",
-
-                alignItems: "center",
+                lineHeight: 1.7,
               }}
             >
-              {!preview ? (
-                <div
-                  style={{
-                    textAlign: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 70,
-                    }}
-                  >
-                    ☁️
-                  </div>
-
-                  <h2>Upload Story</h2>
-
-                  <p
-                    style={{
-                      color: "#64748b",
-                    }}
-                  >
-                    Image or video
-                  </p>
-                </div>
-              ) : media?.type.startsWith("video") ? (
-                <video
-                  src={preview}
-                  controls
-                  style={{
-                    width: "100%",
-
-                    height: "100%",
-
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <img
-                  src={preview}
-                  alt=""
-                  style={{
-                    width: "100%",
-
-                    height: "100%",
-
-                    objectFit: "cover",
-                  }}
-                />
-              )}
+              Share moments with immersive story experiences.
             </div>
-          </label>
 
-          <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Write something..."
-            style={{
-              width: "100%",
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              placeholder="Tell your story..."
+              style={{
+                marginTop: 36,
 
-              marginTop: 24,
+                minHeight: 180,
 
-              minHeight: 140,
+                border: 0,
 
-              padding: 22,
+                color: "black",
 
-              borderRadius: 24,
+                borderRadius: 28,
 
-              border: "1px solid rgba(255,255,255,.9)",
+                padding: 26,
 
-              background: "rgba(255,255,255,.65)",
+                resize: "none",
 
-              backdropFilter: "blur(20px)",
+                background: "white",
 
-              resize: "vertical",
+                backdropFilter: "blur(30px)",
+              }}
+            />
 
-              boxSizing: "border-box",
-            }}
-          />
+            <button
+              disabled={loading}
+              style={{
+                height: 72,
 
-          <button
-            disabled={loading}
-            style={{
-              width: "100%",
+                marginTop: 26,
 
-              height: 68,
+                border: 0,
 
-              marginTop: 24,
+                cursor: "pointer",
 
-              border: 0,
+                borderRadius: 999,
 
-              borderRadius: 999,
+                color: "#fff",
 
-              background: "#1d9bf0",
+                fontWeight: 900,
 
-              color: "#fff",
+                fontSize: 18,
 
-              fontWeight: 800,
+                background: `
+                linear-gradient(
+                135deg,
+                #1d9bf0,
+                #53c5ff
+                )
+              `,
 
-              fontSize: 16,
-
-              boxShadow: "0 20px 60px rgba(29,155,240,.25)",
-            }}
-          >
-            {loading ? "Posting..." : "Post Story"}
-          </button>
+                boxShadow: "0 30px 90px rgba(29,155,240,.35)",
+              }}
+            >
+              {loading ? "Publishing..." : "Post Story"}
+            </button>
+          </div>
         </form>
       </div>
     </AppLayout>
