@@ -92,11 +92,8 @@ io.on(
     );
   }
 );
+const PORT = process.env.PORT || 5000;
 
-server.listen(
-  5000,
-
-  () => {
-    console.log("Server running");
-  }
-);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on ${PORT}`);
+});
