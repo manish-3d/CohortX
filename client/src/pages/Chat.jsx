@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import { Link, useParams } from "react-router-dom";
-
 import { io } from "socket.io-client";
-
 import { useAuth } from "../context/AuthContext";
-import LeftSidebar from "../layout/components/LeftSidebar";
 import api from "../services/api";
 
 import "./Chat.css";
@@ -22,10 +18,7 @@ function avatarFor(user) {
 }
 
 function messageTime(date) {
-  if (!date) {
-    return "";
-  }
-
+  if (!date) return "";
   return new Intl.DateTimeFormat(undefined, {
     hour: "numeric",
     minute: "2-digit",
@@ -35,9 +28,7 @@ function messageTime(date) {
 function sortConversations(items) {
   return [...items].sort((a, b) => {
     const aTime = new Date(a.messages?.[0]?.createdAt || a.createdAt).getTime();
-
     const bTime = new Date(b.messages?.[0]?.createdAt || b.createdAt).getTime();
-
     return bTime - aTime;
   });
 }
@@ -50,14 +41,9 @@ function getConversationPeerId(conversation, currentUserId) {
 
 function uniqueConversations(items, currentUserId) {
   const seen = new Set();
-
   return sortConversations(items).filter((conversation) => {
     const peerId = getConversationPeerId(conversation, currentUserId);
-
-    if (!peerId || seen.has(peerId)) {
-      return false;
-    }
-
+    if (!peerId || seen.has(peerId)) return false;
     seen.add(peerId);
     return true;
   });
@@ -65,37 +51,24 @@ function uniqueConversations(items, currentUserId) {
 
 export default function Chat() {
   const { userId } = useParams();
-
   const { user } = useAuth();
 
   const [conversations, setConversations] = useState([]);
-
   const [activeConversation, setActiveConversation] = useState(null);
-
   const [messages, setMessages] = useState([]);
-
   const [text, setText] = useState("");
-
   const [searchTerm, setSearchTerm] = useState("");
-
   const [searchResults, setSearchResults] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [messagesLoading, setMessagesLoading] = useState(false);
-
   const [searching, setSearching] = useState(false);
-
   const [sending, setSending] = useState(false);
-
   const [error, setError] = useState("");
-
   const [showDetails, setShowDetails] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const socketRef = useRef(null);
-
   const activeConversationRef = useRef(null);
-
   const conversationsRef = useRef([]);
 
   useEffect(() => {
@@ -117,48 +90,42 @@ export default function Chat() {
   const startConversation = useCallback(
     async (targetUserId, currentInbox) => {
       setError("");
-
-      const res = await api.post("/conversations", {
-        userId: targetUserId,
-      });
-
-      const conversation = res.data;
-
-      const baseInbox = currentInbox || conversationsRef.current;
-
-      const conversationPeerId = getConversationPeerId(conversation, user?.id);
-
-      const nextInbox = uniqueConversations(
-        [
+      try {
+        const res = await api.post("/conversations", { userId: targetUserId });
+        const conversation = res.data;
+        const baseInbox = currentInbox || conversationsRef.current;
+        const conversationPeerId = getConversationPeerId(
           conversation,
-          ...baseInbox.filter((item) => {
-            const itemPeerId = getConversationPeerId(item, user?.id);
+          user?.id
+        );
 
-            return (
-              item.id !== conversation.id && itemPeerId !== conversationPeerId
-            );
-          }),
-        ],
-        user?.id
-      );
+        const nextInbox = uniqueConversations(
+          [
+            conversation,
+            ...baseInbox.filter((item) => {
+              const itemPeerId = getConversationPeerId(item, user?.id);
+              return (
+                item.id !== conversation.id && itemPeerId !== conversationPeerId
+              );
+            }),
+          ],
+          user?.id
+        );
 
-      setConversations(nextInbox);
-
-      setActiveConversation(conversation);
-
-      setSearchTerm("");
-      setSearchResults([]);
-
-      return conversation;
+        setConversations(nextInbox);
+        setActiveConversation(conversation);
+        setSearchTerm("");
+        setSearchResults([]);
+        return conversation;
+      } catch (err) {
+        setError("Failed to create conversation");
+      }
     },
     [user?.id]
   );
 
   useEffect(() => {
-    const socket = io(socketUrl, {
-      withCredentials: true,
-    });
-
+    const socket = io(socketUrl, { withCredentials: true });
     socketRef.current = socket;
 
     socket.on("chat-message", (message) => {
@@ -166,10 +133,7 @@ export default function Chat() {
         uniqueConversations(
           current.map((conversation) =>
             conversation.id === message.conversationId
-              ? {
-                  ...conversation,
-                  messages: [message],
-                }
+              ? { ...conversation, messages: [message] }
               : conversation
           ),
           user?.id
@@ -192,83 +156,61 @@ export default function Chat() {
 
   useEffect(() => {
     let cancelled = false;
-
     async function loadInbox() {
       setLoading(true);
       setError("");
-
       try {
         const res = await api.get("/conversations");
-
         const inbox = uniqueConversations(res.data || [], user?.id);
-
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
 
         setConversations(inbox);
-
         if (userId) {
           await startConversation(userId, inbox);
           return;
         }
-
-        setActiveConversation(inbox[0] || null);
+        if (window.innerWidth > 860) {
+          setActiveConversation(inbox[0] || null);
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err.response?.data?.message || "Could not load chats");
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
-
     loadInbox();
-
     return () => {
       cancelled = true;
     };
   }, [startConversation, user?.id, userId]);
 
   useEffect(() => {
-    if (!activeConversation?.id) {
-      return;
-    }
+    if (!activeConversation?.id) return;
 
     const socket = socketRef.current;
-
     socket?.emit("join-conversation", activeConversation.id);
 
     let cancelled = false;
-
     async function loadMessages() {
       setMessagesLoading(true);
       setError("");
-
       try {
         const res = await api.get(`/messages/${activeConversation.id}`);
-
-        if (!cancelled) {
-          setMessages(res.data || []);
-        }
+        if (!cancelled) setMessages(res.data || []);
       } catch (err) {
         if (!cancelled) {
           setError(err.response?.data?.message || "Could not load messages");
         }
       } finally {
-        if (!cancelled) {
-          setMessagesLoading(false);
-        }
+        if (!cancelled) setMessagesLoading(false);
       }
     }
 
     loadMessages();
-
     return () => {
       cancelled = true;
-
       socket?.emit("leave-conversation", activeConversation.id);
     };
   }, [activeConversation?.id]);
@@ -278,15 +220,12 @@ export default function Chat() {
       setSearchResults([]);
       return;
     }
-
     setSearching(true);
     setError("");
-
     try {
       const res = await api.get(
         `/users/search?q=${encodeURIComponent(searchTerm.trim())}`
       );
-
       setSearchResults((res.data || []).filter((item) => item.id !== user?.id));
     } catch (err) {
       setError(err.response?.data?.message || "Search failed");
@@ -297,7 +236,6 @@ export default function Chat() {
 
   function selectConversation(conversation) {
     setActiveConversation(conversation);
-
     setShowDetails(false);
   }
 
@@ -306,10 +244,7 @@ export default function Chat() {
       uniqueConversations(
         current.map((conversation) =>
           conversation.id === message.conversationId
-            ? {
-                ...conversation,
-                messages: [message],
-              }
+            ? { ...conversation, messages: [message] }
             : conversation
         ),
         user?.id
@@ -319,36 +254,23 @@ export default function Chat() {
 
   async function sendMessage(overrideText) {
     const cleanText = (overrideText ?? text).trim();
-
-    if (!cleanText || !activeConversation || sending) {
-      return;
-    }
+    if (!cleanText || !activeConversation || sending) return;
 
     setSending(true);
-    if (!overrideText) {
-      setText("");
-    }
+    if (!overrideText) setText("");
     setError("");
 
     try {
       const res = await api.post("/messages", {
         text: cleanText,
-
         conversationId: activeConversation.id,
       });
-
       const message = res.data;
-
       setMessages((current) => [...current, message]);
-
       pushLastMessage(message);
-
       socketRef.current?.emit("chat-message", message);
     } catch (err) {
-      if (!overrideText) {
-        setText(cleanText);
-      }
-
+      if (!overrideText) setText(cleanText);
       setError(err.response?.data?.message || "Send failed");
     } finally {
       setSending(false);
@@ -367,230 +289,274 @@ export default function Chat() {
   }
 
   return (
-    <div className="chat-page">
-      <LeftSidebar />
-
-      <main className="chat-shell">
-        <aside className="chat-inbox">
-          <div className="chat-sidebar-header">
-            <div>
-              <p className="chat-kicker">Direct</p>
-
-              <h1>Messages</h1>
-            </div>
-
-            <Link
-              className="chat-profile-link"
-              to={`/profile/${user?.username}`}
-            >
-              <img src={avatarFor(user)} alt="" />
-            </Link>
+    <div className="chat-shell fade-up">
+      {/* INBOX PANEL */}
+      <aside
+        className={`chat-inbox ${activeConversation ? "hidden-on-mobile" : ""}`}
+      >
+        <div className="chat-sidebar-header">
+          <div>
+            <p className="chat-kicker">Direct Stream</p>
+            <h1 className="gradient-header-text" style={{ fontSize: "16px" }}>
+              Messages
+            </h1>
           </div>
+          <Link className="chat-profile-link" to={`/profile/${user?.username}`}>
+            <img src={avatarFor(user)} alt="" />
+          </Link>
+        </div>
 
-          <div className="chat-search">
+        <div className="chat-search-wrapper">
+          <div
+            className={`search-bar ${searchFocused || searchTerm ? "focused" : ""}`}
+          >
             <input
               value={searchTerm}
-              placeholder="Search people"
+              placeholder="Search builders..."
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
               onChange={(event) => setSearchTerm(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  searchUsers();
-                }
+                if (event.key === "Enter") searchUsers();
               }}
             />
-
             <button
               type="button"
+              className="solid-btn"
+              style={{
+                height: "24px",
+                padding: "0 10px",
+                fontSize: "9.5px",
+                boxShadow: "none",
+              }}
               onClick={searchUsers}
               disabled={searching || !searchTerm.trim()}
             >
               {searching ? "..." : "Find"}
             </button>
           </div>
+        </div>
 
-          {searchResults.length > 0 && (
-            <div className="chat-search-results">
-              {searchResults.map((person) => (
-                <button
-                  type="button"
-                  className="chat-person-row"
-                  key={person.id}
-                  onClick={() => startConversation(person.id)}
-                >
-                  <img src={avatarFor(person)} alt="" />
-
-                  <span>
-                    <strong>@{person.username}-</strong>
-
-                    <small>{person.bio || "Start a conversation"}</small>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="chat-thread-list">
-            {loading ? (
-              <div className="chat-empty-small">Loading chats...</div>
-            ) : conversations.length === 0 ? (
-              <div className="chat-empty-small">
-                Search for someone to send your first message.
-              </div>
-            ) : (
-              conversations.map((conversation) => {
-                const otherUser = conversation.participants?.find(
-                  (participant) => participant.userId !== user?.id
-                )?.user;
-
-                const lastMessage = conversation.messages?.[0];
-
-                return (
-                  <button
-                    type="button"
-                    className={`chat-thread ${
-                      activeConversation?.id === conversation.id
-                        ? "is-active"
-                        : ""
-                    }`}
-                    key={conversation.id}
-                    onClick={() => selectConversation(conversation)}
-                  >
-                    <img src={avatarFor(otherUser)} alt="" />
-
-                    <span>
-                      <strong>@{otherUser?.username || "user"}</strong>
-
-                      <small>{lastMessage?.text || "No messages yet"}</small>
-                    </span>
-
-                    <time>
-                      {messageTime(
-                        lastMessage?.createdAt || conversation.createdAt
-                      )}
-                    </time>
-                  </button>
-                );
-              })
-            )}
+        {searchResults.length > 0 && (
+          <div className="chat-search-results">
+            {searchResults.map((person) => (
+              <button
+                type="button"
+                className="chat-person-row"
+                key={person.id}
+                onClick={() => startConversation(person.id)}
+              >
+                <img src={avatarFor(person)} alt="" />
+                <span>
+                  <strong>@{person.username}</strong>
+                  <small>
+                    {person.bio || "Secure connection link available"}
+                  </small>
+                </span>
+              </button>
+            ))}
           </div>
-        </aside>
+        )}
 
-        <section className="chat-main">
-          {error && <div className="chat-error">{error}</div>}
-
-          {!activeConversation ? (
-            <div className="chat-empty-state">
-              <div className="chat-empty-icon">DM</div>
-
-              <h2>Your messages</h2>
-
-              <p>Send private messages to builders in your CohortX network.</p>
+        <div className="chat-thread-list">
+          {loading ? (
+            <div className="chat-empty-small">
+              Parsing secure workspace lines...
+            </div>
+          ) : conversations.length === 0 ? (
+            <div className="chat-empty-small">
+              Find engineers above to initialize streaming.
             </div>
           ) : (
-            <>
-              <header className="chat-main-header">
-                <div className="chat-peer">
-                  <img src={avatarFor(activeUser)} alt="" />
+            conversations.map((conversation) => {
+              const otherUser = conversation.participants?.find(
+                (participant) => participant.userId !== user?.id
+              )?.user;
+              const lastMessage = conversation.messages?.[0];
 
-                  <span>
-                    <strong>@{activeUser?.username || "user"}</strong>
-
-                    <small>Active conversation</small>
-                  </span>
-                </div>
-
-                <div className="chat-actions">
-                  {activeUser && (
-                    <Link to={`/profile/${activeUser.username}`}>Profile</Link>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setShowDetails((value) => !value)}
-                  >
-                    Info
-                  </button>
-                </div>
-              </header>
-
-              {showDetails && (
-                <div className="chat-details">
-                  <img src={avatarFor(activeUser)} alt="" />
-
-                  <div>
-                    <strong>@{activeUser?.username}</strong>
-
-                    <p>{activeUser?.bio || "No bio yet."}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="chat-messages">
-                {messagesLoading ? (
-                  <div className="chat-empty-small">Loading messages...</div>
-                ) : messages.length === 0 ? (
-                  <div className="chat-empty-small">
-                    Say hello to start this chat.
-                  </div>
-                ) : (
-                  messages.map((message) => {
-                    const isMine = message.senderId === user?.id;
-
-                    return (
-                      <div
-                        className={`chat-message-row ${
-                          isMine ? "is-mine" : ""
-                        }`}
-                        key={message.id}
-                      >
-                        {!isMine && (
-                          <img
-                            src={avatarFor(message.sender || activeUser)}
-                            alt=""
-                          />
-                        )}
-
-                        <div className="chat-bubble-wrap">
-                          <div className="chat-bubble">{message.text}</div>
-
-                          <time>{messageTime(message.createdAt)}</time>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              <footer className="chat-composer">
+              return (
                 <button
                   type="button"
-                  className="chat-like-button"
-                  onClick={sendQuickLike}
-                  disabled={sending}
+                  className={`chat-thread ${activeConversation?.id === conversation.id ? "is-active" : ""}`}
+                  key={conversation.id}
+                  onClick={() => selectConversation(conversation)}
                 >
-                  Like
+                  <img src={avatarFor(otherUser)} alt="" />
+                  <span>
+                    <strong>@{otherUser?.username || "user"}</strong>
+                    <small>
+                      {lastMessage?.text || "No datalog footprints yet"}
+                    </small>
+                  </span>
+                  <time>
+                    {messageTime(
+                      lastMessage?.createdAt || conversation.createdAt
+                    )}
+                  </time>
                 </button>
+              );
+            })
+          )}
+        </div>
+      </aside>
 
+      {/* CORE CHAT FEED VIEWPORT */}
+      <section
+        className={`chat-main ${!activeConversation ? "hidden-on-mobile" : ""}`}
+      >
+        {error && <div className="chat-error">{error}</div>}
+
+        {!activeConversation ? (
+          <div className="chat-empty-state">
+            <div className="chat-empty-icon">DM</div>
+            <h2 className="gradient-header-text" style={{ fontSize: "16px" }}>
+              Terminal Node
+            </h2>
+            <p>
+              Initialize secure diagnostic messaging logs with elite members
+              inside CohortX.
+            </p>
+          </div>
+        ) : (
+          <>
+            <header className="chat-main-header">
+              <button
+                type="button"
+                className="glass-btn mobile-back-trigger"
+                style={{ height: "28px", fontSize: "10px" }}
+                onClick={() => setActiveConversation(null)}
+              >
+                ✕ Close
+              </button>
+
+              <div
+                className="chat-peer"
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                <img
+                  src={avatarFor(activeUser)}
+                  alt=""
+                  style={{ width: "32px", height: "32px" }}
+                />
+                <span style={{ display: "flex", flexDirection: "column" }}>
+                  <strong style={{ fontSize: "12px", color: "#fff" }}>
+                    @{activeUser?.username || "user"}
+                  </strong>
+                  <small
+                    style={{ fontSize: "9px", color: "var(--blue-bright)" }}
+                  >
+                    Channel Connected
+                  </small>
+                </span>
+              </div>
+
+              <div
+                className="chat-actions"
+                style={{ display: "flex", gap: "6px" }}
+              >
+                {activeUser && (
+                  <Link
+                    className="glass-btn"
+                    style={{ height: "28px", fontSize: "10px" }}
+                    to={`/profile/${activeUser.username}`}
+                  >
+                    Profile
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  className="dark-btn"
+                  style={{ height: "28px", fontSize: "10px" }}
+                  onClick={() => setShowDetails((value) => !value)}
+                >
+                  Meta Info
+                </button>
+              </div>
+            </header>
+
+            {showDetails && (
+              <div className="chat-details">
+                <img
+                  src={avatarFor(activeUser)}
+                  alt=""
+                  style={{ width: "36px", height: "36px" }}
+                />
+                <div>
+                  <strong>@{activeUser?.username}</strong>
+                  <p>
+                    {activeUser?.bio || "No localized profile manifest found."}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="chat-messages">
+              {messagesLoading ? (
+                <div className="chat-empty-small">
+                  Reading internal database clusters...
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="chat-empty-small">
+                  Send system ping footprint to start connection sequence.
+                </div>
+              ) : (
+                messages.map((message) => {
+                  const isMine = message.senderId === user?.id;
+
+                  return (
+                    <div
+                      className={`chat-message-row ${isMine ? "is-mine" : ""}`}
+                      key={message.id}
+                    >
+                      {!isMine && (
+                        <img
+                          src={avatarFor(message.sender || activeUser)}
+                          alt=""
+                        />
+                      )}
+                      <div className="chat-bubble-wrap">
+                        <div className="chat-bubble">{message.text}</div>
+                        <time>{messageTime(message.createdAt)}</time>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <footer className="chat-composer">
+              <button
+                type="button"
+                className="chat-like-button"
+                onClick={sendQuickLike}
+                disabled={sending}
+              >
+                ♥
+              </button>
+
+              <div className="composer-input-wrapper glass">
                 <textarea
                   value={text}
-                  placeholder="Message..."
+                  placeholder="Type structural tracking footprints..."
                   rows="1"
                   onChange={(event) => setText(event.target.value)}
                   onKeyDown={onComposerKeyDown}
                 />
+              </div>
 
-                <button
-                  type="button"
-                  onClick={sendMessage}
-                  disabled={sending || !text.trim()}
-                >
-                  {sending ? "Sending" : "Send"}
-                </button>
-              </footer>
-            </>
-          )}
-        </section>
-      </main>
+              <button
+                type="button"
+                className="solid-btn"
+                style={{ height: "36px", padding: "0 16px" }}
+                onClick={sendMessage}
+                disabled={sending || !text.trim()}
+              >
+                {sending ? "..." : "Send"}
+              </button>
+            </footer>
+          </>
+        )}
+      </section>
     </div>
   );
 }

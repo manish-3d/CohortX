@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
-
 import api from "../services/api";
-
 import ProjectCard from "../components/ProjectCard";
-
 import PageLoader from "../components/PageLoader";
-
 import StoryTray from "../components/StoryTray";
-
 import AppLayout from "../layout/AppLayout";
 
 export default function Feed() {
   const [projects, setProjects] = useState([]);
-
   const [filteredProjects, setFilteredProjects] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +44,6 @@ export default function Feed() {
 
       if (!query) {
         setFilteredProjects(projects);
-
         return;
       }
 
@@ -65,20 +57,16 @@ export default function Feed() {
     }
 
     window.addEventListener("global-search", handleSearch);
-
     return () => window.removeEventListener("global-search", handleSearch);
   }, [projects]);
 
   async function loadFeed() {
     try {
       const res = await api.get("/feed");
-
       setProjects(res.data);
-
       setFilteredProjects(res.data);
     } catch (err) {
       console.log(err);
-
       alert("Failed to load feed");
     } finally {
       setLoading(false);
@@ -97,17 +85,17 @@ export default function Feed() {
     <AppLayout>
       <div
         style={{
-          maxWidth: "760px",
-
-          margin: "0 auto",
-
-          padding: "30px",
-
+          width: "100%",
+          /* Removed the fixed pixel cap so cards stretch out as wide as possible */
+          maxWidth: "100%",
+          margin: "0",
+          /* Retained the compact normalized layout padding */
+          padding: "21px 14px",
+          boxSizing: "border-box",
           display: "flex",
-
           flexDirection: "column",
-
-          gap: 18,
+          /* Retained the tighter, more proportional gap */
+          gap: "13px",
         }}
       >
         <StoryTray />
@@ -116,13 +104,28 @@ export default function Feed() {
           <div
             style={{
               textAlign: "center",
-
-              padding: "60px 0",
+              padding: "45px 0",
             }}
           >
-            <h2>No projects found</h2>
-
-            <p>Try searching another keyword</p>
+            <h2
+              style={{
+                fontSize: "18px",
+                fontWeight: 700,
+                marginBottom: "5px",
+                color: "var(--text)",
+              }}
+            >
+              No projects found
+            </h2>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "var(--text-dim)",
+                margin: 0,
+              }}
+            >
+              Try searching another keyword
+            </p>
           </div>
         ) : (
           filteredProjects.map((project) => (

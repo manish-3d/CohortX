@@ -69,7 +69,6 @@ export default function RightSidebar() {
       loadLives();
     } catch {}
   }
-
   async function markRead(id) {
     const wasUnread = notifications.some((n) => n.id === id && !n.isRead);
     setNotifications((prev) =>
@@ -80,12 +79,10 @@ export default function RightSidebar() {
       await api.patch(`/notifications/${id}/read`);
     } catch {}
   }
-
   function openNotification(n) {
     markRead(n.id);
     if (n.link) navigate(n.link);
   }
-
   function openActorProfile(n, e) {
     e.stopPropagation();
     const actor = n.actor || n.user;
@@ -94,7 +91,6 @@ export default function RightSidebar() {
       navigate(`/profile/${actor.username}`);
     }
   }
-
   async function joinLive() {
     try {
       window.open(selectedLive.zoomJoinUrl, "_blank");
@@ -103,82 +99,95 @@ export default function RightSidebar() {
     } catch {}
   }
 
+  /* ── Shared dark-glass panel style ── */
   const sectionStyle = {
-    borderRadius: "var(--radius-xl)",
+    borderRadius: "var(--radius-lg)",
     overflow: "hidden",
-    background: "rgba(255,255,255,0.78)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
-    border: "1px solid rgba(29,155,240,0.13)",
-    boxShadow: "var(--shadow-sm)",
-    transition: "box-shadow 0.3s",
+    background: "rgba(4,14,28,0.72)",
+    backdropFilter: "blur(20px) saturate(160%)",
+    WebkitBackdropFilter: "blur(20px) saturate(160%)",
+    border: "1px solid rgba(29,155,240,0.18)",
+    boxShadow:
+      "0 2px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)",
+    transition: "box-shadow 0.3s, border-color 0.3s",
   };
 
-  const panelHeaderStyle = (open) => ({
+  const panelHeaderStyle = {
     width: "100%",
-    padding: "16px 20px",
+    padding: "11px 14px",
     border: "none",
     background: "transparent",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     fontWeight: 800,
-    fontSize: 14,
+    fontSize: 11,
     cursor: "pointer",
-    color: "var(--black)",
-    letterSpacing: "0.01em",
-    transition: "background 0.2s",
-  });
+    color: "var(--text-muted)",
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    transition: "background 0.2s, color 0.2s",
+    fontFamily: "'Syne', 'Inter', sans-serif",
+  };
 
   return (
     <div
       style={{
         height: "100%",
         overflowY: "auto",
-        padding: "20px 16px",
+        padding: "14px 10px",
         display: "flex",
         flexDirection: "column",
-        gap: 14,
+        gap: 10,
       }}
     >
-      {/* Notifications */}
+      {/* ── Notifications ── */}
       <div className="fade-up d1" style={sectionStyle}>
         <button
           onClick={() => setShowNotifications((v) => !v)}
-          style={panelHeaderStyle(showNotifications)}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "rgba(29,155,240,0.04)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "transparent")
-          }
+          style={panelHeaderStyle}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(29,155,240,0.07)";
+            e.currentTarget.style.color = "var(--blue-bright)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "var(--text-muted)";
+          }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Bell size={17} color="var(--blue)" strokeWidth={2} />
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <Bell
+              size={12}
+              color="var(--blue)"
+              strokeWidth={2}
+              style={{ filter: "drop-shadow(0 0 4px rgba(29,155,240,0.6))" }}
+            />
             Notifications
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             {!!unread && (
               <span
                 className="pulse-glow"
                 style={{
-                  minWidth: 22,
-                  height: 22,
+                  minWidth: 17,
+                  height: 17,
                   borderRadius: "var(--radius-full)",
-                  background: "var(--blue)",
+                  background:
+                    "linear-gradient(135deg, var(--blue), var(--blue-bright))",
                   color: "#fff",
                   display: "grid",
                   placeItems: "center",
-                  fontSize: 11,
-                  fontWeight: 800,
+                  fontSize: 9,
+                  fontWeight: 900,
+                  boxShadow: "0 0 10px rgba(29,155,240,0.6)",
                 }}
               >
                 {unread}
               </span>
             )}
             <ChevronDown
-              size={16}
-              color="var(--muted)"
+              size={12}
+              color="var(--text-dim)"
               style={{
                 transition: "transform 0.3s var(--ease)",
                 transform: showNotifications
@@ -191,7 +200,7 @@ export default function RightSidebar() {
 
         <div
           style={{
-            maxHeight: showNotifications ? "600px" : "0",
+            maxHeight: showNotifications ? "500px" : "0",
             opacity: showNotifications ? 1 : 0,
             overflow: "hidden",
             transition: "max-height 0.4s var(--ease), opacity 0.3s",
@@ -199,20 +208,20 @@ export default function RightSidebar() {
         >
           <div
             style={{
-              padding: "0 14px 14px",
+              padding: "0 10px 10px",
               display: "flex",
               flexDirection: "column",
-              gap: 8,
-              borderTop: "1px solid rgba(29,155,240,0.08)",
-              paddingTop: 12,
+              gap: 6,
+              borderTop: "1px solid rgba(29,155,240,0.1)",
+              paddingTop: 9,
             }}
           >
             {notifications.length === 0 ? (
               <div
                 style={{
-                  color: "var(--muted)",
-                  padding: "8px 4px",
-                  fontSize: 13,
+                  color: "var(--text-dim)",
+                  padding: "6px 3px",
+                  fontSize: 11,
                 }}
               >
                 No notifications yet
@@ -226,24 +235,29 @@ export default function RightSidebar() {
                     onClick={() => openNotification(n)}
                     style={{
                       display: "flex",
-                      gap: 10,
-                      padding: "11px 12px",
+                      gap: 8,
+                      padding: "8px 9px",
                       borderRadius: "var(--radius-md)",
                       background: n.isRead
-                        ? "rgba(247,249,250,0.7)"
-                        : "rgba(29,155,240,0.07)",
+                        ? "rgba(255,255,255,0.03)"
+                        : "rgba(29,155,240,0.09)",
                       border: n.isRead
-                        ? "1px solid rgba(29,155,240,0.06)"
-                        : "1px solid rgba(29,155,240,0.22)",
+                        ? "1px solid rgba(29,155,240,0.07)"
+                        : "1px solid rgba(29,155,240,0.28)",
                       cursor: n.link ? "pointer" : "default",
-                      transition: "background 0.2s, transform 0.2s",
+                      transition:
+                        "background 0.2s, transform 0.2s, box-shadow 0.2s",
                     }}
                     onMouseEnter={(e) => {
-                      if (n.link)
+                      if (n.link) {
                         e.currentTarget.style.transform = "translateX(2px)";
+                        e.currentTarget.style.boxShadow =
+                          "0 2px 12px rgba(29,155,240,0.2)";
+                      }
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateX(0)";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     <button
@@ -262,11 +276,12 @@ export default function RightSidebar() {
                         src={actor?.avatar || "/default-avatar.png"}
                         alt={actor?.username}
                         style={{
-                          width: 38,
-                          height: 38,
+                          width: 28,
+                          height: 28,
                           borderRadius: "50%",
                           objectFit: "cover",
-                          border: "1.5px solid rgba(29,155,240,0.2)",
+                          border: "1.5px solid rgba(29,155,240,0.35)",
+                          boxShadow: "0 0 8px rgba(29,155,240,0.2)",
                         }}
                       />
                     </button>
@@ -274,8 +289,8 @@ export default function RightSidebar() {
                       <div
                         style={{
                           fontWeight: n.isRead ? 500 : 700,
-                          fontSize: 13,
-                          color: "var(--black)",
+                          fontSize: 11,
+                          color: n.isRead ? "var(--text-muted)" : "var(--text)",
                           lineHeight: 1.4,
                         }}
                       >
@@ -283,9 +298,9 @@ export default function RightSidebar() {
                       </div>
                       <div
                         style={{
-                          fontSize: 11,
-                          color: "var(--muted)",
-                          marginTop: 3,
+                          fontSize: 9,
+                          color: "var(--text-dim)",
+                          marginTop: 2,
                         }}
                       >
                         {new Date(n.createdAt).toLocaleDateString()}
@@ -299,33 +314,46 @@ export default function RightSidebar() {
         </div>
       </div>
 
-      {/* Messages */}
+      {/* ── Messages ── */}
       <div className="fade-up d2" style={sectionStyle}>
         <button
           onClick={() => setShowChat((v) => !v)}
           style={{
-            ...panelHeaderStyle(showChat),
-            background: showChat ? "var(--black)" : "transparent",
-            color: showChat ? "#fff" : "var(--black)",
+            ...panelHeaderStyle,
+            background: showChat ? "rgba(29,155,240,0.15)" : "transparent",
+            color: showChat ? "var(--blue-bright)" : "var(--text-muted)",
             borderRadius: showChat
-              ? "var(--radius-xl) var(--radius-xl) 0 0"
-              : "var(--radius-xl)",
-            transition: "background 0.3s, color 0.3s, border-radius 0.3s",
+              ? "var(--radius-lg) var(--radius-lg) 0 0"
+              : "var(--radius-lg)",
+            borderBottom: showChat ? "1px solid rgba(29,155,240,0.18)" : "none",
           }}
           onMouseEnter={(e) => {
-            if (!showChat)
-              e.currentTarget.style.background = "rgba(15,20,25,0.06)";
+            if (!showChat) {
+              e.currentTarget.style.background = "rgba(29,155,240,0.07)";
+              e.currentTarget.style.color = "var(--blue-bright)";
+            }
           }}
           onMouseLeave={(e) => {
-            if (!showChat) e.currentTarget.style.background = "transparent";
+            if (!showChat) {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "var(--text-muted)";
+            }
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <MessageCircle size={17} strokeWidth={2} />
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <MessageCircle
+              size={12}
+              strokeWidth={2}
+              style={{
+                filter: showChat
+                  ? "drop-shadow(0 0 4px rgba(29,155,240,0.6))"
+                  : "none",
+              }}
+            />
             Messages
           </div>
           <ChevronDown
-            size={16}
+            size={12}
             style={{
               transition: "transform 0.3s var(--ease)",
               transform: showChat ? "rotate(180deg)" : "rotate(0deg)",
@@ -335,56 +363,83 @@ export default function RightSidebar() {
 
         <div
           style={{
-            maxHeight: showChat ? "600px" : "0",
+            maxHeight: showChat ? "500px" : "0",
             opacity: showChat ? 1 : 0,
             overflow: "hidden",
             transition: "max-height 0.4s var(--ease), opacity 0.3s",
           }}
         >
-          <div style={{ padding: "14px" }}>
+          <div style={{ padding: "10px" }}>
             <RightChatPanel />
           </div>
         </div>
       </div>
 
-      {/* Live */}
-      <div className="fade-up d3" style={{ ...sectionStyle, padding: 16 }}>
+      {/* ── Go Live ── */}
+      <div className="fade-up d3" style={{ ...sectionStyle, padding: 12 }}>
+        {/* Go Live button with shine */}
         <button
           onClick={startLive}
           disabled={liveLoading}
           className="solid-btn"
-          style={{ width: "100%", height: 50, fontSize: 14 }}
+          style={{
+            width: "100%",
+            height: 36,
+            fontSize: 11,
+            gap: 6,
+            position: "relative",
+            overflow: "hidden",
+          }}
+          onMouseEnter={smokeEffect}
         >
-          <Video size={16} />
+          <span
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+              animation: "shineSweep 2.4s ease-in-out infinite",
+              pointerEvents: "none",
+            }}
+          />
+          <Video size={12} />
           {liveLoading ? "Starting..." : "Go Live"}
         </button>
 
+        {/* Live Now header */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            marginTop: 18,
-            marginBottom: 12,
+            gap: 6,
+            marginTop: 14,
+            marginBottom: 9,
             fontWeight: 800,
-            fontSize: 13,
-            color: "var(--black)",
-            letterSpacing: "0.03em",
+            fontSize: 9,
+            color: "var(--text-dim)",
+            letterSpacing: "0.1em",
             textTransform: "uppercase",
+            fontFamily: "'Syne', 'Inter', sans-serif",
           }}
         >
-          <Radio size={14} color="var(--blue)" />
-          Live Now
+          <Radio
+            size={10}
+            color="var(--blue)"
+            style={{ filter: "drop-shadow(0 0 4px rgba(29,155,240,0.7))" }}
+          />
+          <span>Live Now</span>
           {lives.length > 0 && (
             <span
               style={{
                 marginLeft: "auto",
-                fontSize: 11,
-                fontWeight: 700,
-                background: "rgba(29,155,240,0.1)",
-                color: "var(--blue)",
-                padding: "2px 8px",
+                fontSize: 9,
+                fontWeight: 800,
+                background: "rgba(29,155,240,0.15)",
+                color: "var(--blue-bright)",
+                padding: "1px 6px",
                 borderRadius: "var(--radius-full)",
+                border: "1px solid rgba(29,155,240,0.3)",
+                boxShadow: "0 0 8px rgba(29,155,240,0.2)",
               }}
             >
               {lives.length}
@@ -392,32 +447,39 @@ export default function RightSidebar() {
           )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Live cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
           {lives.map((live) => (
             <div
               key={live.id}
               style={{
-                background: "rgba(247,249,250,0.8)",
-                border: "1px solid rgba(29,155,240,0.12)",
-                borderRadius: "var(--radius-lg)",
-                padding: 12,
-                transition: "box-shadow 0.25s",
+                background: "rgba(6,25,41,0.65)",
+                border: "1px solid rgba(29,155,240,0.18)",
+                borderRadius: "var(--radius-md)",
+                padding: "9px 10px",
+                transition: "box-shadow 0.25s, border-color 0.25s",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow = "var(--shadow-sm)")
-              }
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow =
+                  "0 4px 20px rgba(29,155,240,0.2)";
+                e.currentTarget.style.borderColor = "rgba(29,155,240,0.38)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.borderColor = "rgba(29,155,240,0.18)";
+              }}
             >
-              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <div style={{ position: "relative", flexShrink: 0 }}>
                   <img
                     src={live.host.avatar}
                     alt=""
                     style={{
-                      width: 42,
-                      height: 42,
+                      width: 32,
+                      height: 32,
                       borderRadius: "50%",
-                      border: "2px solid rgba(29,155,240,0.3)",
+                      border: "1.5px solid rgba(29,155,240,0.4)",
+                      boxShadow: "0 0 10px rgba(29,155,240,0.25)",
                     }}
                   />
                   <span
@@ -425,11 +487,12 @@ export default function RightSidebar() {
                       position: "absolute",
                       top: 0,
                       right: 0,
-                      width: 10,
-                      height: 10,
+                      width: 8,
+                      height: 8,
                       borderRadius: "50%",
                       background: "#ef4444",
-                      border: "1.5px solid white",
+                      border: "1.5px solid rgba(3,13,26,0.9)",
+                      boxShadow: "0 0 6px rgba(239,68,68,0.7)",
                     }}
                   />
                 </div>
@@ -437,8 +500,8 @@ export default function RightSidebar() {
                   <div
                     style={{
                       fontWeight: 700,
-                      fontSize: 13,
-                      color: "var(--black)",
+                      fontSize: 11,
+                      color: "var(--text)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -450,30 +513,43 @@ export default function RightSidebar() {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 4,
-                      fontSize: 11,
-                      color: "var(--muted)",
+                      gap: 3,
+                      fontSize: 9,
+                      color: "var(--text-dim)",
                       marginTop: 2,
                     }}
                   >
-                    <Eye size={11} />
+                    <Eye size={9} />
                     {live.viewerCount || 0} watching
                   </div>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                 <button
                   onClick={() => setSelectedLive(live)}
                   className="solid-btn"
                   style={{
                     flex: 1,
-                    height: 34,
-                    fontSize: 12,
-                    padding: "0 12px",
+                    height: 26,
+                    fontSize: 10,
+                    padding: "0 8px",
+                    gap: 4,
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  <Play size={11} />
+                  <span
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%)",
+                      animation: "shineSweep 2.8s ease-in-out infinite",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <Play size={9} />
                   Watch
                 </button>
                 <button
@@ -481,14 +557,16 @@ export default function RightSidebar() {
                   className="glass-btn"
                   style={{
                     flex: 1,
-                    height: 34,
-                    fontSize: 12,
-                    padding: "0 12px",
+                    height: 26,
+                    fontSize: 10,
+                    padding: "0 8px",
+                    gap: 4,
                     color: "#ef4444",
-                    borderColor: "rgba(239,68,68,0.25)",
+                    borderColor: "rgba(239,68,68,0.3)",
+                    background: "rgba(239,68,68,0.08)",
                   }}
                 >
-                  <Square size={11} />
+                  <Square size={9} />
                   End
                 </button>
               </div>
@@ -499,10 +577,11 @@ export default function RightSidebar() {
             <div
               style={{
                 textAlign: "center",
-                padding: "16px 0",
-                fontSize: 13,
-                color: "var(--muted)",
+                padding: "12px 0",
+                fontSize: 11,
+                color: "var(--text-dim)",
                 fontWeight: 500,
+                fontStyle: "italic",
               }}
             >
               No active streams right now
@@ -511,16 +590,16 @@ export default function RightSidebar() {
         </div>
       </div>
 
-      {/* Live modal */}
+      {/* ── Live modal ── */}
       {selectedLive && (
         <div
           onClick={() => setSelectedLive(null)}
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(15,20,25,0.55)",
-            backdropFilter: "blur(6px)",
-            WebkitBackdropFilter: "blur(6px)",
+            background: "rgba(3,10,20,0.75)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -530,63 +609,91 @@ export default function RightSidebar() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="card"
             style={{
-              width: 400,
-              padding: 28,
-              background: "rgba(255,255,255,0.96)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
+              width: 320,
+              padding: 22,
+              background: "rgba(4,14,28,0.92)",
+              backdropFilter: "blur(28px)",
+              WebkitBackdropFilter: "blur(28px)",
+              borderRadius: "var(--radius-xl)",
+              border: "1px solid rgba(29,155,240,0.28)",
+              boxShadow:
+                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(29,155,240,0.1)",
               position: "relative",
             }}
           >
+            {/* Glow accent top */}
+            <div
+              style={{
+                position: "absolute",
+                top: -1,
+                left: "20%",
+                right: "20%",
+                height: 2,
+                background:
+                  "linear-gradient(90deg, transparent, var(--blue), transparent)",
+                borderRadius: 2,
+              }}
+            />
             <button
               onClick={() => setSelectedLive(null)}
               style={{
                 position: "absolute",
-                top: 18,
-                right: 18,
-                border: "none",
+                top: 14,
+                right: 14,
+                border: "1px solid rgba(29,155,240,0.2)",
                 background: "rgba(29,155,240,0.08)",
                 borderRadius: "50%",
-                width: 32,
-                height: 32,
+                width: 26,
+                height: 26,
                 display: "grid",
                 placeItems: "center",
                 cursor: "pointer",
-                color: "var(--muted)",
-                transition: "background 0.2s",
+                color: "var(--text-muted)",
+                transition: "background 0.2s, box-shadow 0.2s",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "rgba(29,155,240,0.15)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = "rgba(29,155,240,0.08)")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(29,155,240,0.18)";
+                e.currentTarget.style.boxShadow =
+                  "0 0 10px rgba(29,155,240,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(29,155,240,0.08)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
-              <X size={15} />
+              <X size={12} />
             </button>
 
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                marginBottom: 16,
+                gap: 10,
+                marginBottom: 12,
               }}
             >
-              <Radio size={20} color="var(--blue)" />
+              <Radio
+                size={16}
+                color="var(--blue)"
+                style={{ filter: "drop-shadow(0 0 6px rgba(29,155,240,0.7))" }}
+              />
               <h2
-                style={{ fontSize: 18, fontWeight: 800, color: "var(--black)" }}
+                style={{
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: "var(--text)",
+                  fontFamily: "'Syne', 'Inter', sans-serif",
+                }}
               >
                 {selectedLive.title}
               </h2>
             </div>
             <p
               style={{
-                color: "var(--muted)",
-                fontSize: 14,
-                marginBottom: 22,
+                color: "var(--text-muted)",
+                fontSize: 12,
+                marginBottom: 18,
                 lineHeight: 1.6,
               }}
             >
@@ -595,9 +702,26 @@ export default function RightSidebar() {
             <button
               onClick={joinLive}
               className="solid-btn"
-              style={{ width: "100%", height: 52 }}
+              style={{
+                width: "100%",
+                height: 40,
+                fontSize: 12,
+                position: "relative",
+                overflow: "hidden",
+              }}
+              onMouseEnter={smokeEffect}
             >
-              <Play size={16} />
+              <span
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+                  animation: "shineSweep 2.4s ease-in-out infinite",
+                  pointerEvents: "none",
+                }}
+              />
+              <Play size={13} />
               Join Stream
             </button>
           </div>
@@ -605,4 +729,44 @@ export default function RightSidebar() {
       )}
     </div>
   );
+}
+
+function smokeEffect(e) {
+  const btn = e.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  for (let i = 0; i < 12; i++) {
+    const puff = document.createElement("div");
+    const size = Math.random() * 14 + 6;
+    const startX = Math.random() * rect.width;
+    const dirX = (Math.random() - 0.5) * 48;
+    const dirY = -(Math.random() * 38 + 14);
+    const dur = Math.random() * 500 + 350;
+    const delay = Math.random() * 180;
+    Object.assign(puff.style, {
+      position: "fixed",
+      left: rect.left + startX + "px",
+      top: rect.top + rect.height / 2 + "px",
+      width: size + "px",
+      height: size + "px",
+      borderRadius: "50%",
+      background:
+        i % 3 === 0
+          ? "rgba(29,155,240,0.65)"
+          : i % 3 === 1
+            ? "rgba(66,176,245,0.5)"
+            : "rgba(255,255,255,0.35)",
+      pointerEvents: "none",
+      zIndex: 9999,
+      filter: "blur(3px)",
+      transition: `all ${dur}ms cubic-bezier(0.22,1,0.36,1)`,
+      opacity: "0.85",
+      transform: "scale(0.3)",
+    });
+    document.body.appendChild(puff);
+    setTimeout(() => {
+      puff.style.transform = `translate(${dirX}px, ${dirY}px) scale(${Math.random() * 1.6 + 1.1})`;
+      puff.style.opacity = "0";
+    }, delay);
+    setTimeout(() => puff.remove(), dur + delay + 50);
+  }
 }

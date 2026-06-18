@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -153,7 +153,6 @@ function OceanCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Particles
     const PARTICLE_COUNT = 80;
     const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
       x: Math.random() * window.innerWidth,
@@ -200,7 +199,6 @@ function OceanCanvas() {
       const W = canvas.width;
       const H = canvas.height;
 
-      // Deep ocean background gradient
       const bg = ctx.createLinearGradient(0, 0, 0, H);
       bg.addColorStop(0, "#020b16");
       bg.addColorStop(0.4, "#030f1f");
@@ -208,7 +206,6 @@ function OceanCanvas() {
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Radial glow from bottom center
       const glow = ctx.createRadialGradient(
         W * 0.5,
         H * 0.85,
@@ -223,7 +220,6 @@ function OceanCanvas() {
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, H);
 
-      // Secondary glow top-left
       const glow2 = ctx.createRadialGradient(
         W * 0.1,
         H * 0.2,
@@ -237,7 +233,6 @@ function OceanCanvas() {
       ctx.fillStyle = glow2;
       ctx.fillRect(0, 0, W, H);
 
-      // Wave layers — back to front, deep to bright
       const waves = [
         {
           amplitude: H * 0.055,
@@ -311,7 +306,6 @@ function OceanCanvas() {
           color: "rgba(22,124,205,0.96)",
           blur: 0,
         },
-        // Bright crest — the surf line
         {
           amplitude: H * 0.015,
           frequency: 0.01,
@@ -324,7 +318,6 @@ function OceanCanvas() {
 
       waves.forEach((w) => drawWave(t, { W, H, ...w }));
 
-      // Foam / highlight streaks on crests
       ctx.save();
       ctx.globalAlpha = 0.18;
       for (let i = 0; i < 5; i++) {
@@ -343,7 +336,6 @@ function OceanCanvas() {
       }
       ctx.restore();
 
-      // Bioluminescence glow lines
       ctx.save();
       ctx.globalAlpha = 0.08;
       for (let i = 0; i < 3; i++) {
@@ -365,7 +357,6 @@ function OceanCanvas() {
       }
       ctx.restore();
 
-      // Floating particles (bubbles / sea spray)
       particles.forEach((p) => {
         p.x += p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08;
         p.y += p.vy;
@@ -382,7 +373,6 @@ function OceanCanvas() {
         ctx.fill();
       });
 
-      // Light caustics on the surface
       ctx.save();
       ctx.globalAlpha = 0.06;
       for (let i = 0; i < 6; i++) {
@@ -465,7 +455,10 @@ export default function Login() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("login");
-  const [form, setForm] = useState({ email: "", password: "" });
+
+  /* FIXED: Initialized username in state object */
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
+
   const cardRef = useRef(null);
   const tagsDouble = useMemo(() => [...TAGS, ...TAGS], []);
   const navScrolled = useNavScroll();
@@ -481,11 +474,18 @@ export default function Login() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await api.post("/auth/login", form);
+
+      /* FIXED: Dynamically shift route based on current tab layout selection */
+      const endpoint = tab === "login" ? "/auth/login" : "/auth/register";
+      const res = await api.post(endpoint, form);
+
       login(res.data.user, res.data.token);
       navigate("/feed");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      alert(
+        err.response?.data?.message ||
+          `${tab === "login" ? "Login" : "Registration"} failed`
+      );
     } finally {
       setLoading(false);
     }
@@ -542,7 +542,6 @@ export default function Login() {
 
       {/* ── HERO ────────────────────────────────────────── */}
       <section className="cx-hero">
-        {/* LEFT */}
         <div className="hero-left">
           <div className="hero-eyebrow">
             <span className="eyebrow-dot" />
@@ -575,7 +574,6 @@ export default function Login() {
             </button>
           </div>
 
-          {/* FLOATING CARDS */}
           <div className="float-cards">
             {FLOAT_CARDS.map((c) => {
               const Icon = c.icon;
@@ -636,10 +634,13 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="login-form">
             {tab === "register" && (
               <div className="form-field">
+                {/* FIXED: Bound state properties so context values map automatically */}
                 <input
                   name="username"
                   type="text"
                   placeholder="Username"
+                  value={form.username}
+                  onChange={handleChange}
                   required
                   id="f-user"
                 />
@@ -692,19 +693,17 @@ export default function Login() {
           <p className="register-link">
             {tab === "login" ? (
               <>
-                {" "}
                 No account?{" "}
                 <a onClick={() => setTab("register")} href="#">
                   Register free
-                </a>{" "}
+                </a>
               </>
             ) : (
               <>
-                {" "}
                 Have an account?{" "}
                 <a onClick={() => setTab("login")} href="#">
                   Sign in
-                </a>{" "}
+                </a>
               </>
             )}
           </p>
