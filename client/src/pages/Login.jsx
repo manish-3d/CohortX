@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -12,36 +12,34 @@ import {
   MessageCircle,
   Briefcase,
   Star,
-  Flame,
-  CheckCircle,
   Lock,
   Globe,
   Shield,
   Infinity,
-  BadgeCheck,
+  ArrowRight,
 } from "lucide-react";
 
 /* ── DATA ─────────────────────────────────────────────────── */
 const FEATURES = [
   {
     icon: Rocket,
-    title: "Share Projects",
-    desc: "Publish your builds with rich project pages — demos, repos, tech stacks. Get discovered by devs and recruiters worldwide.",
+    title: "Ship Projects",
+    desc: "Publish your builds with rich project pages — demos, repos, tech stacks. Get discovered by developers and hiring teams worldwide.",
   },
   {
     icon: User,
     title: "Dev Profiles",
-    desc: "Your developer identity — skills, contributions, followers, portfolio. Think LinkedIn meets GitHub, but social-first.",
+    desc: "Your developer identity — skills, contributions, followers, portfolio. LinkedIn meets GitHub, but actually social.",
   },
   {
     icon: Zap,
-    title: "Stories & Highlights",
-    desc: "Share code snippets, milestones, and quick updates like stories. Keep your network in the loop without a full post.",
+    title: "Stories & Drops",
+    desc: "Share code snippets, milestones, and quick updates. Keep your network in the loop without a full post.",
   },
   {
     icon: Video,
-    title: "Go Live",
-    desc: "Stream your coding sessions, debug live, do pair programming. Real-time collaboration baked right in.",
+    title: "Live Coding",
+    desc: "Stream sessions, debug live, do pair programming. Real-time collaboration baked in — no third-party tools needed.",
   },
   {
     icon: MessageCircle,
@@ -51,13 +49,13 @@ const FEATURES = [
   {
     icon: Briefcase,
     title: "Hire & Get Hired",
-    desc: "Post jobs, apply with your CohortX profile, schedule interviews — the whole hiring loop in one place.",
+    desc: "Post roles, apply with your CohortX profile, schedule interviews — the entire hiring loop, one place.",
   },
 ];
 
 const TESTIMONIALS = [
   {
-    text: "CohortX replaced my LinkedIn, GitHub README updates and Slack for team chats. It's the dev social network I always wanted.",
+    text: "CohortX replaced LinkedIn, GitHub README updates, and Slack for team chats. It's the developer social network I always wanted.",
     name: "Arjun Mehta",
     role: "Senior SWE @ Stripe",
     initials: "AM",
@@ -69,7 +67,7 @@ const TESTIMONIALS = [
     initials: "PS",
   },
   {
-    text: "The live coding feature is insane. I went live once to debug a gnarly Prisma query and got 40 people helping me in real-time.",
+    text: "The live coding feature is incredible. I went live to debug a gnarly query and got 40 people helping me in real-time.",
     name: "Dev Patel",
     role: "Full-stack Engineer",
     initials: "DP",
@@ -98,12 +96,20 @@ const TAGS = [
 ];
 
 const FLOAT_CARDS = [
-  { icon: Zap, label: "12k+ Projects", sub: "Shared this month" },
-  { icon: Flame, label: "4.2k Live Now", sub: "Active developers" },
-  { icon: CheckCircle, label: "890 Jobs Posted", sub: "This week" },
+  { icon: Zap, label: "Projects Live", sub: "Shared this month" },
+  { icon: Star, label: "Active Devs", sub: "Online right now" },
+  { icon: Briefcase, label: "Roles Posted", sub: "This week" },
 ];
 
-/* ── GITHUB SVG ───────────────────────────────────────────── */
+const PROOF = [
+  { icon: Star, text: "Rated 4.9 / 5 by developers" },
+  { icon: Rocket, text: "Growing developer community" },
+  { icon: Briefcase, text: "Companies actively hiring" },
+  { icon: Shield, text: "Enterprise-grade security" },
+  { icon: Globe, text: "60+ countries" },
+];
+
+/* ── ICONS ────────────────────────────────────────────────── */
 function GithubIcon() {
   return (
     <svg className="oauth-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -135,15 +141,337 @@ function GoogleIcon() {
   );
 }
 
-/* ── COMPONENT ────────────────────────────────────────────── */
+/* ── OCEAN CANVAS ─────────────────────────────────────────── */
+function OceanCanvas() {
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const tRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Particles
+    const PARTICLE_COUNT = 80;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 0.5 + Math.random() * 1.5,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: -0.05 - Math.random() * 0.15,
+      alpha: 0.1 + Math.random() * 0.4,
+    }));
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    function drawWave(t, opts) {
+      const { W, H, amplitude, frequency, speed, yBase, color, blur } = opts;
+      ctx.save();
+      if (blur) {
+        ctx.filter = `blur(${blur}px)`;
+      }
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      for (let x = 0; x <= W; x += 2) {
+        const y =
+          yBase +
+          Math.sin(x * frequency + t * speed) * amplitude +
+          Math.sin(x * frequency * 1.7 + t * speed * 0.8) * (amplitude * 0.4) +
+          Math.sin(x * frequency * 0.4 + t * speed * 1.3) * (amplitude * 0.6);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function draw(timestamp) {
+      tRef.current = timestamp * 0.001;
+      const t = tRef.current;
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // Deep ocean background gradient
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, "#020b16");
+      bg.addColorStop(0.4, "#030f1f");
+      bg.addColorStop(1, "#010810");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Radial glow from bottom center
+      const glow = ctx.createRadialGradient(
+        W * 0.5,
+        H * 0.85,
+        0,
+        W * 0.5,
+        H * 0.85,
+        W * 0.65
+      );
+      glow.addColorStop(0, "rgba(13,68,140,0.25)");
+      glow.addColorStop(0.5, "rgba(8,40,88,0.10)");
+      glow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+
+      // Secondary glow top-left
+      const glow2 = ctx.createRadialGradient(
+        W * 0.1,
+        H * 0.2,
+        0,
+        W * 0.1,
+        H * 0.2,
+        W * 0.4
+      );
+      glow2.addColorStop(0, "rgba(15,90,160,0.12)");
+      glow2.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow2;
+      ctx.fillRect(0, 0, W, H);
+
+      // Wave layers — back to front, deep to bright
+      const waves = [
+        {
+          amplitude: H * 0.055,
+          frequency: 0.0018,
+          speed: 0.22,
+          yBase: H * 0.68,
+          color: "rgba(5,28,58,0.80)",
+          blur: 4,
+        },
+        {
+          amplitude: H * 0.05,
+          frequency: 0.0022,
+          speed: 0.3,
+          yBase: H * 0.72,
+          color: "rgba(7,38,75,0.85)",
+          blur: 3,
+        },
+        {
+          amplitude: H * 0.045,
+          frequency: 0.0028,
+          speed: 0.38,
+          yBase: H * 0.76,
+          color: "rgba(9,50,96,0.88)",
+          blur: 2,
+        },
+        {
+          amplitude: H * 0.042,
+          frequency: 0.0034,
+          speed: 0.46,
+          yBase: H * 0.8,
+          color: "rgba(11,60,112,0.90)",
+          blur: 2,
+        },
+        {
+          amplitude: H * 0.038,
+          frequency: 0.004,
+          speed: 0.55,
+          yBase: H * 0.83,
+          color: "rgba(13,72,128,0.92)",
+          blur: 1,
+        },
+        {
+          amplitude: H * 0.032,
+          frequency: 0.005,
+          speed: 0.64,
+          yBase: H * 0.86,
+          color: "rgba(16,85,148,0.93)",
+          blur: 0,
+        },
+        {
+          amplitude: H * 0.028,
+          frequency: 0.006,
+          speed: 0.75,
+          yBase: H * 0.89,
+          color: "rgba(18,100,168,0.94)",
+          blur: 0,
+        },
+        {
+          amplitude: H * 0.024,
+          frequency: 0.007,
+          speed: 0.85,
+          yBase: H * 0.91,
+          color: "rgba(20,112,186,0.95)",
+          blur: 0,
+        },
+        {
+          amplitude: H * 0.02,
+          frequency: 0.0085,
+          speed: 1.0,
+          yBase: H * 0.93,
+          color: "rgba(22,124,205,0.96)",
+          blur: 0,
+        },
+        // Bright crest — the surf line
+        {
+          amplitude: H * 0.015,
+          frequency: 0.01,
+          speed: 1.2,
+          yBase: H * 0.955,
+          color: "rgba(29,155,240,0.55)",
+          blur: 0,
+        },
+      ];
+
+      waves.forEach((w) => drawWave(t, { W, H, ...w }));
+
+      // Foam / highlight streaks on crests
+      ctx.save();
+      ctx.globalAlpha = 0.18;
+      for (let i = 0; i < 5; i++) {
+        const yOff = H * (0.9 + i * 0.018);
+        const freq = 0.008 + i * 0.001;
+        const spd = 1.1 + i * 0.15;
+        ctx.beginPath();
+        for (let x = 0; x < W; x += 3) {
+          const y = yOff + Math.sin(x * freq + t * spd) * H * 0.008;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = `rgba(150,210,255,${0.35 - i * 0.04})`;
+        ctx.lineWidth = 1.5 - i * 0.2;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Bioluminescence glow lines
+      ctx.save();
+      ctx.globalAlpha = 0.08;
+      for (let i = 0; i < 3; i++) {
+        const yOff = H * (0.7 + i * 0.07);
+        ctx.beginPath();
+        for (let x = 0; x < W; x += 2) {
+          const y = yOff + Math.sin(x * 0.003 + t * 0.4 + i * 1.5) * H * 0.025;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        const grad = ctx.createLinearGradient(0, 0, W, 0);
+        grad.addColorStop(0, "transparent");
+        grad.addColorStop(0.3, "rgba(66,176,245,0.8)");
+        grad.addColorStop(0.7, "rgba(29,155,240,0.6)");
+        grad.addColorStop(1, "transparent");
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Floating particles (bubbles / sea spray)
+      particles.forEach((p) => {
+        p.x += p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08;
+        p.y += p.vy;
+        if (p.y < -10) {
+          p.y = H + 10;
+          p.x = Math.random() * W;
+        }
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(100,190,255,${p.alpha * (0.6 + 0.4 * Math.sin(t + p.x))})`;
+        ctx.fill();
+      });
+
+      // Light caustics on the surface
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      for (let i = 0; i < 6; i++) {
+        const cx2 = W * (0.15 + 0.14 * i + Math.sin(t * 0.18 + i) * 0.04);
+        const cy2 = H * (0.6 + Math.cos(t * 0.22 + i * 0.8) * 0.06);
+        const rg = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, W * 0.08);
+        rg.addColorStop(0, "rgba(120,200,255,0.6)");
+        rg.addColorStop(1, "transparent");
+        ctx.fillStyle = rg;
+        ctx.fillRect(0, 0, W, H);
+      }
+      ctx.restore();
+
+      animRef.current = requestAnimationFrame(draw);
+    }
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} id="ocean-canvas" />;
+}
+
+/* ── SCROLL REVEAL ────────────────────────────────────────── */
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("visible");
+        }),
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+/* ── NAV SCROLL ───────────────────────────────────────────── */
+function useNavScroll() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  return scrolled;
+}
+
+/* ── CARD TILT ────────────────────────────────────────────── */
+function useTilt(ref) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onMove = (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = `perspective(1100px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg) translateZ(10px)`;
+    };
+    const onLeave = () => {
+      el.style.transform = "";
+    };
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+    };
+  }, [ref]);
+}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("login");
   const [form, setForm] = useState({ email: "", password: "" });
-
+  const cardRef = useRef(null);
   const tagsDouble = useMemo(() => [...TAGS, ...TAGS], []);
+  const navScrolled = useNavScroll();
+
+  useReveal();
+  useTilt(cardRef);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -167,12 +495,20 @@ export default function Login() {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/github`;
   }
 
+  function scrollToCard() {
+    document
+      .getElementById("login-card")
+      ?.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <div className="cx-root">
+      <OceanCanvas />
+
       {/* ── NAV ─────────────────────────────────────────── */}
-      <nav className="cx-nav">
+      <nav className={`cx-nav${navScrolled ? " scrolled" : ""}`}>
         <div className="cx-logo">
-          Cohort<span>X</span>
+          Cohort<span className="cx-logo-x">X</span>
         </div>
         <ul className="cx-nav-links">
           <li>
@@ -189,23 +525,14 @@ export default function Login() {
           </li>
         </ul>
         <div className="cx-nav-cta">
-          <button
-            className="btn-ghost"
-            onClick={() =>
-              document
-                .getElementById("login-card")
-                .scrollIntoView({ behavior: "smooth" })
-            }
-          >
+          <button className="btn-ghost" onClick={scrollToCard}>
             Sign in
           </button>
           <button
             className="btn-primary"
             onClick={() => {
               setTab("register");
-              document
-                .getElementById("login-card")
-                .scrollIntoView({ behavior: "smooth" });
+              scrollToCard();
             }}
           >
             Join Free
@@ -215,22 +542,22 @@ export default function Login() {
 
       {/* ── HERO ────────────────────────────────────────── */}
       <section className="cx-hero">
-        {/* Left */}
+        {/* LEFT */}
         <div className="hero-left">
-          <div className="hero-eyebrow">The Developer Social Network</div>
+          <div className="hero-eyebrow">
+            <span className="eyebrow-dot" />
+            The Developer Social Network
+          </div>
 
           <h1 className="hero-h1">
-            Build.
-            <br />
-            Share.
-            <br />
-            <span className="accent">Connect.</span>
+            <span className="word word-1">Build.</span>
+            <span className="word word-2">Ship.</span>
+            <span className="word word-3">Connect.</span>
           </h1>
 
           <p className="hero-sub">
             CohortX is where developers grow — share projects, collaborate live,
-            find jobs, and build real connections inside one premium ecosystem.
-            Think Instagram + LinkedIn, made for engineers.
+            find roles, and build real connections inside one premium ecosystem.
           </p>
 
           <div className="hero-actions">
@@ -238,45 +565,24 @@ export default function Login() {
               className="btn-hero-primary"
               onClick={() => {
                 setTab("register");
-                document
-                  .getElementById("login-card")
-                  .scrollIntoView({ behavior: "smooth" });
+                scrollToCard();
               }}
             >
-              Get Started Free →
+              Join CohortX <ArrowRight size={17} strokeWidth={2.5} />
             </button>
             <button className="btn-hero-secondary" onClick={githubLogin}>
               <GithubIcon /> Continue with GitHub
             </button>
           </div>
 
-          <div className="hero-stats">
-            <div className="stat-item">
-              <div className="stat-num">42k+</div>
-              <div className="stat-label">Developers</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-num">12k+</div>
-              <div className="stat-label">Projects Shared</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-num">890+</div>
-              <div className="stat-label">Jobs Posted</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-num">4.2k</div>
-              <div className="stat-label">Live Right Now</div>
-            </div>
-          </div>
-
-          {/* Floating mini-cards */}
+          {/* FLOATING CARDS */}
           <div className="float-cards">
             {FLOAT_CARDS.map((c) => {
               const Icon = c.icon;
               return (
                 <div key={c.label} className="float-card">
                   <div className="float-card-icon">
-                    <Icon size={18} strokeWidth={2} />
+                    <Icon size={17} strokeWidth={2} />
                   </div>
                   <div className="float-card-text">
                     <div className="label">{c.label}</div>
@@ -288,8 +594,8 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right: Login/Register Card */}
-        <div className="login-card" id="login-card">
+        {/* RIGHT — LOGIN CARD */}
+        <div className="login-card" id="login-card" ref={cardRef}>
           <div className="card-head">
             <h2>{tab === "login" ? "Welcome back" : "Join CohortX"}</h2>
             <p>
@@ -299,43 +605,20 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Tab toggle */}
-          <div
-            style={{
-              display: "flex",
-              gap: 0,
-              marginBottom: 24,
-              background: "rgba(29,155,240,.08)",
-              borderRadius: 14,
-              padding: 4,
-            }}
-          >
+          {/* TABS */}
+          <div className="tab-toggle">
             {["login", "register"].map((t) => (
               <button
                 key={t}
+                className={`tab-btn${tab === t ? " active" : ""}`}
                 onClick={() => setTab(t)}
-                style={{
-                  flex: 1,
-                  height: 38,
-                  borderRadius: 10,
-                  border: "none",
-                  background: tab === t ? "#fff" : "transparent",
-                  color: tab === t ? "#071326" : "#4a7fa5",
-                  fontWeight: tab === t ? 700 : 500,
-                  fontSize: 14,
-                  cursor: "pointer",
-                  boxShadow:
-                    tab === t ? "0 2px 8px rgba(29,155,240,.12)" : "none",
-                  transition: "all .2s",
-                  fontFamily: "inherit",
-                }}
               >
                 {t === "login" ? "Sign In" : "Register"}
               </button>
             ))}
           </div>
 
-          {/* OAuth */}
+          {/* OAUTH */}
           <div className="oauth-row">
             <button className="oauth-btn" onClick={githubLogin}>
               <GithubIcon /> GitHub
@@ -349,6 +632,7 @@ export default function Login() {
             <span>or continue with email</span>
           </div>
 
+          {/* FORM */}
           <form onSubmit={handleSubmit} className="login-form">
             {tab === "register" && (
               <div className="form-field">
@@ -357,18 +641,22 @@ export default function Login() {
                   type="text"
                   placeholder="Username"
                   required
+                  id="f-user"
                 />
+                <label htmlFor="f-user">Username</label>
               </div>
             )}
             <div className="form-field">
               <input
                 name="email"
                 type="email"
-                placeholder="Email address"
+                placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
                 required
+                id="f-email"
               />
+              <label htmlFor="f-email">Email address</label>
             </div>
             <div className="form-field">
               <input
@@ -378,7 +666,9 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 required
+                id="f-pass"
               />
+              <label htmlFor="f-pass">Password</label>
             </div>
 
             {tab === "login" && (
@@ -392,7 +682,7 @@ export default function Login() {
 
             <button className="btn-login" disabled={loading}>
               {loading
-                ? "Please wait..."
+                ? "Please wait…"
                 : tab === "login"
                   ? "Sign In to CohortX"
                   : "Create Account"}
@@ -402,51 +692,32 @@ export default function Login() {
           <p className="register-link">
             {tab === "login" ? (
               <>
+                {" "}
                 No account?{" "}
                 <a onClick={() => setTab("register")} href="#">
                   Register free
-                </a>
+                </a>{" "}
               </>
             ) : (
               <>
+                {" "}
                 Have an account?{" "}
                 <a onClick={() => setTab("login")} href="#">
                   Sign in
-                </a>
+                </a>{" "}
               </>
             )}
           </p>
 
-          {/* Trust badges */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 20,
-              marginTop: 20,
-              paddingTop: 16,
-              borderTop: "1px solid rgba(29,155,240,.1)",
-            }}
-          >
+          <div className="trust-badges">
             {[
               { icon: Lock, label: "Secure" },
               { icon: Infinity, label: "Free Forever" },
-              { icon: Zap, label: "Instant Access" },
+              { icon: Shield, label: "Private" },
             ].map(({ icon: Icon, label }) => (
-              <span
-                key={label}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  fontSize: 11,
-                  color: "#4a7fa5",
-                  fontWeight: 600,
-                }}
-              >
-                <Icon size={12} strokeWidth={2.5} />
-                {label}
-              </span>
+              <div key={label} className="trust-badge">
+                <Icon size={12} strokeWidth={2.5} /> {label}
+              </div>
             ))}
           </div>
         </div>
@@ -464,15 +735,9 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ── SOCIAL PROOF STRIP ──────────────────────────── */}
+      {/* ── PROOF STRIP ─────────────────────────────────── */}
       <div className="cx-proof">
-        {[
-          { icon: Star, text: "Rated 4.9/5 by developers" },
-          { icon: Rocket, text: "42,000+ active members" },
-          { icon: Briefcase, text: "890+ companies hiring" },
-          { icon: Shield, text: "Enterprise-grade security" },
-          { icon: Globe, text: "60+ countries" },
-        ].map(({ icon: Icon, text }) => (
+        {PROOF.map(({ icon: Icon, text }) => (
           <div key={text} className="proof-item">
             <span className="proof-icon">
               <Icon size={15} strokeWidth={2} />
@@ -484,17 +749,24 @@ export default function Login() {
 
       {/* ── FEATURES ────────────────────────────────────── */}
       <section className="cx-features" id="features">
-        <div className="section-label">Everything you need</div>
-        <h2 className="section-title">
+        <div className="reveal section-eyebrow">Everything you need</div>
+        <h2 className="reveal section-title reveal-delay-1">
           Built for how developers actually work
         </h2>
+        <p className="reveal section-sub reveal-delay-2">
+          One network that replaces five tools. Less context-switching, more
+          building.
+        </p>
         <div className="feat-grid">
-          {FEATURES.map((f) => {
+          {FEATURES.map((f, i) => {
             const Icon = f.icon;
             return (
-              <div key={f.title} className="feat-card">
+              <div
+                key={f.title}
+                className={`feat-card reveal reveal-delay-${(i % 3) + 1}`}
+              >
                 <div className="feat-icon">
-                  <Icon size={26} strokeWidth={1.8} />
+                  <Icon size={24} strokeWidth={1.8} />
                 </div>
                 <h3>{f.title}</h3>
                 <p>{f.desc}</p>
@@ -506,14 +778,19 @@ export default function Login() {
 
       {/* ── TESTIMONIALS ────────────────────────────────── */}
       <section className="cx-testimonials" id="community">
-        <div className="section-label">Developer stories</div>
-        <h2 className="section-title">Loved by engineers</h2>
+        <div className="reveal section-eyebrow">Developer stories</div>
+        <h2 className="reveal section-title reveal-delay-1">
+          Trusted by engineers
+        </h2>
         <div className="testi-grid">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="testi-card">
+          {TESTIMONIALS.map((t, i) => (
+            <div
+              key={t.name}
+              className={`testi-card reveal reveal-delay-${i + 1}`}
+            >
               <div className="testi-stars">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill="#1d9bf0" color="#1d9bf0" />
+                {[...Array(5)].map((_, j) => (
+                  <Star key={j} size={14} fill="#42b0f5" color="#42b0f5" />
                 ))}
               </div>
               <p className="testi-text">"{t.text}"</p>
@@ -529,20 +806,17 @@ export default function Login() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ──────────────────────────────────── */}
-      <div className="cx-cta">
+      {/* ── CTA ─────────────────────────────────────────── */}
+      <div className="cx-cta reveal" id="jobs">
         <h2>Your developer network awaits</h2>
         <p>
-          Join 42,000+ engineers building, sharing, and growing together on
-          CohortX
+          Join engineers building, shipping, and growing together on CohortX.
         </p>
         <button
           className="btn-cta"
           onClick={() => {
             setTab("register");
-            document
-              .getElementById("login-card")
-              .scrollIntoView({ behavior: "smooth" });
+            scrollToCard();
           }}
         >
           Create Free Account →
@@ -550,21 +824,21 @@ export default function Login() {
       </div>
 
       {/* ── FOOTER ──────────────────────────────────────── */}
-      <footer className="cx-footer">
+      <footer className="cx-footer" id="about">
         <div className="cx-footer-logo">
           Cohort<span>X</span>
         </div>
-        <div>Build. Share. Connect. — The Developer Social Network</div>
+        <div>Build. Ship. Connect. — The Developer Social Network</div>
         <div style={{ display: "flex", gap: 24 }}>
-          <a href="#" style={{ color: "#4a7fa5", textDecoration: "none" }}>
-            Privacy
-          </a>
-          <a href="#" style={{ color: "#4a7fa5", textDecoration: "none" }}>
-            Terms
-          </a>
-          <a href="#" style={{ color: "#4a7fa5", textDecoration: "none" }}>
-            Contact
-          </a>
+          {["Privacy", "Terms", "Contact"].map((l) => (
+            <a
+              key={l}
+              href="#"
+              style={{ color: "var(--text-dim)", textDecoration: "none" }}
+            >
+              {l}
+            </a>
+          ))}
         </div>
       </footer>
     </div>
