@@ -592,35 +592,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* RIGHT — LOGIN CARD */}          
-        <div
-  style={{
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  }}
->
-  <img
-    src="/World Map.svg"
-    alt="world map"
-    style={{
-      width: "100%",
-      maxWidth: "540px",
-      height: "auto",
-      objectFit: "contain",
-      opacity: 0.92,
-      filter:
-        "drop-shadow(0 30px 80px rgba(29,155,240,.22)) brightness(1.03)",
-      transform: "scale(1.04)",
-      transition: "0.5s ease",
-      pointerEvents: "none",
-      userSelect: "none",
-    }}
-  />
-</div>
+        {/* RIGHT — LOGIN CARD */}
       </section>
 
       {/* ── SCROLLING TAGS ──────────────────────────────── */}
