@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import AppLayout from "../layout/AppLayout";
 
 import "./Chat.css";
 
@@ -70,6 +71,11 @@ export default function Chat() {
   const socketRef = useRef(null);
   const activeConversationRef = useRef(null);
   const conversationsRef = useRef([]);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   useEffect(() => {
     activeConversationRef.current = activeConversation;
@@ -289,274 +295,277 @@ export default function Chat() {
   }
 
   return (
-    <div className="chat-shell fade-up">
-      {/* INBOX PANEL */}
-      <aside
-        className={`chat-inbox ${activeConversation ? "hidden-on-mobile" : ""}`}
-      >
-        <div className="chat-sidebar-header">
-          <div>
-            <p className="chat-kicker">Direct Stream</p>
-            <h1 className="gradient-header-text" style={{ fontSize: "16px" }}>
-              Messages
-            </h1>
+    <AppLayout>
+      <div className="chat-shell">
+        {/* INBOX PANEL */}
+        <aside
+          className={`chat-inbox ${activeConversation ? "hidden-on-mobile" : ""}`}
+        >
+          <div className="chat-sidebar-header">
+            <div>
+              <p className="chat-kicker">Direct Stream</p>
+              <h1 className="gradient-header-text" style={{ fontSize: "16px" }}>
+                Messages
+              </h1>
+            </div>
+            <Link className="chat-profile-link" to={`/profile/${user?.username}`}>
+              <img src={avatarFor(user)} alt="" />
+            </Link>
           </div>
-          <Link className="chat-profile-link" to={`/profile/${user?.username}`}>
-            <img src={avatarFor(user)} alt="" />
-          </Link>
-        </div>
 
-        <div className="chat-search-wrapper">
-          <div
-            className={`search-bar ${searchFocused || searchTerm ? "focused" : ""}`}
-          >
-            <input
-              value={searchTerm}
-              placeholder="Search builders..."
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") searchUsers();
-              }}
-            />
-            <button
-              type="button"
-              className="solid-btn"
-              style={{
-                height: "24px",
-                padding: "0 10px",
-                fontSize: "9.5px",
-                boxShadow: "none",
-              }}
-              onClick={searchUsers}
-              disabled={searching || !searchTerm.trim()}
+          <div className="chat-search-wrapper">
+            <div
+              className={`search-bar ${searchFocused || searchTerm ? "focused" : ""}`}
             >
-              {searching ? "..." : "Find"}
-            </button>
-          </div>
-        </div>
-
-        {searchResults.length > 0 && (
-          <div className="chat-search-results">
-            {searchResults.map((person) => (
-              <button
-                type="button"
-                className="chat-person-row"
-                key={person.id}
-                onClick={() => startConversation(person.id)}
-              >
-                <img src={avatarFor(person)} alt="" />
-                <span>
-                  <strong>@{person.username}</strong>
-                  <small>
-                    {person.bio || "Secure connection link available"}
-                  </small>
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="chat-thread-list">
-          {loading ? (
-            <div className="chat-empty-small">
-              Parsing secure workspace lines...
-            </div>
-          ) : conversations.length === 0 ? (
-            <div className="chat-empty-small">
-              Find engineers above to initialize streaming.
-            </div>
-          ) : (
-            conversations.map((conversation) => {
-              const otherUser = conversation.participants?.find(
-                (participant) => participant.userId !== user?.id
-              )?.user;
-              const lastMessage = conversation.messages?.[0];
-
-              return (
-                <button
-                  type="button"
-                  className={`chat-thread ${activeConversation?.id === conversation.id ? "is-active" : ""}`}
-                  key={conversation.id}
-                  onClick={() => selectConversation(conversation)}
-                >
-                  <img src={avatarFor(otherUser)} alt="" />
-                  <span>
-                    <strong>@{otherUser?.username || "user"}</strong>
-                    <small>
-                      {lastMessage?.text || "No datalog footprints yet"}
-                    </small>
-                  </span>
-                  <time>
-                    {messageTime(
-                      lastMessage?.createdAt || conversation.createdAt
-                    )}
-                  </time>
-                </button>
-              );
-            })
-          )}
-        </div>
-      </aside>
-
-      {/* CORE CHAT FEED VIEWPORT */}
-      <section
-        className={`chat-main ${!activeConversation ? "hidden-on-mobile" : ""}`}
-      >
-        {error && <div className="chat-error">{error}</div>}
-
-        {!activeConversation ? (
-          <div className="chat-empty-state">
-            <div className="chat-empty-icon">DM</div>
-            <h2 className="gradient-header-text" style={{ fontSize: "16px" }}>
-              Terminal Node
-            </h2>
-            <p>
-              Initialize secure diagnostic messaging logs with elite members
-              inside CohortX.
-            </p>
-          </div>
-        ) : (
-          <>
-            <header className="chat-main-header">
-              <button
-                type="button"
-                className="glass-btn mobile-back-trigger"
-                style={{ height: "28px", fontSize: "10px" }}
-                onClick={() => setActiveConversation(null)}
-              >
-                ✕ Close
-              </button>
-
-              <div
-                className="chat-peer"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-              >
-                <img
-                  src={avatarFor(activeUser)}
-                  alt=""
-                  style={{ width: "32px", height: "32px" }}
-                />
-                <span style={{ display: "flex", flexDirection: "column" }}>
-                  <strong style={{ fontSize: "12px", color: "#fff" }}>
-                    @{activeUser?.username || "user"}
-                  </strong>
-                  <small
-                    style={{ fontSize: "9px", color: "var(--blue-bright)" }}
-                  >
-                    Channel Connected
-                  </small>
-                </span>
-              </div>
-
-              <div
-                className="chat-actions"
-                style={{ display: "flex", gap: "6px" }}
-              >
-                {activeUser && (
-                  <Link
-                    className="glass-btn"
-                    style={{ height: "28px", fontSize: "10px" }}
-                    to={`/profile/${activeUser.username}`}
-                  >
-                    Profile
-                  </Link>
-                )}
-                <button
-                  type="button"
-                  className="dark-btn"
-                  style={{ height: "28px", fontSize: "10px" }}
-                  onClick={() => setShowDetails((value) => !value)}
-                >
-                  Meta Info
-                </button>
-              </div>
-            </header>
-
-            {showDetails && (
-              <div className="chat-details">
-                <img
-                  src={avatarFor(activeUser)}
-                  alt=""
-                  style={{ width: "36px", height: "36px" }}
-                />
-                <div>
-                  <strong>@{activeUser?.username}</strong>
-                  <p>
-                    {activeUser?.bio || "No localized profile manifest found."}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="chat-messages">
-              {messagesLoading ? (
-                <div className="chat-empty-small">
-                  Reading internal database clusters...
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="chat-empty-small">
-                  Send system ping footprint to start connection sequence.
-                </div>
-              ) : (
-                messages.map((message) => {
-                  const isMine = message.senderId === user?.id;
-
-                  return (
-                    <div
-                      className={`chat-message-row ${isMine ? "is-mine" : ""}`}
-                      key={message.id}
-                    >
-                      {!isMine && (
-                        <img
-                          src={avatarFor(message.sender || activeUser)}
-                          alt=""
-                        />
-                      )}
-                      <div className="chat-bubble-wrap">
-                        <div className="chat-bubble">{message.text}</div>
-                        <time>{messageTime(message.createdAt)}</time>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            <footer className="chat-composer">
-              <button
-                type="button"
-                className="chat-like-button"
-                onClick={sendQuickLike}
-                disabled={sending}
-              >
-                ♥
-              </button>
-
-              <div className="composer-input-wrapper glass">
-                <textarea
-                  value={text}
-                  placeholder="Type structural tracking footprints..."
-                  rows="1"
-                  onChange={(event) => setText(event.target.value)}
-                  onKeyDown={onComposerKeyDown}
-                />
-              </div>
-
+              <input
+                value={searchTerm}
+                placeholder="Search builders..."
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") searchUsers();
+                }}
+              />
               <button
                 type="button"
                 className="solid-btn"
-                style={{ height: "36px", padding: "0 16px" }}
-                onClick={sendMessage}
-                disabled={sending || !text.trim()}
+                style={{
+                  height: "24px",
+                  padding: "0 10px",
+                  fontSize: "9.5px",
+                  boxShadow: "none",
+                }}
+                onClick={searchUsers}
+                disabled={searching || !searchTerm.trim()}
               >
-                {sending ? "..." : "Send"}
+                {searching ? "..." : "Find"}
               </button>
-            </footer>
-          </>
-        )}
-      </section>
-    </div>
+            </div>
+          </div>
+
+          {searchResults.length > 0 && (
+            <div className="chat-search-results">
+              {searchResults.map((person) => (
+                <button
+                  type="button"
+                  className="chat-person-row"
+                  key={person.id}
+                  onClick={() => startConversation(person.id)}
+                >
+                  <img src={avatarFor(person)} alt="" />
+                  <span>
+                    <strong>@{person.username}</strong>
+                    <small>
+                      {person.bio || "Secure connection link available"}
+                    </small>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="chat-thread-list">
+            {loading ? (
+              <div className="chat-empty-small">
+                Parsing secure workspace lines...
+              </div>
+            ) : conversations.length === 0 ? (
+              <div className="chat-empty-small">
+                Find engineers above to initialize streaming.
+              </div>
+            ) : (
+              conversations.map((conversation) => {
+                const otherUser = conversation.participants?.find(
+                  (participant) => participant.userId !== user?.id
+                )?.user;
+                const lastMessage = conversation.messages?.[0];
+
+                return (
+                  <button
+                    type="button"
+                    className={`chat-thread ${activeConversation?.id === conversation.id ? "is-active" : ""}`}
+                    key={conversation.id}
+                    onClick={() => selectConversation(conversation)}
+                  >
+                    <img src={avatarFor(otherUser)} alt="" />
+                    <span>
+                      <strong>@{otherUser?.username || "user"}</strong>
+                      <small>
+                        {lastMessage?.text || "No datalog footprints yet"}
+                      </small>
+                    </span>
+                    <time>
+                      {messageTime(
+                        lastMessage?.createdAt || conversation.createdAt
+                      )}
+                    </time>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </aside>
+
+        {/* CORE CHAT FEED VIEWPORT */}
+        <section
+          className={`chat-main ${!activeConversation ? "hidden-on-mobile" : ""}`}
+        >
+          {error && <div className="chat-error">{error}</div>}
+
+          {!activeConversation ? (
+            <div className="chat-empty-state">
+              <div className="chat-empty-icon">DM</div>
+              <h2 className="gradient-header-text" style={{ fontSize: "16px" }}>
+                Terminal Node
+              </h2>
+              <p>
+                Initialize secure diagnostic messaging logs with elite members
+                inside CohortX.
+              </p>
+            </div>
+          ) : (
+            <>
+              <header className="chat-main-header">
+                <button
+                  type="button"
+                  className="glass-btn mobile-back-trigger"
+                  style={{ height: "28px", fontSize: "10px" }}
+                  onClick={() => setActiveConversation(null)}
+                >
+                  ✕ Close
+                </button>
+
+                <div
+                  className="chat-peer"
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <img
+                    src={avatarFor(activeUser)}
+                    alt=""
+                    style={{ width: "32px", height: "32px" }}
+                  />
+                  <span style={{ display: "flex", flexDirection: "column" }}>
+                    <strong style={{ fontSize: "12px", color: "#fff" }}>
+                      @{activeUser?.username || "user"}
+                    </strong>
+                    <small
+                      style={{ fontSize: "9px", color: "var(--blue-bright)" }}
+                    >
+                      Channel Connected
+                    </small>
+                  </span>
+                </div>
+
+                <div
+                  className="chat-actions"
+                  style={{ display: "flex", gap: "6px" }}
+                >
+                  {activeUser && (
+                    <Link
+                      className="glass-btn"
+                      style={{ height: "28px", fontSize: "10px" }}
+                      to={`/profile/${activeUser.username}`}
+                    >
+                      Profile
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    className="dark-btn"
+                    style={{ height: "28px", fontSize: "10px" }}
+                    onClick={() => setShowDetails((value) => !value)}
+                  >
+                    Meta Info
+                  </button>
+                </div>
+              </header>
+
+              {showDetails && (
+                <div className="chat-details">
+                  <img
+                    src={avatarFor(activeUser)}
+                    alt=""
+                    style={{ width: "36px", height: "36px" }}
+                  />
+                  <div>
+                    <strong>@{activeUser?.username}</strong>
+                    <p>
+                      {activeUser?.bio || "No localized profile manifest found."}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="chat-messages">
+                {messagesLoading ? (
+                  <div className="chat-empty-small">
+                    Reading internal database clusters...
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="chat-empty-small">
+                    Send system ping footprint to start connection sequence.
+                  </div>
+                ) : (
+                  messages.map((message) => {
+                    const isMine = message.senderId === user?.id;
+
+                    return (
+                      <div
+                        className={`chat-message-row ${isMine ? "is-mine" : ""}`}
+                        key={message.id}
+                      >
+                        {!isMine && (
+                          <img
+                            src={avatarFor(message.sender || activeUser)}
+                            alt=""
+                          />
+                        )}
+                        <div className="chat-bubble-wrap">
+                          <div className="chat-bubble">{message.text}</div>
+                          <time>{messageTime(message.createdAt)}</time>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              <footer className="chat-composer">
+                <button
+                  type="button"
+                  className="chat-like-button"
+                  onClick={sendQuickLike}
+                  disabled={sending}
+                >
+                  ♥
+                </button>
+
+                <div className="composer-input-wrapper glass">
+                  <textarea
+                    value={text}
+                    placeholder="Type structural tracking footprints..."
+                    rows="1"
+                    onChange={(event) => setText(event.target.value)}
+                    onKeyDown={onComposerKeyDown}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="solid-btn"
+                  style={{ height: "36px", padding: "0 16px" }}
+                  onClick={sendMessage}
+                  disabled={sending || !text.trim()}
+                >
+                  {sending ? "..." : "Send"}
+                </button>
+              </footer>
+            </>
+          )}
+        </section>
+      </div>
+    </AppLayout>
   );
 }

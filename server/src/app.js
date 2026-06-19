@@ -11,7 +11,6 @@ const likeRoutes = require("./routes/likeRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const followRoutes = require("./routes/followRoutes");
 const feedRoutes = require("./routes/feedRoutes");
-const fileUpload = require("express-fileupload");
 const uploadRoutes = require("./routes/uploadRoutes");
 const githubRoutes = require("./routes/githubRoutes");
 const app = express();
@@ -76,7 +75,6 @@ app.use("/projects", commentRoutes);
 app.use("/users", followRoutes);
 app.use("/feed", feedRoutes);
 app.use("/stories", storyRoutes);
-app.use(fileUpload({ useTempFiles: true }));
 app.use("/upload", uploadRoutes);
 app.use("/github", githubRoutes);
 

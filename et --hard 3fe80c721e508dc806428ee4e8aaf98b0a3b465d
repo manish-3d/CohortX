@@ -1,0 +1,51 @@
+[33m1c79649[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m feat(ui): redesign login experience with premium visuals
+[33m540c70e[m  loginpage upgrade
+[33meade259[m pott updated to 10000
+[33m3cde5e3[m fix vercel spa routing
+[33m039571b[m add frontend env
+[33m267adbd[m fix route import casing for render
+[33m2de0bbe[m fix render start command
+[33md6e70e3[m feat: login redesign + github oauth + project ui upgrades
+[33m1608472[m all good
+[33me3ee0f0[m commit till gitlogin succeded
+[33m869d998[m fix(auth): resolve oauth callback and session conflicts
+[33m4206485[m feat(router): register github oauth redirect page
+[33m6e5a0ab[m feat(frontend): add oauth success redirect handler
+[33me0cbf25[m feat(auth): implement github oauth routes and callback
+[33ma7840c6[m feat(auth): integrate github oauth with passport
+[33m4b1e27b[m feat(auth): add github oauth fields to user schema
+[33m63012bd[m style(ui): unify dashboard visuals with premium theme
+[33mc4da092[m feat(feed): improve user search integration
+[33m6e670fb[m style(layout): widen sidebars and refine spacing
+[33m48d5e0e[m feat(topbar): improve global search experience
+[33mfcaaff7[m feat(leftsidebar): upgrade navigation with lucide icons
+[33mfeca614[m feat(rightsidebar): redesign notifications and messages section
+[33m227c162[m feat: add follower notifications for live sessions
+[33m8249727[m chore: configure ngrok CORS and webhook validation
+[33m27873da[m feat: connect Zoom webhooks and event subscriptions
+[33m4dccc0d[m feat: implement viewer tracking and live session state
+[33mb8d5289[m feat: build live section with join and end live flow
+[33m36d3a86[m feat: integrate Zoom Server-to-Server OAuth and live meeting creation
+[33md54daf3[m refactor: organize live streaming backend and webhook configuration
+[33me2884d8[m feat: connect ngrok tunnel and validate Zoom event subscriptions
+[33m56e5792[m feat: implement Zoom webhook endpoint and event handling
+[33m01736b6[m feat: add viewerCount support in live model and controller
+[33m5f5825b[m feat: create live session flow with Zoom meeting generation
+[33meb7715f[m feat: integrate Zoom Server-to-Server OAuth for live meetings
+[33me5db925[m feat(db): add viewerCount field for live sessions
+[33m34b2d16[m feat(live): integrate Zoom meeting creation and live APIs
+[33m86422c2[m  live section
+[33m64648c7[m feat(zoom): integrate zoom oauth and meeting creation
+[33m5c9d21b[m feat(live): implement start live and meeting flow
+[33mb8ae155[m feat(live): add live routes and protected endpoints
+[33m7adbe91[m refactor(ui): polish notifications and sidebar
+[33mff98bdd[m fix(like): persist liked state
+[33me632db9[m feat(project): add owner actions menu
+[33med40887[m feat(chat): integrate sidebar chat
+[33mcfa402d[m feat(ui): add notification dropdown
+[33mc963289[m chore(server): mount notification routes
+[33m57d5abf[m feat(routes): register notification endpoints
+[33m8f54dc2[m feat(notification): add notification APIs
+[33m0f82274[m feat(notification): create like notifications
+[33md3c5790[m feat(db): add notification model
+[33m584128e[m refactor(layout): redesign app into three-column social layout

@@ -4,7 +4,7 @@
 .chat-shell {
   display: flex;
   flex: 1;
-  height: calc(100vh - 54px); /* Accounts for your sticky top bar */
+  height: calc(100vh - 120px); /* Fits inside AppLayout */
   position: relative;
   z-index: 1;
   padding: 14px;
@@ -394,6 +394,48 @@
   color: var(--text-dim);
 }
 
+/* Scrollbar styles */
+.chat-messages::-webkit-scrollbar,
+.chat-thread-list::-webkit-scrollbar,
+.chat-inbox::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-messages::-webkit-scrollbar-track,
+.chat-thread-list::-webkit-scrollbar-track,
+.chat-inbox::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb,
+.chat-thread-list::-webkit-scrollbar-thumb,
+.chat-inbox::-webkit-scrollbar-thumb {
+  background: rgba(29, 155, 240, 0.15);
+  border-radius: 3px;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover,
+.chat-thread-list::-webkit-scrollbar-thumb:hover,
+.chat-inbox::-webkit-scrollbar-thumb:hover {
+  background: rgba(29, 155, 240, 0.35);
+}
+
+/* Animations */
+.chat-thread {
+  animation: slideRight 0.3s ease-out both;
+}
+.chat-message-row {
+  animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* Responsive Overrides */
 @media (max-width: 860px) {
   .hidden-on-mobile {
@@ -403,6 +445,6 @@
     flex: 1;
   }
   .chat-shell {
-    height: calc(100vh - 50px);
+    height: calc(100vh - 140px);
   }
 }

@@ -1,20 +1,14 @@
-const cloudinary = require("../config/cloudinary");
+const uploadToCloudinary = require("../config/uploadToCloudinary");
 
 exports.uploadImage = async (req, res) => {
   try {
-    if (!req.files) {
+    if (!req.file) {
       return res.status(400).json({
-        message: "No image",
+        message: "No image file provided",
       });
     }
 
-    const result = await cloudinary.uploader.upload(
-      req.files.image.tempFilePath,
-
-      {
-        folder: "cohortx",
-      }
-    );
+    const result = await uploadToCloudinary(req.file, "cohortx");
 
     res.json({
       url: result.secure_url,
