@@ -132,6 +132,18 @@ export default function Profile() {
     navigate(`/profile/${user.username}`);
   }
 
+  const bannerStyle = {
+  // Linear gradient from dark-blue to medium-blue
+  background: 'linear-gradient(135deg, #0a192f 0%, #112240 100%)',
+  
+  // Necessary styling for a banner
+  width: '100%',
+  minHeight: '100vh', // Adjust height as needed
+  borderRadius: '16px', // Matches your card's rounded corners
+  position: 'relative',
+  overflow: 'hidden'
+};
+
   const handleShareProfile = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -141,8 +153,10 @@ export default function Profile() {
   if (!profile) {
     return (
       <>
-        <Navbar />
-        <PageLoader color="#477bf6ff" text="Looading cosmic workspace..." />
+       <div style={bannerStyle}>
+          <PageLoader  text="profile loading.."/>
+       </div>
+        
         
       </>
     );

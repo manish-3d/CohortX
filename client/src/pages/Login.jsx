@@ -592,134 +592,35 @@ export default function Login() {
           </div>
         </div>
 
-        {/* RIGHT — LOGIN CARD */}
-        <div className="login-card" id="login-card" ref={cardRef}>
-          <div className="card-head">
-            <h2>{tab === "login" ? "Welcome back" : "Join CohortX"}</h2>
-            <p>
-              {tab === "login"
-                ? "Sign in to your developer network"
-                : "Create your free account today"}
-            </p>
-          </div>
-
-          {/* TABS */}
-          <div className="tab-toggle">
-            {["login", "register"].map((t) => (
-              <button
-                key={t}
-                className={`tab-btn${tab === t ? " active" : ""}`}
-                onClick={() => setTab(t)}
-              >
-                {t === "login" ? "Sign In" : "Register"}
-              </button>
-            ))}
-          </div>
-
-          {/* OAUTH */}
-          <div className="oauth-row">
-            <button className="oauth-btn" onClick={githubLogin}>
-              <GithubIcon /> GitHub
-            </button>
-            <button className="oauth-btn">
-              <GoogleIcon /> Google
-            </button>
-          </div>
-
-          <div className="divider">
-            <span>or continue with email</span>
-          </div>
-
-          {/* FORM */}
-          <form onSubmit={handleSubmit} className="login-form">
-            {tab === "register" && (
-              <div className="form-field">
-                {/* FIXED: Bound state properties so context values map automatically */}
-                <input
-                  name="username"
-                  type="text"
-                  placeholder="Username"
-                  value={form.username}
-                  onChange={handleChange}
-                  required
-                  id="f-user"
-                />
-                <label htmlFor="f-user">Username</label>
-              </div>
-            )}
-            <div className="form-field">
-              <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                id="f-email"
-              />
-              <label htmlFor="f-email">Email address</label>
-            </div>
-            <div className="form-field">
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                id="f-pass"
-              />
-              <label htmlFor="f-pass">Password</label>
-            </div>
-
-            {tab === "login" && (
-              <div className="form-row-meta">
-                <label className="remember">
-                  <input type="checkbox" /> Remember me
-                </label>
-                <a href="#">Forgot password?</a>
-              </div>
-            )}
-
-            <button className="btn-login" disabled={loading}>
-              {loading
-                ? "Please wait…"
-                : tab === "login"
-                  ? "Sign In to CohortX"
-                  : "Create Account"}
-            </button>
-          </form>
-
-          <p className="register-link">
-            {tab === "login" ? (
-              <>
-                No account?{" "}
-                <a onClick={() => setTab("register")} href="#">
-                  Register free
-                </a>
-              </>
-            ) : (
-              <>
-                Have an account?{" "}
-                <a onClick={() => setTab("login")} href="#">
-                  Sign in
-                </a>
-              </>
-            )}
-          </p>
-
-          <div className="trust-badges">
-            {[
-              { icon: Lock, label: "Secure" },
-              { icon: Infinity, label: "Free Forever" },
-              { icon: Shield, label: "Private" },
-            ].map(({ icon: Icon, label }) => (
-              <div key={label} className="trust-badge">
-                <Icon size={12} strokeWidth={2.5} /> {label}
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* RIGHT — LOGIN CARD */}          
+        <div
+  style={{
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  }}
+>
+  <img
+    src="/World Map.svg"
+    alt="world map"
+    style={{
+      width: "100%",
+      maxWidth: "540px",
+      height: "auto",
+      objectFit: "contain",
+      opacity: 0.92,
+      filter:
+        "drop-shadow(0 30px 80px rgba(29,155,240,.22)) brightness(1.03)",
+      transform: "scale(1.04)",
+      transition: "0.5s ease",
+      pointerEvents: "none",
+      userSelect: "none",
+    }}
+  />
+</div>
       </section>
 
       {/* ── SCROLLING TAGS ──────────────────────────────── */}
