@@ -142,7 +142,8 @@ export default function Profile() {
     return (
       <>
         <Navbar />
-        <PageLoader text="Loading cosmic workspace..." />
+        <PageLoader color="#477bf6ff" text="Looading cosmic workspace..." />
+        
       </>
     );
   }

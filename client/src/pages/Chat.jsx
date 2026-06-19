@@ -304,7 +304,7 @@ export default function Chat() {
           <div className="chat-sidebar-header">
             <div>
               <p className="chat-kicker">Direct Stream</p>
-              <h1 className="gradient-header-text" style={{ fontSize: "16px" }}>
+              <h1 className="gradient-header-text" style={{ fontSize: "14px" }}>
                 Messages
               </h1>
             </div>
@@ -319,7 +319,7 @@ export default function Chat() {
             >
               <input
                 value={searchTerm}
-                placeholder="Search builders..."
+                placeholder="Search..."
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 onChange={(event) => setSearchTerm(event.target.value)}
@@ -329,13 +329,7 @@ export default function Chat() {
               />
               <button
                 type="button"
-                className="solid-btn"
-                style={{
-                  height: "24px",
-                  padding: "0 10px",
-                  fontSize: "9.5px",
-                  boxShadow: "none",
-                }}
+                className="solid-btn search-submit-btn"
                 onClick={searchUsers}
                 disabled={searching || !searchTerm.trim()}
               >
@@ -367,8 +361,8 @@ export default function Chat() {
 
           <div className="chat-thread-list">
             {loading ? (
-              <div className="chat-empty-small">
-                Parsing secure workspace lines...
+              <div className="chat-loading-container">
+                <div className="chat-spinner" />
               </div>
             ) : conversations.length === 0 ? (
               <div className="chat-empty-small">
@@ -415,14 +409,10 @@ export default function Chat() {
 
           {!activeConversation ? (
             <div className="chat-empty-state">
-              <div className="chat-empty-icon">DM</div>
+              <div className="chat-empty-icon"></div>
               <h2 className="gradient-header-text" style={{ fontSize: "16px" }}>
-                Terminal Node
+                
               </h2>
-              <p>
-                Initialize secure diagnostic messaging logs with elite members
-                inside CohortX.
-              </p>
             </div>
           ) : (
             <>
@@ -499,8 +489,8 @@ export default function Chat() {
 
               <div className="chat-messages">
                 {messagesLoading ? (
-                  <div className="chat-empty-small">
-                    Reading internal database clusters...
+                  <div className="chat-loading-container">
+                    <div className="chat-spinner" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="chat-empty-small">
@@ -545,7 +535,7 @@ export default function Chat() {
                 <div className="composer-input-wrapper glass">
                   <textarea
                     value={text}
-                    placeholder="Type structural tracking footprints..."
+                    placeholder="Type message..."
                     rows="1"
                     onChange={(event) => setText(event.target.value)}
                     onKeyDown={onComposerKeyDown}
@@ -555,7 +545,7 @@ export default function Chat() {
                 <button
                   type="button"
                   className="solid-btn"
-                  style={{ height: "36px", padding: "0 16px" }}
+                  style={{ height: "30px", padding: "0 14px", borderRadius: "15px", fontSize: "11px" }}
                   onClick={sendMessage}
                   disabled={sending || !text.trim()}
                 >

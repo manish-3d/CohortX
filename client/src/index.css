@@ -113,17 +113,7 @@ hr {
   border-top: 1px solid #eee;
 }
 
-.page-loader {
-  display: flex;
 
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 14px;
-}
 
 .loader-spinner {
   width: 42px;
@@ -183,4 +173,55 @@ hr {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #999;
+}
+.page-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at center, #061929 0%, #030d1a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.loader-canvas {
+  position: absolute;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 1;
+}
+
+.loader-content p {
+  color: var(--blue-bright);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Reusing your high-tech spinner */
+.chat-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(29, 155, 240, 0.15);
+  border-top: 3px solid #1ea1f2;
+  border-radius: 50%;
+  animation: neon-spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  filter: drop-shadow(0 0 8px rgba(30, 161, 242, 0.6));
+}
+
+@keyframes neon-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
