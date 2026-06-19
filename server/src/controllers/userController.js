@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const uploadToCloudinary = require("../config/uploadToCloudinary");
 
 exports.getProfile = async (req, res) => {
   try {
@@ -133,10 +134,9 @@ exports.uploadAvatar = async (req, res) => {
       });
     }
 
-    const apiUrl =
-      process.env.API_URL || `${req.protocol}://${req.get("host")}`;
+    const result = await uploadToCloudinary(req.file, "cohortx/avatars");
 
-    const avatar = `${apiUrl}/uploads/${req.file.filename}`;
+    const avatar = result.secure_url;
 
     const user = await prisma.user.update({
       where: {

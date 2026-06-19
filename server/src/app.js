@@ -14,10 +14,8 @@ const feedRoutes = require("./routes/feedRoutes");
 const fileUpload = require("express-fileupload");
 const uploadRoutes = require("./routes/uploadRoutes");
 const githubRoutes = require("./routes/githubRoutes");
-const path = require("path");
 const app = express();
 const webhookRoutes = require("./routes/webhookRoutes");
-const uploadsPath = path.join(__dirname, "../uploads");
 const conversationRoutes = require("./routes/ConversationRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
@@ -81,7 +79,7 @@ app.use("/stories", storyRoutes);
 app.use(fileUpload({ useTempFiles: true }));
 app.use("/upload", uploadRoutes);
 app.use("/github", githubRoutes);
-app.use("/uploads", express.static(uploadsPath));
+
 app.get("/", (req, res) => {
   res.json({ message: "CohortX API Running" });
 });

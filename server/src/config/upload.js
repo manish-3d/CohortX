@@ -1,28 +1,8 @@
 const multer = require("multer");
 
-const fs = require("fs");
-
-const path = require("path");
-
-const uploadDir = path.join(__dirname, "../../uploads");
-
-fs.mkdirSync(uploadDir, {
-  recursive: true,
-});
-
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, uploadDir);
-  },
-
-  filename(req, file, cb) {
-    cb(
-      null,
-
-      Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+// Use memory storage instead of disk — files are kept in RAM as buffers
+// and uploaded to Cloudinary from the controller, so nothing touches disk.
+const storage = multer.memoryStorage();
 
 function fileFilter(req, file, cb) {
   const allowed = [

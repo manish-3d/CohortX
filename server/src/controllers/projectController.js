@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const uploadToCloudinary = require("../config/uploadToCloudinary");
 
 /* ==========================
    CREATE PROJECT
@@ -13,7 +14,9 @@ exports.createProject = async (req, res) => {
     let mediaType = null;
 
     if (req.file) {
-      mediaUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      const result = await uploadToCloudinary(req.file, "cohortx/projects");
+
+      mediaUrl = result.secure_url;
 
       mediaType = req.file.mimetype.startsWith("video") ? "video" : "image";
     }
