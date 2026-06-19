@@ -61,8 +61,8 @@ export default function TopBar() {
             padding: "0 18px",
             borderRadius: "var(--radius-full)",
             background: focused
-              ? "rgba(255,255,255,0.95)"
-              : "rgba(255,255,255,0.72)",
+              ? "rgba(15, 23, 42, 0.65)"
+              : "rgba(15, 23, 42, 0.4)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             border: focused
@@ -77,7 +77,7 @@ export default function TopBar() {
         >
           <Search
             size={18}
-            color={focused ? "var(--blue)" : "var(--muted)"}
+            color={focused ? "var(--blue-bright)" : "var(--text-muted)"}
             strokeWidth={2}
             style={{ transition: "color 0.25s", flexShrink: 0 }}
           />
@@ -95,7 +95,7 @@ export default function TopBar() {
               fontSize: 14,
               fontWeight: 500,
               background: "transparent",
-              color: "var(--black)",
+              color: "#ffffff",
               fontFamily: "inherit",
             }}
           />
@@ -108,7 +108,7 @@ export default function TopBar() {
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                color: "var(--muted)",
+                color: "var(--text-muted)",
                 padding: 2,
                 borderRadius: "50%",
                 transition: "color 0.2s",
@@ -122,7 +122,6 @@ export default function TopBar() {
         {/* Dropdown */}
         {open && users.length > 0 && (
           <div
-            className="card"
             style={{
               position: "absolute",
               top: "calc(100% + 10px)",
@@ -130,6 +129,11 @@ export default function TopBar() {
               right: 0,
               zIndex: 100,
               overflow: "hidden",
+              borderRadius: "20px",
+              background: "rgba(15, 23, 42, 0.95)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
               boxShadow: "var(--shadow-lg)",
               animation: "fadeUp 0.25s var(--ease) both",
             }}
@@ -146,12 +150,12 @@ export default function TopBar() {
                   alignItems: "center",
                   borderBottom:
                     i < users.length - 1
-                      ? "1px solid rgba(29,155,240,0.07)"
+                      ? "1px solid rgba(255,255,255,0.05)"
                       : "none",
                   transition: "background 0.2s",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "rgba(29,155,240,0.05)")
+                  (e.currentTarget.style.background = "rgba(29,155,240,0.08)")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.background = "transparent")
@@ -165,7 +169,7 @@ export default function TopBar() {
                     height: 44,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    border: "1.5px solid rgba(29,155,240,0.2)",
+                    border: "1.5px solid rgba(29,155,240,0.3)",
                     flexShrink: 0,
                   }}
                 />
@@ -174,7 +178,7 @@ export default function TopBar() {
                     style={{
                       fontWeight: 700,
                       fontSize: 14,
-                      color: "var(--black)",
+                      color: "#ffffff",
                     }}
                   >
                     @{item.username}
@@ -182,7 +186,7 @@ export default function TopBar() {
                   <div
                     style={{
                       fontSize: 12,
-                      color: "var(--muted)",
+                      color: "#94a3b8",
                       marginTop: 2,
                     }}
                   >

@@ -1,30 +1,40 @@
-import { useState } from "react";
-
-import { Link, useNavigate } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
-
 import { useAuth } from "../context/AuthContext";
+import "./Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const auth = useAuth();
 
-  const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  if (!auth) {
-    return null;
-  }
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
+  // Close menus on page transition
+  useEffect(() => {
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  if (!auth) return null;
   const { user, logout } = auth;
 
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
-
       logout();
-
+      setMobileMenuOpen(false);
       navigate("/login");
     } catch {
       alert("Logout failed");
@@ -32,157 +42,130 @@ export default function Navbar() {
   }
 
   return (
-    <nav
-      style={{
-        display: "flex",
-
-        justifyContent: "space-between",
-
-        alignItems: "center",
-
-        padding: "20px 40px",
-
-        background: "rgba(255,255,255,.82)",
-
-        backdropFilter: "blur(18px)",
-
-        borderBottom: "1px solid rgba(17,24,39,.07)",
-
-        boxShadow: "0 18px 50px rgba(17,24,39,.05)",
-      }}
-    >
-      <Link
-        to="/feed"
-        style={{
-          fontSize: "28px",
-
-          fontWeight: "700",
-
-          textDecoration: "none",
-
-          color: "black",
-        }}
-      >
-        CohortX
-      </Link>
-
-      <div
-        style={{
-          display: "flex",
-
-          alignItems: "center",
-
-          gap: "26px",
-        }}
-      >
-        {/* CREATE */}
-
-        <div
-          style={{
-            position: "relative",
-          }}
-        >
-          <button
-            onClick={() => setOpen(!open)}
-            style={{
-              padding: "10px 18px",
-
-              border: "none",
-
-              borderRadius: "10px",
-
-              background: "#080809",
-
-              color: "white",
-
-              cursor: "pointer",
-            }}
-          >
-            + Create
-          </button>
-
-          {open && (
-            <div
-              style={{
-                position: "absolute",
-
-                top: "120%",
-
-                right: 0,
-
-                width: "180px",
-
-                background: "white",
-
-                border: "1px solid #eee",
-
-                borderRadius: "14px",
-
-                overflow: "hidden",
-
-                boxShadow: "0 10px 25px rgba(0,0,0,.1)",
-              }}
-            >
-              <Link
-                to="/create"
-                onClick={() => setOpen(false)}
-                style={{
-                  display: "block",
-
-                  padding: "14px",
-
-                  textDecoration: "none",
-
-                  color: "black",
-                }}
-              >
-                + New Project
-              </Link>
-
-              <Link
-                to="/story/create"
-                onClick={() => setOpen(false)}
-                style={{
-                  display: "block",
-
-                  padding: "14px",
-
-                  textDecoration: "none",
-
-                  color: "black",
-                }}
-              >
-                + New Story
-              </Link>
-            </div>
-          )}
-        </div>
-
-        <Link to="/explore">Explore</Link>
-
-        <Link to="/search">Discover</Link>
-
-        <Link to="/profile/edit">Edit Profile</Link>
-
-        <Link to={`/profile/${user?.username}`}>
-          <img
-            src={user?.avatar || "https://placehold.co/40"}
-            alt="avatar"
-            style={{
-              width: "42px",
-
-              height: "42px",
-
-              borderRadius: "50%",
-
-              objectFit: "cover",
-
-              border: "2px solid #ddd",
-            }}
-          />
+    <nav className={`galaxy-nav-wrapper ${scrolled ? "is-scrolled" : ""}`}>
+      <div className="galaxy-nav-container">
+        
+        {/* Brand / Logo */}
+        <Link to="/feed" className="galaxy-nav-logo">
+          <span className="gradient-brand-text">CohortX</span>
         </Link>
 
-        <button onClick={handleLogout}>Logout</button>
+        {/* Desktop Interface Links */}
+        <div className="galaxy-nav-links-center">
+          <Link 
+            to="/feed" 
+            className={`nav-cosmic-link ${location.pathname === "/feed" ? "is-active" : ""}`}
+          >
+            Feed
+          </Link>
+          <Link 
+            to="/explore" 
+            className={`nav-cosmic-link ${location.pathname === "/explore" ? "is-active" : ""}`}
+          >
+            Explore
+          </Link>
+          <Link 
+            to="/search" 
+            className={`nav-cosmic-link ${location.pathname === "/search" ? "is-active" : ""}`}
+          >
+            Discover
+          </Link>
+        </div>
+
+        {/* Action Controls Section (Desktop) */}
+        <div className="galaxy-nav-actions">
+          
+          {/* Dropdown Controller Container */}
+          <div className="create-dropdown-wrapper">
+            <button 
+              onClick={() => setDropdownOpen(!dropdownOpen)} 
+              className={`nav-create-btn ${dropdownOpen ? "is-active" : ""}`}
+            >
+              <span>+ Create</span>
+              <span className="arrow-indicator">{dropdownOpen ? "▲" : "▼"}</span>
+            </button>
+            
+            {dropdownOpen && (
+              <div className="create-dropdown-menu">
+                <div className="dropdown-mega-header">
+                  Create New
+                </div>
+                <Link to="/create" className="dropdown-item">
+                  <div className="dropdown-text">
+                    <strong>New Project</strong>
+                    <small>Share your build details</small>
+                  </div>
+                </Link>
+                <Link to="/story/create" className="dropdown-item">
+                  <div className="dropdown-text">
+                    <strong>New Story</strong>
+                    <small>Broadcast highlights</small>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* User Avatar Identity Circle */}
+          <Link to={`/profile/${user?.username}`} className="nav-avatar-link">
+            <img
+              src={user?.avatar || `https://placehold.co/80x80?text=${encodeURIComponent(user?.username?.[0]?.toUpperCase() || "U")}`}
+              alt="avatar"
+              className="nav-user-avatar"
+            />
+          </Link>
+
+          <button onClick={handleLogout} className="nav-logout-btn">
+            Logout
+          </button>
+        </div>
+
+        {/* Mobile Interactive Toggle Trigger */}
+        <button 
+          className={`mobile-menu-trigger ${mobileMenuOpen ? "is-active" : ""}`}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle Navigation"
+        >
+          <span className="burger-line line-1"></span>
+          <span className="burger-line line-2"></span>
+          <span className="burger-line line-3"></span>
+        </button>
+
+      </div>
+
+      {/* Responsive Mobile Layout Expansion Overlay */}
+      <div className={`mobile-cosmic-overlay ${mobileMenuOpen ? "is-expanded" : ""}`}>
+        <div className="mobile-overlay-links">
+          
+          {/* Profile Quick Insight badge on mobile */}
+          <Link to={`/profile/${user?.username}`} className="mobile-profile-badge">
+            <img src={user?.avatar || `https://placehold.co/80x80?text=${encodeURIComponent(user?.username?.[0]?.toUpperCase() || "U")}`} alt="avatar" />
+            <span>@{user?.username || 'profile'}</span>
+          </Link>
+          
+          <hr className="cosmic-divider" />
+
+          <Link to="/feed" className="mobile-link">Feed</Link>
+          <Link to="/explore" className="mobile-link">Explore</Link>
+          <Link to="/search" className="mobile-link">Discover</Link>
+          <Link to="/profile/edit" className="mobile-link">Edit Profile</Link>
+          
+          <hr className="cosmic-divider" />
+          
+          {/* Mobile Creation Inline Channels */}
+          <Link to="/create" className="mobile-create-action-link">
+            New Project
+          </Link>
+          <Link to="/story/create" className="mobile-create-action-link">
+            New Story
+          </Link>
+
+          <hr className="cosmic-divider" />
+
+          <button onClick={handleLogout} className="mobile-logout-action-btn">
+            Disconnect System
+          </button>
+        </div>
       </div>
     </nav>
   );

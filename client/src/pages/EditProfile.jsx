@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import AppLayout from "../layout/AppLayout";
 import api from "../services/api";
 
@@ -8,14 +7,10 @@ export default function EditProfile() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-
   const [form, setForm] = useState({
     bio: "",
-
     githubUsername: "",
-
     linkedinUrl: "",
-
     xUrl: "",
   });
 
@@ -26,14 +21,10 @@ export default function EditProfile() {
   async function loadProfile() {
     try {
       const res = await api.get("/auth/me");
-
       setForm({
         bio: res.data.bio || "",
-
         githubUsername: res.data.githubUsername || "",
-
         linkedinUrl: res.data.linkedinUrl || "",
-
         xUrl: res.data.xUrl || "",
       });
     } catch {
@@ -44,20 +35,16 @@ export default function EditProfile() {
   function handleChange(e) {
     setForm({
       ...form,
-
       [e.target.name]: e.target.value,
     });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     try {
       setLoading(true);
-
       await api.put("/users/profile/edit", form);
-
-      navigate("/feed");
+      navigate(`/profile/${form.githubUsername || ""}`);
     } catch {
       alert("Update failed");
     } finally {
@@ -65,215 +52,257 @@ export default function EditProfile() {
     }
   }
 
-  const inputStyle = {
-    width: "100%",
-
-    height: 62,
-
-    borderRadius: 22,
-
-    border: "1px solid rgba(255,255,255,.9)",
-
-    background: "rgba(255,255,255,.62)",
-
-    backdropFilter: "blur(18px)",
-
-    padding: "0 22px",
-
-    outline: "none",
-
-    fontSize: 15,
-
-    boxSizing: "border-box",
-  };
-
   return (
     <AppLayout>
       <div
         style={{
-          maxWidth: 900,
-
-          margin: "40px auto",
-
-          padding: 40,
-
-          borderRadius: 38,
-
-          background: "rgba(255,255,255,.55)",
-
-          backdropFilter: "blur(30px)",
-
-          border: "1px solid rgba(255,255,255,.95)",
-
-          boxShadow: "0 30px 90px rgba(29,155,240,.08)",
+          position: "relative",
+          minHeight: "100vh",
+          width: "100%",
+          overflowX: "hidden",
+          background: "transparent",
+          boxSizing: "border-box",
+          fontFamily: "'Space Grotesk', sans-serif",
+          padding: "30px 16px 80px",
         }}
       >
-        <div
-          style={{
-            marginBottom: 36,
-          }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
+        {/* Style Matrix Injector */}
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap');
 
-              alignItems: "center",
+          * {
+            box-sizing: border-box;
+          }
+          .gradient-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #ffffff 30%, #1d9bf0 70%, #7cc8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          .premium-input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            outline: none;
+            font-size: 15px;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .premium-input:focus {
+            border-color: rgba(29, 155, 240, 0.5);
+            background: rgba(15, 23, 42, 0.4);
+            box-shadow: 0 0 0 4px rgba(29, 155, 240, 0.12);
+          }
+          .premium-input::placeholder {
+            color: #4b5563;
+          }
+          .interactive-btn {
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.2s ease;
+          }
+          .interactive-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+          }
+          .interactive-btn:active {
+            transform: translateY(0);
+          }
+        `}</style>
 
-              gap: 10,
-
-              background: "#eef8ff",
-
-              color: "#1d9bf0",
-
-              padding: "10px 18px",
-
-              borderRadius: 999,
-
-              fontWeight: 700,
-            }}
-          >
-            ✨ Edit Profile
-          </div>
-
-          <h1
-            style={{
-              margin: "18px 0 10px",
-
-              fontSize: 48,
-            }}
-          >
-            Shape your identity
-          </h1>
-
-          <p
-            style={{
-              color: "#64748b",
-
-              fontSize: 18,
-            }}
-          >
-            Customize how people see your profile.
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-
-            flexDirection: "column",
-
-            gap: 26,
-          }}
-        >
-          <div>
-            <label
-              style={{
-                fontWeight: 700,
-              }}
-            >
-              Bio
-            </label>
-
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              placeholder="Tell people what you build..."
-              style={{
-                ...inputStyle,
-
-                minHeight: 180,
-
-                padding: 22,
-
-                resize: "vertical",
-              }}
-            />
-          </div>
-
-          <div>
-            <label
-              style={{
-                fontWeight: 700,
-              }}
-            >
-              GitHub Username
-            </label>
-
-            <input
-              name="githubUsername"
-              value={form.githubUsername}
-              onChange={handleChange}
-              placeholder="your-github"
-              style={inputStyle}
-            />
-          </div>
-
-          <div>
-            <label
-              style={{
-                fontWeight: 700,
-              }}
-            >
-              LinkedIn URL
-            </label>
-
-            <input
-              name="linkedinUrl"
-              value={form.linkedinUrl}
-              onChange={handleChange}
-              placeholder="linkedin.com/in/..."
-              style={inputStyle}
-            />
-          </div>
-
-          <div>
-            <label
-              style={{
-                fontWeight: 700,
-              }}
-            >
-              X URL
-            </label>
-
-            <input
-              name="xUrl"
-              value={form.xUrl}
-              onChange={handleChange}
-              placeholder="x.com/..."
-              style={inputStyle}
-            />
-          </div>
-
+        {/* Global Floating Layout Container */}
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          {/* Back Navigation Trigger */}
           <button
-            type="submit"
-            disabled={loading}
+            type="button"
+            onClick={() => navigate(-1)}
+            className="interactive-btn"
             style={{
-              marginTop: 12,
-
-              height: 68,
-
-              border: 0,
-
-              borderRadius: 999,
-
-              background: "#1d9bf0",
-
-              color: "#fff",
-
-              fontSize: 16,
-
-              fontWeight: 800,
-
+              background: "rgba(255, 255, 255, 0.02)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "999px",
+              padding: "6px 14px",
+              color: "#94a3b8",
               cursor: "pointer",
-
-              boxShadow: "0 20px 60px rgba(29,155,240,.25)",
+              display: "inline-flex",
+              alignItems: "center",
+              fontSize: 12,
+              fontWeight: 600,
+              marginBottom: 24,
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
             }}
           >
-            {loading ? "Saving..." : "Save Changes"}
+            Back
           </button>
-        </form>
+
+          {/* Main Glassmorphic Workspace Container */}
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
+              background: "rgba(13, 20, 38, 0.35)",
+              backdropFilter: "blur(24px) saturate(120%)",
+              WebkitBackdropFilter: "blur(24px) saturate(120%)",
+              border: "1px solid rgba(255, 255, 255, 0.07)",
+              borderRadius: 28,
+              padding: "40px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            <div>
+              <h1
+                className="gradient-heading"
+                style={{
+                  margin: "0 0 6px 0",
+                  fontSize: 40,
+                  fontWeight: 900,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Shape your identity
+              </h1>
+              <p
+                style={{
+                  color: "#64748b",
+                  margin: 0,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                }}
+              >
+                Customize how people see your profile.
+              </p>
+            </div>
+
+            {/* Inputs Grid */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#64748b",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  value={form.bio}
+                  onChange={handleChange}
+                  placeholder="Tell people what you build..."
+                  className="premium-input"
+                  style={{ minHeight: 120, resize: "vertical" }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#64748b",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  GitHub Username
+                </label>
+                <input
+                  name="githubUsername"
+                  value={form.githubUsername}
+                  onChange={handleChange}
+                  placeholder="your-github"
+                  className="premium-input"
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#64748b",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  LinkedIn URL
+                </label>
+                <input
+                  name="linkedinUrl"
+                  value={form.linkedinUrl}
+                  onChange={handleChange}
+                  placeholder="linkedin.com/in/..."
+                  className="premium-input"
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#64748b",
+                    marginBottom: 6,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  X URL
+                </label>
+                <input
+                  name="xUrl"
+                  value={form.xUrl}
+                  onChange={handleChange}
+                  placeholder="x.com/..."
+                  className="premium-input"
+                />
+              </div>
+            </div>
+
+            {/* Action Trigger Button */}
+            <button
+              disabled={loading}
+              className="interactive-btn"
+              style={{
+                height: 48,
+                width: "100%",
+                marginTop: 12,
+                border: 0,
+                cursor: loading ? "not-allowed" : "pointer",
+                borderRadius: 14,
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: 14,
+                background: "#1d9bf0",
+                boxShadow: "0 10px 25px rgba(29, 155, 240, 0.15)",
+                opacity: loading ? 0.6 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {loading ? "Saving Changes..." : "Save Changes"}
+            </button>
+          </form>
+        </div>
       </div>
     </AppLayout>
   );

@@ -1,0 +1,431 @@
+/* ==========================================================================
+   Cosmic Floating Navigation Architecture (CohortX Theme)
+   ========================================================================== */
+
+:root {
+  --nav-bg: rgba(15, 23, 42, 0.7); /* Matches profile main card */
+  --nav-border: rgba(255, 255, 255, 0.08); /* Matches profile main card */
+  --accent-blue: #1d9bf0;
+  --accent-light-blue: #7cc8ff;
+  --accent-glow: rgba(29, 155, 240, 0.15);
+  --text-primary: #f3f4f6;
+  --text-secondary: #94a3b8;
+}
+
+.galaxy-nav-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 9999;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+
+  /* Overrides the global nav styles from index.css */
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.galaxy-nav-wrapper.is-scrolled {
+  padding: 12px 24px;
+}
+
+/* Centered Floating Pill Navbar matching Consensys reference layout */
+.galaxy-nav-container {
+  width: 100%;
+  max-width: 1100px;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  border-radius: 50px;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.galaxy-nav-container:hover {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* --- Brand Logo --- */
+.galaxy-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  padding-left: 8px;
+}
+
+.gradient-brand-text {
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 30%, var(--accent-light-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Navigation Links --- */
+.galaxy-nav-links-center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-cosmic-link {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 30px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.nav-cosmic-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-cosmic-link.is-active {
+  color: var(--accent-light-blue);
+  background: rgba(29, 155, 240, 0.08);
+  border-color: rgba(29, 155, 240, 0.25);
+  box-shadow: 0 0 15px rgba(29, 155, 240, 0.1);
+}
+
+/* --- Action Controls --- */
+.galaxy-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Create Button (MetaMask style active highlight in blue/white) */
+.nav-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: 1px solid rgba(29, 155, 240, 0.25);
+  border-radius: 30px;
+  background: rgba(29, 155, 240, 0.08);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-create-btn:hover,
+.nav-create-btn.is-active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(29, 155, 240, 0.45);
+  transform: translateY(-1px);
+}
+
+.arrow-indicator {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  transition: transform 0.2s;
+}
+
+/* Dropdown Menu (Consensys Mega Dropdown Style) */
+.create-dropdown-wrapper {
+  position: relative;
+}
+
+.create-dropdown-menu {
+  position: absolute;
+  top: 140%;
+  right: 0;
+  width: 260px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(29, 155, 240, 0.05);
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  z-index: 10000;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-mega-header {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-light-blue);
+  font-weight: 800;
+  padding: 10px 14px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 6px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  text-decoration: none;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-text strong {
+  font-size: 0.85rem;
+  color: #ffffff;
+}
+
+.dropdown-text small {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.dropdown-item:hover {
+  background: rgba(29, 155, 240, 0.1);
+}
+
+.dropdown-item:hover strong {
+  color: var(--accent-light-blue);
+}
+
+/* User Avatar */
+.nav-avatar-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.nav-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(29, 155, 240, 0.25);
+  box-shadow: 0 0 10px rgba(29, 155, 240, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-avatar-link:hover .nav-user-avatar {
+  border-color: var(--accent-light-blue);
+  box-shadow: 0 0 15px rgba(29, 155, 240, 0.45);
+  transform: scale(1.05);
+}
+
+/* Logout Button */
+.nav-logout-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* --- Mobile Menu Trigger --- */
+.mobile-menu-trigger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 22px;
+  height: 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10001;
+}
+
+.burger-line {
+  width: 100%;
+  height: 2px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-menu-trigger.is-active .line-1 {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.mobile-menu-trigger.is-active .line-2 {
+  opacity: 0;
+}
+
+.mobile-menu-trigger.is-active .line-3 {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* --- Mobile Overlay Navigation --- */
+.mobile-cosmic-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  z-index: 9998;
+  overflow: hidden;
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.mobile-cosmic-overlay.is-expanded {
+  height: 100vh;
+}
+
+.mobile-overlay-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 80%;
+  max-width: 280px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-cosmic-overlay.is-expanded .mobile-overlay-links {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+
+.mobile-link {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.mobile-link:hover {
+  color: var(--accent-light-blue);
+}
+
+.mobile-profile-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.mobile-profile-badge img {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 2px solid rgba(29, 155, 240, 0.4);
+  box-shadow: 0 0 20px rgba(29, 155, 240, 0.2);
+}
+
+.cosmic-divider {
+  width: 100%;
+  border: 0;
+  height: 1px;
+  background: var(--nav-border);
+  margin: 8px 0;
+}
+
+.mobile-create-action-link {
+  color: var(--accent-light-blue);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.mobile-create-action-link:hover {
+  transform: scale(1.05);
+}
+
+.mobile-logout-action-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.mobile-logout-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .galaxy-nav-wrapper {
+    padding: 12px;
+  }
+  
+  .galaxy-nav-wrapper.is-scrolled {
+    padding: 12px;
+  }
+
+  .galaxy-nav-container {
+    padding: 10px 18px;
+    border-radius: 35px;
+  }
+
+  .galaxy-nav-links-center,
+  .galaxy-nav-actions {
+    display: none;
+  }
+
+  .mobile-menu-trigger {
+    display: flex;
+  }
+}
