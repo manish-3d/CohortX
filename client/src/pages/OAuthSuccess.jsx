@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import PageLoader from "./PageLoader2";
 
 export default function OAuthSuccess() {
   const navigate = useNavigate();
@@ -33,5 +34,5 @@ export default function OAuthSuccess() {
     finishLogin();
   }, [login, navigate]);
 
-  return <div>Logging in...</div>;
+  return <PageLoader />;
 }

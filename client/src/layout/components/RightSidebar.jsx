@@ -8,6 +8,7 @@ import {
   X,
   MessageCircle,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,15 @@ export default function RightSidebar() {
   const [showChat, setShowChat] = useState(false);
   const [liveLoading, setLiveLoading] = useState(false);
 
+  // ── Go Live modal state ──
+  const [showGoLive, setShowGoLive] = useState(false);
+  const [liveTitle, setLiveTitle] = useState("");
+  const [liveDescription, setLiveDescription] = useState("");
+  const [liveError, setLiveError] = useState("");
+
+  // ── Lightweight toast (replaces alert()) ──
+  const [toast, setToast] = useState(null); // { message, tone: 'success' | 'error' }
+
   useEffect(() => {
     loadNotifications();
     loadUnread();
@@ -31,6 +41,16 @@ export default function RightSidebar() {
     const interval = setInterval(loadLives, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  function showToast(message, tone = "success") {
+    setToast({ message, tone });
+  }
 
   async function loadNotifications() {
     try {
@@ -50,24 +70,47 @@ export default function RightSidebar() {
       setLives(res.data);
     } catch {}
   }
-  async function startLive() {
+
+  function openGoLive() {
+    setLiveTitle("");
+    setLiveDescription("");
+    setLiveError("");
+    setShowGoLive(true);
+  }
+
+  async function submitGoLive(e) {
+    e.preventDefault();
+    if (!liveTitle.trim()) {
+      setLiveError("Give your stream a title to continue.");
+      return;
+    }
     try {
-      const title = prompt("Live title");
-      if (!title) return;
-      const description = prompt("Description");
       setLiveLoading(true);
-      await api.post("/live/start", { title, description });
+      setLiveError("");
+      await api.post("/live/start", {
+        title: liveTitle.trim(),
+        description: liveDescription.trim(),
+      });
+      setShowGoLive(false);
       loadLives();
-      alert("Live started");
+      showToast("You're live! Viewers can now join your stream.");
+    } catch (err) {
+      setLiveError(
+        err.response?.data?.message || "Couldn't start your stream. Try again."
+      );
     } finally {
       setLiveLoading(false);
     }
   }
+
   async function endLive(id) {
     try {
       await api.patch(`/live/${id}/end`);
       loadLives();
-    } catch {}
+      showToast("Stream ended.");
+    } catch {
+      showToast("Couldn't end the stream. Try again.", "error");
+    }
   }
   async function markRead(id) {
     const wasUnread = notifications.some((n) => n.id === id && !n.isRead);
@@ -130,6 +173,30 @@ export default function RightSidebar() {
     fontFamily: "'Syne', 'Inter', sans-serif",
   };
 
+  const inputStyle = {
+    width: "100%",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(29,155,240,0.22)",
+    borderRadius: "var(--radius-md)",
+    padding: "10px 12px",
+    color: "var(--text)",
+    fontSize: 13,
+    fontFamily: "'Inter', sans-serif",
+    outline: "none",
+    transition: "border-color 0.2s, box-shadow 0.2s, background 0.2s",
+  };
+
+  function focusInput(e) {
+    e.currentTarget.style.borderColor = "rgba(29,155,240,0.6)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(29,155,240,0.12)";
+    e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+  }
+  function blurInput(e) {
+    e.currentTarget.style.borderColor = "rgba(29,155,240,0.22)";
+    e.currentTarget.style.boxShadow = "none";
+    e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+  }
+
   return (
     <div
       style={{
@@ -139,6 +206,7 @@ export default function RightSidebar() {
         display: "flex",
         flexDirection: "column",
         gap: 10,
+        position: "relative",
       }}
     >
       {/* ── Notifications ── */}
@@ -315,17 +383,30 @@ export default function RightSidebar() {
       </div>
 
       {/* ── Messages ── */}
-      <div className="fade-up d2" style={sectionStyle}>
+      <div
+        className="fade-up d2"
+        style={{
+          ...sectionStyle,
+          borderColor: showChat
+            ? "rgba(29,155,240,0.32)"
+            : "rgba(29,155,240,0.18)",
+          boxShadow: showChat
+            ? "0 4px 28px rgba(29,155,240,0.16), inset 0 1px 0 rgba(255,255,255,0.05)"
+            : sectionStyle.boxShadow,
+        }}
+      >
         <button
           onClick={() => setShowChat((v) => !v)}
           style={{
             ...panelHeaderStyle,
-            background: showChat ? "rgba(29,155,240,0.15)" : "transparent",
+            background: showChat
+              ? "linear-gradient(180deg, rgba(29,155,240,0.16), rgba(29,155,240,0.07))"
+              : "transparent",
             color: showChat ? "var(--blue-bright)" : "var(--text-muted)",
             borderRadius: showChat
               ? "var(--radius-lg) var(--radius-lg) 0 0"
               : "var(--radius-lg)",
-            borderBottom: showChat ? "1px solid rgba(29,155,240,0.18)" : "none",
+            borderBottom: showChat ? "1px solid rgba(29,155,240,0.2)" : "none",
           }}
           onMouseEnter={(e) => {
             if (!showChat) {
@@ -341,15 +422,29 @@ export default function RightSidebar() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-            <MessageCircle
-              size={12}
-              strokeWidth={2}
+            <span
               style={{
-                filter: showChat
-                  ? "drop-shadow(0 0 4px rgba(29,155,240,0.6))"
-                  : "none",
+                width: 20,
+                height: 20,
+                borderRadius: "var(--radius-full)",
+                display: "grid",
+                placeItems: "center",
+                background: showChat
+                  ? "rgba(29,155,240,0.22)"
+                  : "rgba(29,155,240,0.1)",
+                transition: "background 0.2s",
               }}
-            />
+            >
+              <MessageCircle
+                size={11}
+                strokeWidth={2.2}
+                style={{
+                  filter: showChat
+                    ? "drop-shadow(0 0 4px rgba(29,155,240,0.6))"
+                    : "none",
+                }}
+              />
+            </span>
             Messages
           </div>
           <ChevronDown
@@ -363,14 +458,29 @@ export default function RightSidebar() {
 
         <div
           style={{
-            maxHeight: showChat ? "500px" : "0",
+            maxHeight: showChat ? "560px" : "0",
             opacity: showChat ? 1 : 0,
             overflow: "hidden",
             transition: "max-height 0.4s var(--ease), opacity 0.3s",
           }}
         >
-          <div style={{ padding: "10px" }}>
-            <RightChatPanel />
+          <div
+            style={{
+              padding: "12px",
+              background:
+                "linear-gradient(180deg, rgba(29,155,240,0.04), transparent 60px)",
+            }}
+          >
+            <div
+              style={{
+                borderRadius: "var(--radius-md)",
+                overflow: "hidden",
+                border: "1px solid rgba(29,155,240,0.12)",
+                background: "rgba(2,9,18,0.4)",
+              }}
+            >
+              <RightChatPanel />
+            </div>
           </div>
         </div>
       </div>
@@ -379,8 +489,7 @@ export default function RightSidebar() {
       <div className="fade-up d3" style={{ ...sectionStyle, padding: 12 }}>
         {/* Go Live button with shine */}
         <button
-          onClick={startLive}
-          disabled={liveLoading}
+          onClick={openGoLive}
           className="solid-btn"
           style={{
             width: "100%",
@@ -403,7 +512,7 @@ export default function RightSidebar() {
             }}
           />
           <Video size={12} />
-          {liveLoading ? "Starting..." : "Go Live"}
+          Go Live
         </button>
 
         {/* Live Now header */}
@@ -590,6 +699,243 @@ export default function RightSidebar() {
         </div>
       </div>
 
+      {/* ── Go Live modal (replaces prompt()) ── */}
+      {showGoLive && (
+        <div
+          onClick={() => !liveLoading && setShowGoLive(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(3,10,20,0.75)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
+            animation: "fadeUp 0.25s var(--ease) both",
+            padding: 16,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 360,
+              maxWidth: "100%",
+              padding: 24,
+              background: "rgba(4,14,28,0.94)",
+              backdropFilter: "blur(28px)",
+              WebkitBackdropFilter: "blur(28px)",
+              borderRadius: "var(--radius-xl)",
+              border: "1px solid rgba(29,155,240,0.28)",
+              boxShadow:
+                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(29,155,240,0.1)",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: -1,
+                left: "20%",
+                right: "20%",
+                height: 2,
+                background:
+                  "linear-gradient(90deg, transparent, var(--blue), transparent)",
+                borderRadius: 2,
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => !liveLoading && setShowGoLive(false)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 14,
+                border: "1px solid rgba(29,155,240,0.2)",
+                background: "rgba(29,155,240,0.08)",
+                borderRadius: "50%",
+                width: 26,
+                height: 26,
+                display: "grid",
+                placeItems: "center",
+                cursor: "pointer",
+                color: "var(--text-muted)",
+                transition: "background 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(29,155,240,0.18)";
+                e.currentTarget.style.boxShadow =
+                  "0 0 10px rgba(29,155,240,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(29,155,240,0.08)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <X size={12} />
+            </button>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 18,
+              }}
+            >
+              <span
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "var(--radius-md)",
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(29,155,240,0.15)",
+                  border: "1px solid rgba(29,155,240,0.3)",
+                  flexShrink: 0,
+                }}
+              >
+                <Video
+                  size={15}
+                  color="var(--blue-bright)"
+                  style={{
+                    filter: "drop-shadow(0 0 6px rgba(29,155,240,0.6))",
+                  }}
+                />
+              </span>
+              <div>
+                <h2
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 800,
+                    color: "var(--text)",
+                    fontFamily: "'Syne', 'Inter', sans-serif",
+                  }}
+                >
+                  Go Live
+                </h2>
+                <p
+                  style={{
+                    fontSize: 11,
+                    color: "var(--text-dim)",
+                    marginTop: 1,
+                  }}
+                >
+                  Start a stream your followers can join
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={submitGoLive}>
+              <div style={{ marginBottom: 12 }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    color: "var(--text-dim)",
+                    marginBottom: 6,
+                  }}
+                >
+                  Title
+                </label>
+                <input
+                  autoFocus
+                  value={liveTitle}
+                  onChange={(e) => setLiveTitle(e.target.value)}
+                  onFocus={focusInput}
+                  onBlur={blurInput}
+                  placeholder="e.g. Building a React dashboard"
+                  maxLength={80}
+                  style={inputStyle}
+                  disabled={liveLoading}
+                />
+              </div>
+
+              <div style={{ marginBottom: liveError ? 8 : 18 }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    color: "var(--text-dim)",
+                    marginBottom: 6,
+                  }}
+                >
+                  Description{" "}
+                  <span style={{ textTransform: "none", fontWeight: 500 }}>
+                    (optional)
+                  </span>
+                </label>
+                <textarea
+                  value={liveDescription}
+                  onChange={(e) => setLiveDescription(e.target.value)}
+                  onFocus={focusInput}
+                  onBlur={blurInput}
+                  placeholder="What are you working on?"
+                  rows={3}
+                  maxLength={240}
+                  style={{
+                    ...inputStyle,
+                    resize: "none",
+                    fontFamily: "inherit",
+                  }}
+                  disabled={liveLoading}
+                />
+              </div>
+
+              {liveError && (
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#f87171",
+                    marginBottom: 14,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {liveError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={liveLoading}
+                className="solid-btn"
+                style={{
+                  width: "100%",
+                  height: 42,
+                  fontSize: 12,
+                  position: "relative",
+                  overflow: "hidden",
+                  opacity: liveLoading ? 0.75 : 1,
+                  cursor: liveLoading ? "wait" : "pointer",
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+                    animation: "shineSweep 2.4s ease-in-out infinite",
+                    pointerEvents: "none",
+                  }}
+                />
+                <Sparkles size={13} />
+                {liveLoading ? "Starting your stream…" : "Start Streaming"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ── Live modal ── */}
       {selectedLive && (
         <div
@@ -622,7 +968,6 @@ export default function RightSidebar() {
               position: "relative",
             }}
           >
-            {/* Glow accent top */}
             <div
               style={{
                 position: "absolute",
@@ -725,6 +1070,55 @@ export default function RightSidebar() {
               Join Stream
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ── Toast (replaces alert()) ── */}
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            gap: 9,
+            padding: "12px 16px",
+            borderRadius: "var(--radius-md)",
+            background: "rgba(4,14,28,0.94)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border:
+              toast.tone === "error"
+                ? "1px solid rgba(239,68,68,0.35)"
+                : "1px solid rgba(29,155,240,0.32)",
+            boxShadow:
+              toast.tone === "error"
+                ? "0 8px 30px rgba(239,68,68,0.18), 0 0 0 1px rgba(0,0,0,0.2)"
+                : "0 8px 30px rgba(29,155,240,0.18), 0 0 0 1px rgba(0,0,0,0.2)",
+            fontSize: 12,
+            fontWeight: 600,
+            color: "var(--text)",
+            maxWidth: 280,
+            animation: "fadeUp 0.25s var(--ease) both",
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: "50%",
+              flexShrink: 0,
+              background:
+                toast.tone === "error" ? "#ef4444" : "var(--blue-bright)",
+              boxShadow:
+                toast.tone === "error"
+                  ? "0 0 8px rgba(239,68,68,0.7)"
+                  : "0 0 8px rgba(29,155,240,0.7)",
+            }}
+          />
+          {toast.message}
         </div>
       )}
     </div>

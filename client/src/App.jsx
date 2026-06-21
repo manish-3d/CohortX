@@ -5,10 +5,9 @@ import Notifications from "./pages/Notifications";
 import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 import OAuthSuccess from "./pages/OAuthSuccess";
-
 import Explore from "./pages/Explore";
 import Search from "./pages/Search";
-
+import RedirectLogin from "./pages/RedirectLogin";
 import CreateProject from "./pages/CreateProject";
 import CreateStory from "./pages/CreateStory";
 
@@ -66,6 +65,7 @@ function App() {
         }
       />
 
+      <Route path="/RedirectLogin" element={<RedirectLogin />} />
       <Route
         path="/explore"
         element={

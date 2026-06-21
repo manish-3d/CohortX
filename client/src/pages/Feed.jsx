@@ -4,6 +4,7 @@ import ProjectCard from "../components/ProjectCard";
 import PageLoader from "../components/PageLoader";
 import StoryTray from "../components/StoryTray";
 import AppLayout from "../layout/AppLayout";
+import PageLoader2 from "./PageLoader2";
 
 export default function Feed() {
   const [projects, setProjects] = useState([]);
@@ -76,7 +77,7 @@ export default function Feed() {
   if (loading) {
     return (
       <AppLayout>
-        <PageLoader text="Loading feed..." />
+        <PageLoader2 />
       </AppLayout>
     );
   }

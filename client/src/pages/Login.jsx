@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./Login.css";
+import { TypeAnimation } from "react-type-animation";
 
 import {
   Rocket,
@@ -141,7 +142,7 @@ function GoogleIcon() {
   );
 }
 
-/* ── OCEAN CANVAS ─────────────────────────────────────────── */
+/* ── OCEAN CANVAS (background waves, unchanged) ──────────── */
 function OceanCanvas() {
   const canvasRef = useRef(null);
   const animRef = useRef(null);
@@ -399,6 +400,179 @@ function OceanCanvas() {
   return <canvas ref={canvasRef} id="ocean-canvas" />;
 }
 
+/* ── ANTIGRAVITY HAND PARTICLE FIELD ─────────────────────────
+   Fills the hero with a starfield of small glowing particles
+   that drift slowly, and repel away from the cursor (antigravity
+   effect) within a radius. Sits as its own layer above the ocean
+   canvas but behind the headline text, framing the hand image.
+─────────────────────────────────────────────────────────────── */
+function HandParticleField() {
+  const canvasRef = useRef(null);
+  const wrapRef = useRef(null);
+  const animRef = useRef(null);
+  const mouseRef = useRef({ x: -9999, y: -9999, active: false });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let W = 0;
+    let H = 0;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const REPEL_RADIUS = 130;
+    const REPEL_FORCE = 1.9;
+    const RETURN_FORCE = 0.018;
+    const FRICTION = 0.92;
+
+    function makeParticles() {
+      const area = W * H;
+      const density = 1 / 9000; // tuned for "so many stars" without killing perf
+      const count = Math.max(220, Math.min(900, Math.round(area * density)));
+      return Array.from({ length: count }, () => {
+        const baseX = Math.random() * W;
+        const baseY = Math.random() * H;
+        return {
+          baseX,
+          baseY,
+          x: baseX,
+          y: baseY,
+          vx: 0,
+          vy: 0,
+          r:
+            Math.random() < 0.12
+              ? 1.6 + Math.random() * 1.6
+              : 0.5 + Math.random() * 1.1,
+          twinkleSpeed: 0.5 + Math.random() * 1.8,
+          twinklePhase: Math.random() * Math.PI * 2,
+          driftX: (Math.random() - 0.5) * 0.05,
+          driftY: (Math.random() - 0.5) * 0.05,
+          hueShift: Math.random(),
+        };
+      });
+    }
+
+    let particles = [];
+
+    function resize() {
+      const rect = wrap.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      particles = makeParticles();
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    function onMove(e) {
+      const rect = wrap.getBoundingClientRect();
+      mouseRef.current.x = e.clientX - rect.left;
+      mouseRef.current.y = e.clientY - rect.top;
+      mouseRef.current.active = true;
+    }
+    function onLeave() {
+      mouseRef.current.active = false;
+      mouseRef.current.x = -9999;
+      mouseRef.current.y = -9999;
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mouseleave", onLeave, { passive: true });
+
+    let t = 0;
+
+    function draw() {
+      t += 0.016;
+      ctx.clearRect(0, 0, W, H);
+
+      const mouse = mouseRef.current;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // slow ambient drift of the resting position
+        p.baseX += p.driftX;
+        p.baseY += p.driftY;
+        if (p.baseX < -20) p.baseX = W + 20;
+        if (p.baseX > W + 20) p.baseX = -20;
+        if (p.baseY < -20) p.baseY = H + 20;
+        if (p.baseY > H + 20) p.baseY = -20;
+
+        // antigravity repulsion from cursor
+        if (mouse.active) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+          if (dist < REPEL_RADIUS) {
+            const force = (1 - dist / REPEL_RADIUS) * REPEL_FORCE;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+        }
+
+        // spring back toward base position
+        p.vx += (p.baseX - p.x) * RETURN_FORCE;
+        p.vy += (p.baseY - p.y) * RETURN_FORCE;
+
+        // friction / damping
+        p.vx *= FRICTION;
+        p.vy *= FRICTION;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const twinkle =
+          0.45 + 0.55 * Math.sin(t * p.twinkleSpeed + p.twinklePhase);
+        const alpha = 0.25 + twinkle * 0.55;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        const c = p.hueShift > 0.7 ? "150,225,255" : "90,180,250";
+        ctx.fillStyle = `rgba(${c},${alpha})`;
+        ctx.fill();
+
+        // glow halo on the bigger "feature" stars
+        if (p.r > 1.4) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 3.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${c},${alpha * 0.12})`;
+          ctx.fill();
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    }
+
+    animRef.current = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
+  return (
+    <div className="hand-field" ref={wrapRef}>
+      <canvas ref={canvasRef} className="hand-field-canvas" />
+      <div className="hand-field-glow" />
+      <img
+        src="/assets/adam-hand.png"
+        alt=""
+        className="hand-field-img"
+        draggable={false}
+      />
+    </div>
+  );
+}
+
 /* ── SCROLL REVEAL ────────────────────────────────────────── */
 function useReveal() {
   useEffect(() => {
@@ -426,29 +600,6 @@ function useNavScroll() {
   return scrolled;
 }
 
-/* ── CARD TILT ────────────────────────────────────────────── */
-function useTilt(ref) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onMove = (e) => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      el.style.transform = `perspective(1100px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg) translateZ(10px)`;
-    };
-    const onLeave = () => {
-      el.style.transform = "";
-    };
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [ref]);
-}
-
 /* ── MAIN ─────────────────────────────────────────────────── */
 export default function Login() {
   const navigate = useNavigate();
@@ -456,49 +607,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("login");
 
-  /* FIXED: Initialized username in state object */
   const [form, setForm] = useState({ username: "", email: "", password: "" });
 
-  const cardRef = useRef(null);
   const tagsDouble = useMemo(() => [...TAGS, ...TAGS], []);
   const navScrolled = useNavScroll();
 
   useReveal();
-  useTilt(cardRef);
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    try {
-      setLoading(true);
-
-      /* FIXED: Dynamically shift route based on current tab layout selection */
-      const endpoint = tab === "login" ? "/auth/login" : "/auth/register";
-      const res = await api.post(endpoint, form);
-
-      login(res.data.user, res.data.token);
-      navigate("/feed");
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          `${tab === "login" ? "Login" : "Registration"} failed`
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function githubLogin() {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/github`;
   }
 
-  function scrollToCard() {
-    document
-      .getElementById("login-card")
-      ?.scrollIntoView({ behavior: "smooth" });
+  function scrollToFeatures() {
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -525,14 +646,11 @@ export default function Login() {
           </li>
         </ul>
         <div className="cx-nav-cta">
-          <button className="btn-ghost" onClick={scrollToCard}>
-            Sign in
-          </button>
           <button
             className="btn-primary"
             onClick={() => {
               setTab("register");
-              scrollToCard();
+              githubLogin();
             }}
           >
             Join Free
@@ -541,16 +659,21 @@ export default function Login() {
       </nav>
 
       {/* ── HERO ────────────────────────────────────────── */}
-      <section className="cx-hero">
-        <div className="hero-left">
+      <section className="cx-hero cx-hero-centered">
+        <HandParticleField />
+
+        <div className="hero-content">
+          <div className="cohortx-domain">
+            Cohort<span className="x"></span>.com
+          </div>
           <div className="hero-eyebrow">
             <span className="eyebrow-dot" />
             The Developer Social Network
           </div>
 
           <h1 className="hero-h1">
-            <span className="word word-1">Build.</span>
-            <span className="word word-2">Ship.</span>
+            <span className="word word-1">Build.</span>{" "}
+            <span className="word word-2">Ship.</span>{" "}
             <span className="word word-3">Connect.</span>
           </h1>
 
@@ -562,12 +685,10 @@ export default function Login() {
           <div className="hero-actions">
             <button
               className="btn-hero-primary"
-              onClick={() => {
-                setTab("register");
-                scrollToCard();
-              }}
+              onClick={() => navigate("/RedirectLogin")}
             >
-              Join CohortX <ArrowRight size={17} strokeWidth={2.5} />
+              Join CohortX
+              <ArrowRight size={17} strokeWidth={2.5} />
             </button>
             <button className="btn-hero-secondary" onClick={githubLogin}>
               <GithubIcon /> Continue with GitHub
@@ -591,8 +712,6 @@ export default function Login() {
             })}
           </div>
         </div>
-
-        {/* RIGHT — LOGIN CARD */}
       </section>
 
       {/* ── SCROLLING TAGS ──────────────────────────────── */}
@@ -688,7 +807,7 @@ export default function Login() {
           className="btn-cta"
           onClick={() => {
             setTab("register");
-            scrollToCard();
+            githubLogin();
           }}
         >
           Create Free Account →
@@ -696,23 +815,6 @@ export default function Login() {
       </div>
 
       {/* ── FOOTER ──────────────────────────────────────── */}
-      <footer className="cx-footer" id="about">
-        <div className="cx-footer-logo">
-          Cohort<span>X</span>
-        </div>
-        <div>Build. Ship. Connect. — The Developer Social Network</div>
-        <div style={{ display: "flex", gap: 24 }}>
-          {["Privacy", "Terms", "Contact"].map((l) => (
-            <a
-              key={l}
-              href="#"
-              style={{ color: "var(--text-dim)", textDecoration: "none" }}
-            >
-              {l}
-            </a>
-          ))}
-        </div>
-      </footer>
     </div>
   );
 }
