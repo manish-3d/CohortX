@@ -4,11 +4,13 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import LikeButton from "./LikeButton";
 import CommentSection from "./CommentSection";
+import { Share2 } from "lucide-react";
 
 export default function ProjectCard({ project }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [shared, setShared] = useState(false);
 
   async function handleDelete() {
     const ok = window.confirm("Delete project?");
@@ -20,6 +22,12 @@ export default function ProjectCard({ project }) {
     } catch {
       alert("Delete failed");
     }
+  }
+
+  function handleShare() {
+    // Dummy share action — wire up to real share logic later
+    setShared(true);
+    setTimeout(() => setShared(false), 1500);
   }
 
   return (
@@ -242,6 +250,7 @@ export default function ProjectCard({ project }) {
       <div
         style={{
           display: "flex",
+          alignItems: "center",
           gap: "15px",
           padding: "12px 15px",
           background: "rgba(255, 255, 255, 0.01)",
@@ -258,6 +267,35 @@ export default function ProjectCard({ project }) {
           projectId={project.id}
           count={project._count?.comments || 0}
         />
+
+        {/* DUMMY SHARE BUTTON */}
+        <button
+          onClick={handleShare}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: "transparent",
+            border: "none",
+            color: shared ? "#1d9bf0" : "var(--text-muted)",
+            fontFamily: "'Hookride', 'Space Grotesk', sans-serif",
+            fontSize: "12.5px",
+            fontWeight: "600",
+            cursor: "pointer",
+            padding: "4px 6px",
+            marginLeft: "auto",
+            transition: "color 0.18s ease, transform 0.18s ease",
+          }}
+          onMouseEnter={(e) => {
+            if (!shared) e.currentTarget.style.color = "#42b0f5";
+          }}
+          onMouseLeave={(e) => {
+            if (!shared) e.currentTarget.style.color = "var(--text-muted)";
+          }}
+        >
+          <Share2 size={16} strokeWidth={2} />
+          {shared ? "Shared!" : "Share"}
+        </button>
       </div>
     </div>
   );

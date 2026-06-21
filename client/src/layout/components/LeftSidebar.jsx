@@ -249,23 +249,24 @@ export default function LeftSidebar() {
             height: 26,
             borderRadius: "50%",
             padding: 0,
-            border: "1px solid rgba(239,68,68,0.3)",
-            color: "rgba(239,68,68,0.8)",
-            background: "rgba(239,68,68,0.08)",
+            border: "1px solid rgba(242, 242, 242, 0.3)",
+            color: "rgba(252, 246, 246, 0.8)",
+            background: "rgba(51, 103, 193, 0.08)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(239,68,68,0.18)";
-            e.currentTarget.style.borderColor = "rgba(239,68,68,0.6)";
-            e.currentTarget.style.boxShadow = "0 0 12px rgba(239,68,68,0.35)";
+            e.currentTarget.style.background = "rgba(22, 139, 178, 0.18)";
+            e.currentTarget.style.borderColor = "rgba(47, 164, 232, 0.6)";
+            e.currentTarget.style.boxShadow =
+              "0 0 12px rgba(68, 142, 239, 0.35)";
             smokeEffect(e);
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(239,68,68,0.08)";
-            e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)";
+            e.currentTarget.style.background = "rgba(62, 122, 190, 0.08)";
+            e.currentTarget.style.borderColor = "rgba(70, 154, 232, 0.3)";
             e.currentTarget.style.boxShadow = "none";
           }}
         >
-          <LogOut size={11} />
+          <LogOut size={11} color="black" />
         </button>
       </div>
     </div>

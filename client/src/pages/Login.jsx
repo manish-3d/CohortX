@@ -664,7 +664,7 @@ export default function Login() {
 
         <div className="hero-content">
           <div className="cohortx-domain">
-            Cohort<span className="x"></span>.com
+            Cohort<span className="x">X</span>.com
           </div>
           <div className="hero-eyebrow">
             <span className="eyebrow-dot" />
