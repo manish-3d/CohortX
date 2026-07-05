@@ -18,39 +18,48 @@ import {
   Shield,
   Infinity,
   ArrowRight,
+  Code2,
+  Play,
+  Send,
+  Plus,
 } from "lucide-react";
 
 /* ── DATA ─────────────────────────────────────────────────── */
-const FEATURES = [
+const DEMO_STEPS = [
   {
     icon: Rocket,
-    title: "Ship Projects",
-    desc: "Publish your builds with rich project pages — demos, repos, tech stacks. Get discovered by developers and hiring teams worldwide.",
+    eyebrow: "Project page",
+    title: "Publish a build people can feel",
+    desc: "Show the demo, repo, stack, reactions, and launch notes in one polished project page.",
+    demo: "project",
   },
   {
     icon: User,
-    title: "Dev Profiles",
-    desc: "Your developer identity — skills, contributions, followers, portfolio. LinkedIn meets GitHub, but actually social.",
-  },
-  {
-    icon: Zap,
-    title: "Stories & Drops",
-    desc: "Share code snippets, milestones, and quick updates. Keep your network in the loop without a full post.",
+    eyebrow: "Profile",
+    title: "Turn your work into a living portfolio",
+    desc: "Your profile brings projects, skills, streaks, followers, and social proof together.",
+    demo: "profile",
   },
   {
     icon: Video,
-    title: "Live Coding",
-    desc: "Stream sessions, debug live, do pair programming. Real-time collaboration baked in — no third-party tools needed.",
+    eyebrow: "Live room",
+    title: "Go live without leaving the network",
+    desc: "Run live coding rooms with chat, viewers, screen sharing, and collaboration energy built in.",
+    demo: "live",
+  },
+  {
+    icon: Code2,
+    eyebrow: "Live coding",
+    title: "Code together in a focused workspace",
+    desc: "Share a lightweight editor, run dummy output, and keep collaborators in the same flow.",
+    demo: "coding",
   },
   {
     icon: MessageCircle,
-    title: "Real-time Chat",
-    desc: "DMs, group threads, code-sharing. Fast async or live — your workflow, your choice.",
-  },
-  {
-    icon: Briefcase,
-    title: "Hire & Get Hired",
-    desc: "Post roles, apply with your CohortX profile, schedule interviews — the entire hiring loop, one place.",
+    eyebrow: "Chat",
+    title: "Keep the conversation moving",
+    desc: "Move from discovery to DMs, code reviews, and opportunities with the same developer context.",
+    demo: "chat",
   },
 ];
 
@@ -139,6 +148,373 @@ function GoogleIcon() {
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
       />
     </svg>
+  );
+}
+
+function DemoPreview({ type }) {
+  if (type === "profile") return <ProfileDemo />;
+  if (type === "live") return <LiveDemo />;
+  if (type === "coding") return <LiveCodingDemo />;
+  if (type === "chat") return <ChatDemo />;
+  return <ProjectDemo />;
+}
+
+function DemoChrome({ label, children }) {
+  return (
+    <div className="demo-chrome">
+      <div className="demo-chrome-top">
+        <span className="demo-dot" />
+        <span className="demo-dot" />
+        <span className="demo-dot" />
+        <span className="demo-url">{label}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function ProjectDemo() {
+  const [projectName, setProjectName] = useState("Neon API Studio");
+  const [demoUrl, setDemoUrl] = useState("https://demo.cohortx.app");
+  const [tagInput, setTagInput] = useState("React");
+  const [tags, setTags] = useState(["React", "Node", "Prisma"]);
+
+  function addTag() {
+    const nextTag = tagInput.trim();
+    if (!nextTag) return;
+    setTags((current) =>
+      current.includes(nextTag) ? current : [...current.slice(-3), nextTag]
+    );
+    setTagInput("");
+  }
+
+  return (
+    <DemoChrome label="cohortx.app/projects/neon-api">
+      <div className="demo-project-hero">
+        <div className="demo-play">
+          <Rocket size={18} strokeWidth={2.2} />
+        </div>
+        <div className="demo-code-lines">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+      <div className="demo-project-body">
+        <div>
+          <div className="demo-title-row">
+            <h3>{projectName || "Untitled project"}</h3>
+            <span>Live</span>
+          </div>
+          <p>{demoUrl || "Paste a demo link to preview it here."}</p>
+        </div>
+        <div className="demo-form-grid">
+          <label>
+            Project name
+            <input
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="Project name"
+            />
+          </label>
+          <label>
+            Demo URL
+            <input
+              value={demoUrl}
+              onChange={(e) => setDemoUrl(e.target.value)}
+              placeholder="https://..."
+            />
+          </label>
+        </div>
+        <div className="demo-inline-form">
+          <input
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") addTag();
+            }}
+            placeholder="Add stack tag"
+          />
+          <button type="button" onClick={addTag} aria-label="Add tag">
+            <Plus size={14} />
+          </button>
+        </div>
+        <div className="demo-stack">
+          {tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+        <div className="demo-metrics">
+          <span>
+            <Star size={13} fill="currentColor" /> 2.8k
+          </span>
+          <span>Forks 418</span>
+          <span>Demo open</span>
+        </div>
+      </div>
+    </DemoChrome>
+  );
+}
+
+function ProfileDemo() {
+  const [name, setName] = useState("Maya Chen");
+  const [headline, setHeadline] = useState(
+    "Full-stack engineer shipping AI tools."
+  );
+  const [skillInput, setSkillInput] = useState("WebSockets");
+  const [skills, setSkills] = useState(["TypeScript", "Postgres", "WebSockets"]);
+  const [following, setFollowing] = useState(false);
+
+  function addSkill() {
+    const nextSkill = skillInput.trim();
+    if (!nextSkill) return;
+    setSkills((current) =>
+      current.includes(nextSkill) ? current : [...current.slice(-3), nextSkill]
+    );
+    setSkillInput("");
+  }
+
+  return (
+    <DemoChrome label="cohortx.app/dev/maya">
+      <div className="demo-profile-head">
+        <div className="demo-avatar">{(name || "X").slice(0, 1)}</div>
+        <div className="demo-profile-copy">
+          <h3>{name || "Your Name"}</h3>
+          <p>{headline || "Add a short developer headline."}</p>
+        </div>
+        <button type="button" onClick={() => setFollowing((value) => !value)}>
+          {following ? "Following" : "Follow"}
+        </button>
+      </div>
+      <div className="demo-form-grid">
+        <label>
+          Display name
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Display name"
+          />
+        </label>
+        <label>
+          Headline
+          <input
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+            placeholder="What are you building?"
+          />
+        </label>
+      </div>
+      <div className="demo-profile-stats">
+        <span>
+          <strong>18</strong> Projects
+        </span>
+        <span>
+          <strong>9.7k</strong> Views
+        </span>
+        <span>
+          <strong>42</strong> Drops
+        </span>
+      </div>
+      <div className="demo-inline-form">
+        <input
+          value={skillInput}
+          onChange={(e) => setSkillInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") addSkill();
+          }}
+          placeholder="Add skill"
+        />
+        <button type="button" onClick={addSkill} aria-label="Add skill">
+          <Plus size={14} />
+        </button>
+      </div>
+      <div className="demo-skill-grid">
+        {skills.map((skill) => (
+          <span key={skill}>{skill}</span>
+        ))}
+      </div>
+      <div className="demo-activity">
+        {Array.from({ length: 18 }).map((_, i) => (
+          <span key={i} style={{ "--level": (i % 5) + 1 }} />
+        ))}
+      </div>
+    </DemoChrome>
+  );
+}
+
+function LiveDemo() {
+  const [roomName, setRoomName] = useState("API Debug Jam");
+  const [topic, setTopic] = useState("Fix feed socket reconnects");
+  const [muted, setMuted] = useState(false);
+
+  return (
+    <DemoChrome label="cohortx.app/live/api-debug">
+      <div className="demo-form-grid demo-live-form">
+        <label>
+          Room name
+          <input
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            placeholder="Room name"
+          />
+        </label>
+        <label>
+          Topic
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Session topic"
+          />
+        </label>
+      </div>
+      <div className="demo-live-grid">
+        <div className="demo-live-stage">
+          <div className="demo-live-badge">
+            <span /> Live
+          </div>
+          <div className="demo-live-title">
+            <strong>{roomName || "Untitled room"}</strong>
+            <small>{topic || "Add a topic for viewers."}</small>
+          </div>
+          <div className="demo-terminal">
+            <span>npm run dev</span>
+            <span>route /feed synced</span>
+            <span>socket connected</span>
+          </div>
+        </div>
+        <div className="demo-live-side">
+          <div className="demo-viewers">
+            <User size={14} />
+            128 watching
+          </div>
+          <div className="demo-mini-chat">
+            <span>Great fix.</span>
+            <span>Try caching feed.</span>
+            <span>Ship it.</span>
+          </div>
+        </div>
+      </div>
+      <div className="demo-live-controls">
+        <span>
+          <Video size={14} />
+        </span>
+        <span>
+          <Zap size={14} />
+        </span>
+        <button type="button" onClick={() => setMuted((value) => !value)}>
+          {muted ? "Muted" : "Mic on"}
+        </button>
+      </div>
+    </DemoChrome>
+  );
+}
+
+function LiveCodingDemo() {
+  const [fileName, setFileName] = useState("FeedSocket.jsx");
+  const [code, setCode] = useState(
+    "useEffect(() => {\n  connect(roomId);\n}, [roomId]);"
+  );
+  const [output, setOutput] = useState("Ready to run the snippet.");
+
+  function runSnippet() {
+    const lineCount = code.split("\n").filter(Boolean).length || 1;
+    setOutput(
+      `Preview compiled ${lineCount} line${lineCount > 1 ? "s" : ""}. No backend touched.`
+    );
+  }
+
+  return (
+    <DemoChrome label="cohortx.app/live/coding">
+      <div className="demo-coding-head">
+        <label>
+          File
+          <input
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="Component.jsx"
+          />
+        </label>
+        <button type="button" onClick={runSnippet}>
+          <Play size={14} />
+          Run
+        </button>
+      </div>
+      <div className="demo-code-workspace">
+        <div className="demo-code-tabs">
+          <span className="active">{fileName || "Untitled.jsx"}</span>
+          <span>Chat</span>
+          <span>Preview</span>
+        </div>
+        <textarea
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          spellCheck="false"
+          aria-label="Dummy code editor"
+        />
+        <div className="demo-code-output">
+          <Code2 size={14} />
+          <span>{output}</span>
+        </div>
+      </div>
+    </DemoChrome>
+  );
+}
+
+function ChatDemo() {
+  const [draft, setDraft] = useState("Can you review this?");
+  const [messages, setMessages] = useState([
+    { type: "inbound", text: "Can you review the live room PR?" },
+    { type: "outbound", text: "Yes, checking the socket flow now." },
+    { type: "inbound", text: "Perfect. Project page is ready too." },
+  ]);
+
+  function sendMessage() {
+    const nextMessage = draft.trim();
+    if (!nextMessage) return;
+    setMessages((current) => [
+      ...current.slice(-3),
+      { type: "outbound", text: nextMessage },
+    ]);
+    setDraft("");
+  }
+
+  return (
+    <DemoChrome label="cohortx.app/chat">
+      <div className="demo-chat-layout">
+        <div className="demo-chat-list">
+          <span className="active">AM</span>
+          <span>PS</span>
+          <span>DK</span>
+        </div>
+        <div className="demo-chat-thread">
+          {messages.map((message, i) => (
+            <div
+              key={`${message.text}-${i}`}
+              className={`demo-message ${message.type}`}
+            >
+              {message.text}
+            </div>
+          ))}
+          <div className="demo-compose">
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendMessage();
+              }}
+              placeholder="Write a reply..."
+            />
+            <button
+              type="button"
+              onClick={sendMessage}
+              aria-label="Send message"
+            >
+              <Send size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </DemoChrome>
   );
 }
 
@@ -748,20 +1124,28 @@ export default function Login() {
           One network that replaces five tools. Less context-switching, more
           building.
         </p>
-        <div className="feat-grid">
-          {FEATURES.map((f, i) => {
+        <div className="demo-story">
+          {DEMO_STEPS.map((f, i) => {
             const Icon = f.icon;
             return (
-              <div
+              <article
                 key={f.title}
-                className={`feat-card reveal reveal-delay-${(i % 3) + 1}`}
+                className={`demo-step reveal reveal-delay-${(i % 3) + 1}`}
               >
-                <div className="feat-icon">
-                  <Icon size={24} strokeWidth={1.8} />
+                <div className="demo-step-copy">
+                  <div className="demo-step-kicker">
+                    <span className="demo-step-icon">
+                      <Icon size={18} strokeWidth={2} />
+                    </span>
+                    {f.eyebrow}
+                  </div>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
                 </div>
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-              </div>
+                <div className="demo-step-visual">
+                  <DemoPreview type={f.demo} />
+                </div>
+              </article>
             );
           })}
         </div>
