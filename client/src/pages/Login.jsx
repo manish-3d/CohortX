@@ -63,26 +63,67 @@ const DEMO_STEPS = [
   },
 ];
 
-const TESTIMONIALS = [
+const FEATURE_DEMO_POSITIONS = [
+  { top: "24px", left: "36%" },
+  { top: "246px", left: "34%" },
+  { top: "468px", left: "36%" },
+  { top: "690px", left: "34%" },
+  { top: "804px", left: "36%" },
+];
+
+const FEATURE_ARROW_TRIGGERS = ["112px", "334px", "556px", "778px"];
+
+const FEATURE_ARROW_PATHS = [
+  "M156 96 C330 244 640 80 844 312",
+  "M844 372 C696 566 344 354 156 540",
+  "M156 600 C348 780 624 568 844 756",
+  "M844 816 C690 1016 334 802 156 984",
+];
+
+const COMMUNITY_USERS = [
   {
-    text: "CohortX replaced LinkedIn, GitHub README updates, and Slack for team chats. It's the developer social network I always wanted.",
     name: "Arjun Mehta",
-    role: "Senior SWE @ Stripe",
-    initials: "AM",
+    avatar: "https://i.pravatar.cc/96?img=12",
+    chat: "Just shipped my new portfolio.",
   },
   {
-    text: "I landed my current job through CohortX. Posted a project, a recruiter saw it, three interviews later — hired.",
     name: "Priya Sharma",
-    role: "Frontend Lead @ Razorpay",
-    initials: "PS",
+    avatar: "https://i.pravatar.cc/96?img=47",
+    chat: "Live coding tonight?",
   },
   {
-    text: "The live coding feature is incredible. I went live to debug a gnarly query and got 40 people helping me in real-time.",
     name: "Dev Patel",
-    role: "Full-stack Engineer",
-    initials: "DP",
+    avatar: "https://i.pravatar.cc/96?img=33",
+    chat: "Need eyes on this API.",
+  },
+  {
+    name: "Maya Iyer",
+    avatar: "https://i.pravatar.cc/96?img=26",
+    chat: "Found a great frontend role.",
+  },
+  {
+    name: "Rohan Das",
+    avatar: "https://i.pravatar.cc/96?img=59",
+    chat: "Review my Docker setup?",
+  },
+  {
+    name: "Nisha Rao",
+    avatar: "https://i.pravatar.cc/96?img=5",
+    chat: "Pairing on auth flows.",
+  },
+  {
+    name: "Kabir Khan",
+    avatar: "https://i.pravatar.cc/96?img=68",
+    chat: "My websocket demo is live.",
+  },
+  {
+    name: "Sara Thomas",
+    avatar: "https://i.pravatar.cc/96?img=44",
+    chat: "Joining the React room.",
   },
 ];
+
+const COMMUNITY_RAIL = [...COMMUNITY_USERS, ...COMMUNITY_USERS];
 
 const TAGS = [
   "React",
@@ -999,13 +1040,69 @@ export default function Login() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("login");
+  const [activeDemo, setActiveDemo] = useState(null);
+  const [activeFeatureArrow, setActiveFeatureArrow] = useState(null);
+  const arrowTriggerRefs = useRef([]);
+  const arrowVisibilityRef = useRef(new Map());
 
   const [form, setForm] = useState({ username: "", email: "", password: "" });
 
   const tagsDouble = useMemo(() => [...TAGS, ...TAGS], []);
+  const activeFeatureIndex = DEMO_STEPS.findIndex((f) => f.demo === activeDemo);
+  const hasActiveFeature = activeFeatureIndex >= 0;
+  const safeFeatureIndex = hasActiveFeature ? activeFeatureIndex : 0;
+  const activeFeature = hasActiveFeature ? DEMO_STEPS[safeFeatureIndex] : null;
+  const activeFeaturePosition = FEATURE_DEMO_POSITIONS[safeFeatureIndex];
   const navScrolled = useNavScroll();
 
   useReveal();
+
+  useEffect(() => {
+    if (!activeDemo) return undefined;
+
+    function clearActiveDemo() {
+      setActiveDemo(null);
+    }
+
+    window.addEventListener("click", clearActiveDemo);
+    return () => window.removeEventListener("click", clearActiveDemo);
+  }, [activeDemo]);
+
+  useEffect(() => {
+    const triggers = arrowTriggerRefs.current.filter(Boolean);
+    if (!triggers.length || typeof IntersectionObserver === "undefined") {
+      setActiveFeatureArrow(0);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = Number(entry.target.dataset.arrow);
+
+          if (entry.isIntersecting) {
+            arrowVisibilityRef.current.set(index, entry.intersectionRatio);
+          } else {
+            arrowVisibilityRef.current.delete(index);
+          }
+        });
+
+        const [activeIndex] = [...arrowVisibilityRef.current.entries()].sort(
+          (a, b) => b[1] - a[1]
+        )[0] || [null];
+
+        setActiveFeatureArrow(activeIndex);
+      },
+      {
+        root: null,
+        rootMargin: "-36% 0px -36% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    triggers.forEach((trigger) => observer.observe(trigger));
+    return () => observer.disconnect();
+  }, []);
 
   function githubLogin() {
     window.location.href = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/github`;
@@ -1141,60 +1238,153 @@ export default function Login() {
           One network that replaces five tools. Less context-switching, more
           building.
         </p>
-        <div className="demo-story">
-          {DEMO_STEPS.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <article
-                key={f.title}
-                className={`demo-step reveal reveal-delay-${(i % 3) + 1}`}
+        <div
+          className="feature-flow reveal reveal-delay-3"
+          style={{
+            "--active-feature": safeFeatureIndex,
+            "--demo-top": activeFeaturePosition.top,
+            "--demo-left": activeFeaturePosition.left,
+          }}
+        >
+          <svg
+            className="feature-path"
+            viewBox="0 0 1000 1080"
+            aria-hidden="true"
+            focusable="false"
+          >
+            {FEATURE_ARROW_PATHS.map((path, index) => (
+              <path
+                key={path}
+                className={activeFeatureArrow === index ? "active" : ""}
+                d={path}
+                pathLength="1"
+              />
+            ))}
+            {activeFeatureArrow !== null && (
+              <g
+                key={`feature-arrow-head-${activeFeatureArrow}`}
+                className="feature-moving-arrow-head"
               >
-                <div className="demo-step-copy">
-                  <div className="demo-step-kicker">
-                    <span className="demo-step-icon">
-                      <Icon size={18} strokeWidth={2} />
-                    </span>
-                    {f.eyebrow}
-                  </div>
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
+                <polygon points="-14,-9 10,0 -14,9 -7,0" />
+                <animateMotion
+                  dur="2.8s"
+                  fill="freeze"
+                  rotate="auto"
+                  path={FEATURE_ARROW_PATHS[activeFeatureArrow]}
+                />
+              </g>
+            )}
+          </svg>
+          <div className="feature-arrow-triggers" aria-hidden="true">
+            {FEATURE_ARROW_TRIGGERS.map((top, index) => (
+              <span
+                key={top}
+                ref={(node) => {
+                  arrowTriggerRefs.current[index] = node;
+                }}
+                data-arrow={index}
+                style={{ top }}
+              />
+            ))}
+          </div>
+          <div className="feature-map" aria-label="Landing page feature demos">
+            {DEMO_STEPS.map((f) => {
+              const Icon = f.icon;
+              const isActive = f.demo === activeDemo;
+              return (
+                <button
+                  type="button"
+                  key={f.title}
+                  className={`feature-node${isActive ? " active" : ""}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setActiveDemo(f.demo);
+                  }}
+                  aria-pressed={isActive}
+                >
+                  <span className="feature-node-icon">
+                    <Icon size={17} strokeWidth={2.2} />
+                  </span>
+                  <span>{f.title}</span>
+                </button>
+              );
+            })}
+          </div>
+          {activeFeature && (
+            <article className="feature-demo-panel" aria-live="polite">
+              <div className="feature-demo-copy">
+                <span className="feature-demo-kicker">
+                  {activeFeature.eyebrow}
+                </span>
+                <h3>{activeFeature.title}</h3>
+                <p>{activeFeature.desc}</p>
+              </div>
+              <div className="mini-demo-shell">
+                <div className="mini-demo-header">
+                  <span />
+                  <span />
+                  <span />
+                  <strong>{activeFeature.title}</strong>
                 </div>
-                <div className="demo-step-visual">
-                  <DemoPreview type={f.demo} />
+                <div className="feature-demo-window">
+                  <DemoPreview type={activeFeature.demo} />
                 </div>
-              </article>
+              </div>
+            </article>
+          )}
+        </div>
+        <div className="feature-mobile-list">
+          {DEMO_STEPS.map((f) => {
+            const Icon = f.icon;
+            const isActive = f.demo === activeDemo;
+            return (
+              <button
+                type="button"
+                key={f.demo}
+                className={`feature-mobile-tab${isActive ? " active" : ""}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActiveDemo(f.demo);
+                }}
+                aria-pressed={isActive}
+              >
+                <Icon size={15} strokeWidth={2.2} />
+                <span>{f.eyebrow}</span>
+              </button>
             );
           })}
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ────────────────────────────────── */}
+      {/* ── COMMUNITY RAIL ──────────────────────────────── */}
       <section className="cx-testimonials" id="community">
-        <div className="reveal section-eyebrow">Developer stories</div>
+        <div className="reveal section-eyebrow">Community online</div>
         <h2 className="reveal section-title reveal-delay-1">
-          Trusted by engineers
+          Developers moving together
         </h2>
-        <div className="testi-grid">
-          {TESTIMONIALS.map((t, i) => (
-            <div
-              key={t.name}
-              className={`testi-card reveal reveal-delay-${i + 1}`}
-            >
-              <div className="testi-stars">
-                {[...Array(5)].map((_, j) => (
-                  <Star key={j} size={14} fill="#42b0f5" color="#42b0f5" />
-                ))}
-              </div>
-              <p className="testi-text">"{t.text}"</p>
-              <div className="testi-author">
-                <div className="testi-avatar">{t.initials}</div>
-                <div>
-                  <div className="testi-name">{t.name}</div>
-                  <div className="testi-role">{t.role}</div>
+        <div className="community-marquee reveal reveal-delay-2">
+          <div className="community-track">
+            {COMMUNITY_RAIL.map((user, i) => (
+              <div className="community-person" key={`${user.name}-${i}`}>
+                <div className="community-bubble">
+                  <span>{user.chat}</span>
+                  <div className="bubble-dots" aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </div>
                 </div>
+                <img
+                  src={user.avatar}
+                  alt={`${user.name} profile`}
+                  className="community-avatar"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="community-name">{user.name}</span>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
