@@ -35,6 +35,7 @@ export default function Profile() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+    let lastTime = null;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -57,7 +58,12 @@ export default function Profile() {
       });
     }
 
-    const animate = () => {
+    const animate = (timestamp) => {
+      const dt =
+        lastTime === null ? 1 / 60 : Math.min((timestamp - lastTime) / 1000, 0.05);
+      const frameScale = dt * 60;
+      lastTime = timestamp;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       asteroids.forEach((asteroid) => {
@@ -85,8 +91,8 @@ export default function Profile() {
         );
         ctx.stroke();
 
-        asteroid.y += asteroid.speed;
-        asteroid.x += asteroid.speed * 0.12;
+        asteroid.y += asteroid.speed * frameScale;
+        asteroid.x += asteroid.speed * 0.12 * frameScale;
 
         if (asteroid.y > canvas.height) {
           asteroid.y = -asteroid.length;
@@ -97,10 +103,11 @@ export default function Profile() {
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      lastTime = null;
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [profile]);

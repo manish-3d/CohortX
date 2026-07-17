@@ -27,6 +27,7 @@ export default function CreateProject() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+    let lastTime = null;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -54,7 +55,12 @@ export default function CreateProject() {
       });
     }
 
-    const animate = () => {
+    const animate = (timestamp) => {
+      const dt =
+        lastTime === null ? 1 / 60 : Math.min((timestamp - lastTime) / 1000, 0.05);
+      const frameScale = dt * 60;
+      lastTime = timestamp;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const gradient = ctx.createRadialGradient(
@@ -72,7 +78,7 @@ export default function CreateProject() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       stars.forEach((star) => {
-        star.phase += star.twinkleSpeed;
+        star.phase += star.twinkleSpeed * frameScale;
         const alpha = ((Math.sin(star.phase) + 1) / 2) * 0.6 + 0.2;
 
         ctx.fillStyle = star.color;
@@ -86,10 +92,11 @@ export default function CreateProject() {
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      lastTime = null;
       window.removeEventListener("resize", resizeCanvas);
     };
   }, []);

@@ -43,6 +43,7 @@ function OceanCanvas() {
   const canvasRef = useRef(null);
   const animRef = useRef(null);
   const tRef = useRef(0);
+  const lastTimeRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -91,6 +92,12 @@ function OceanCanvas() {
     }
 
     function draw(timestamp) {
+      const dt =
+        lastTimeRef.current === null
+          ? 1 / 60
+          : Math.min((timestamp - lastTimeRef.current) / 1000, 0.05);
+      const frameScale = dt * 60;
+      lastTimeRef.current = timestamp;
       tRef.current = timestamp * 0.001;
       const t = tRef.current;
       const W = canvas.width;
@@ -234,8 +241,8 @@ function OceanCanvas() {
       ctx.restore();
 
       particles.forEach((p) => {
-        p.x += p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08;
-        p.y += p.vy;
+        p.x += (p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08) * frameScale;
+        p.y += p.vy * frameScale;
         if (p.y < -10) {
           p.y = H + 10;
           p.x = Math.random() * W;
@@ -255,6 +262,7 @@ function OceanCanvas() {
     animRef.current = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(animRef.current);
+      lastTimeRef.current = null;
       window.removeEventListener("resize", resize);
     };
   }, []);

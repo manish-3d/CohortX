@@ -1,192 +1,11 @@
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import TopBar from "./components/TopBar";
-import { useEffect, useRef } from "react";
 
-function OceanAsteroidCanvas() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let animId;
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener("resize", resize);
-
-    /* ── Particles (stars/foam) ── */
-    const particles = Array.from({ length: 160 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.6 + 0.2,
-      a: Math.random() * 0.7 + 0.1,
-      speed: Math.random() * 0.18 + 0.04,
-    }));
-
-    /* ── Asteroids ── */
-    function spawnAsteroid() {
-      const side = Math.random();
-      let x, y, vx, vy;
-      if (side < 0.5) {
-        x = Math.random() * canvas.width;
-        y = -20;
-        vx = (Math.random() - 0.5) * 1.4;
-        vy = Math.random() * 2.2 + 1.2;
-      } else {
-        x = -20;
-        y = Math.random() * canvas.height * 0.6;
-        vx = Math.random() * 2.2 + 1.2;
-        vy = Math.random() * 1.4 + 0.4;
-      }
-      return {
-        x,
-        y,
-        vx,
-        vy,
-        size: Math.random() * 3.5 + 1.2,
-        rotation: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.08,
-        trail: [],
-        opacity: Math.random() * 0.7 + 0.3,
-        color: Math.random() > 0.5 ? "#1d9bf0" : "#42b0f5",
-        glow: Math.random() > 0.6,
-      };
-    }
-
-    const asteroids = Array.from({ length: 18 }, spawnAsteroid);
-
-    /* ── Ocean waves ── */
-    let tick = 0;
-
-    function drawWave(yBase, amp, freq, speed, color, alpha) {
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height);
-      for (let x = 0; x <= canvas.width; x += 4) {
-        const y =
-          yBase +
-          Math.sin(x * freq + tick * speed) * amp +
-          Math.sin(x * freq * 1.7 + tick * speed * 0.6) * (amp * 0.4);
-        ctx.lineTo(x, y);
-      }
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.globalAlpha = alpha;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-
-    function drawAsteroid(a) {
-      /* trail */
-      for (let i = 0; i < a.trail.length; i++) {
-        const t = a.trail[i];
-        const prog = i / a.trail.length;
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, a.size * prog * 0.7, 0, Math.PI * 2);
-        ctx.fillStyle = a.color;
-        ctx.globalAlpha = prog * a.opacity * 0.35;
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-
-      /* glow */
-      if (a.glow) {
-        const grd = ctx.createRadialGradient(a.x, a.y, 0, a.x, a.y, a.size * 5);
-        grd.addColorStop(0, a.color + "88");
-        grd.addColorStop(1, "transparent");
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, a.size * 5, 0, Math.PI * 2);
-        ctx.fillStyle = grd;
-        ctx.globalAlpha = 0.55;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-
-      /* body */
-      ctx.save();
-      ctx.translate(a.x, a.y);
-      ctx.rotate(a.rotation);
-      ctx.beginPath();
-      const s = a.size;
-      ctx.moveTo(0, -s * 1.4);
-      ctx.lineTo(s * 0.6, -s * 0.3);
-      ctx.lineTo(s * 1.2, s * 0.4);
-      ctx.lineTo(s * 0.2, s * 1.1);
-      ctx.lineTo(-s * 0.7, s * 0.9);
-      ctx.lineTo(-s * 1.1, s * 0.1);
-      ctx.lineTo(-s * 0.5, -s * 0.8);
-      ctx.closePath();
-      ctx.fillStyle = a.color;
-      ctx.globalAlpha = a.opacity;
-      ctx.fill();
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 0.4;
-      ctx.globalAlpha = a.opacity * 0.5;
-      ctx.stroke();
-      ctx.restore();
-      ctx.globalAlpha = 1;
-    }
-
-    function loop() {
-      tick += 0.012;
-
-      /* Background gradient */
-      const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      bg.addColorStop(0, "#030d1a");
-      bg.addColorStop(0.45, "#061929");
-      bg.addColorStop(0.75, "#0a2540");
-      bg.addColorStop(1, "#0d3460");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      /* Stars */
-      particles.forEach((p) => {
-        p.y += p.speed;
-        if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${p.a})`;
-        ctx.fill();
-      });
-
-      /* Asteroids */
-      asteroids.forEach((a, idx) => {
-        a.trail.push({ x: a.x, y: a.y });
-        if (a.trail.length > 22) a.trail.shift();
-        a.x += a.vx;
-        a.y += a.vy;
-        a.rotation += a.rotSpeed;
-        drawAsteroid(a);
-        if (a.x > canvas.width + 40 || a.y > canvas.height + 40) {
-          asteroids[idx] = spawnAsteroid();
-        }
-      });
-
-      /* Ocean waves */
-      const waveBase = canvas.height * 0.82;
-      drawWave(waveBase + 30, 18, 0.006, 0.7, "#0e4080", 0.55);
-      drawWave(waveBase + 14, 22, 0.0045, 0.55, "#1565c0", 0.45);
-      drawWave(waveBase, 28, 0.0035, 0.42, "#1d9bf0", 0.25);
-      drawWave(waveBase - 10, 12, 0.008, 0.85, "rgba(29,155,240,0.15)", 0.6);
-
-      animId = requestAnimationFrame(loop);
-    }
-
-    loop();
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
+function AppBackground() {
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      aria-hidden="true"
       style={{
         position: "fixed",
         inset: 0,
@@ -194,6 +13,8 @@ function OceanAsteroidCanvas() {
         width: "100%",
         height: "100%",
         pointerEvents: "none",
+        background:
+          "linear-gradient(180deg, #020711 0%, #05111f 38%, #071a2d 72%, #08243f 100%)",
       }}
     />
   );
@@ -642,8 +463,7 @@ export default function AppLayout({ children }) {
     <>
       <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
 
-      {/* Animated ocean + asteroid canvas */}
-      <OceanAsteroidCanvas />
+      <AppBackground />
 
       <div
         className="cx-layout"

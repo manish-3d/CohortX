@@ -523,6 +523,7 @@ function OceanCanvas() {
   const canvasRef = useRef(null);
   const animRef = useRef(null);
   const tRef = useRef(0);
+  const lastTimeRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -571,6 +572,12 @@ function OceanCanvas() {
     }
 
     function draw(timestamp) {
+      const dt =
+        lastTimeRef.current === null
+          ? 1 / 60
+          : Math.min((timestamp - lastTimeRef.current) / 1000, 0.05);
+      const frameScale = dt * 60;
+      lastTimeRef.current = timestamp;
       tRef.current = timestamp * 0.001;
       const t = tRef.current;
       const W = canvas.width;
@@ -735,8 +742,8 @@ function OceanCanvas() {
       ctx.restore();
 
       particles.forEach((p) => {
-        p.x += p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08;
-        p.y += p.vy;
+        p.x += (p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08) * frameScale;
+        p.y += p.vy * frameScale;
         if (p.y < -10) {
           p.y = H + 10;
           p.x = Math.random() * W;
@@ -769,6 +776,7 @@ function OceanCanvas() {
     animRef.current = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(animRef.current);
+      lastTimeRef.current = null;
       window.removeEventListener("resize", resize);
     };
   }, []);
@@ -786,6 +794,7 @@ function HandParticleField() {
   const canvasRef = useRef(null);
   const wrapRef = useRef(null);
   const animRef = useRef(null);
+  const lastTimeRef = useRef(null);
   const mouseRef = useRef({ x: -9999, y: -9999, active: false });
 
   useEffect(() => {
@@ -863,8 +872,14 @@ function HandParticleField() {
 
     let t = 0;
 
-    function draw() {
-      t += 0.016;
+    function draw(timestamp) {
+      const dt =
+        lastTimeRef.current === null
+          ? 1 / 60
+          : Math.min((timestamp - lastTimeRef.current) / 1000, 0.05);
+      const frameScale = dt * 60;
+      lastTimeRef.current = timestamp;
+      t += dt;
       ctx.clearRect(0, 0, W, H);
 
       const mouse = mouseRef.current;
@@ -873,8 +888,8 @@ function HandParticleField() {
         const p = particles[i];
 
         // slow ambient drift of the resting position
-        p.baseX += p.driftX;
-        p.baseY += p.driftY;
+        p.baseX += p.driftX * frameScale;
+        p.baseY += p.driftY * frameScale;
         if (p.baseX < -20) p.baseX = W + 20;
         if (p.baseX > W + 20) p.baseX = -20;
         if (p.baseY < -20) p.baseY = H + 20;
@@ -887,21 +902,22 @@ function HandParticleField() {
           const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
           if (dist < REPEL_RADIUS) {
             const force = (1 - dist / REPEL_RADIUS) * REPEL_FORCE;
-            p.vx += (dx / dist) * force;
-            p.vy += (dy / dist) * force;
+            p.vx += (dx / dist) * force * frameScale;
+            p.vy += (dy / dist) * force * frameScale;
           }
         }
 
         // spring back toward base position
-        p.vx += (p.baseX - p.x) * RETURN_FORCE;
-        p.vy += (p.baseY - p.y) * RETURN_FORCE;
+        p.vx += (p.baseX - p.x) * RETURN_FORCE * frameScale;
+        p.vy += (p.baseY - p.y) * RETURN_FORCE * frameScale;
 
         // friction / damping
-        p.vx *= FRICTION;
-        p.vy *= FRICTION;
+        const damping = Math.pow(FRICTION, frameScale);
+        p.vx *= damping;
+        p.vy *= damping;
 
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx * frameScale;
+        p.y += p.vy * frameScale;
 
         const twinkle =
           0.45 + 0.55 * Math.sin(t * p.twinkleSpeed + p.twinklePhase);
@@ -929,6 +945,7 @@ function HandParticleField() {
 
     return () => {
       cancelAnimationFrame(animRef.current);
+      lastTimeRef.current = null;
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
