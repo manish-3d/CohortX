@@ -50,8 +50,8 @@ export default function CreateProject() {
           Math.random() > 0.4
             ? "#fff"
             : Math.random() > 0.5
-              ? "#7cc8ff"
-              : "#a855f7",
+              ? "#cccccc"
+              : "#888888",
       });
     }
 
@@ -71,8 +71,8 @@ export default function CreateProject() {
         canvas.height * 0.3,
         canvas.width * 0.6
       );
-      gradient.addColorStop(0, "rgba(29, 155, 240, 0.03)");
-      gradient.addColorStop(0.5, "rgba(168, 85, 247, 0.01)");
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0.03)");
+      gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.01)");
       gradient.addColorStop(1, "transparent");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -169,12 +169,15 @@ export default function CreateProject() {
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           }
           .premium-input:focus {
-            border-color: rgba(29, 155, 240, 0.5);
-            background: rgba(15, 23, 42, 0.4);
-            box-shadow: 0 0 0 4px rgba(29, 155, 240, 0.12);
+            border-color: var(--text);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+          }
+          [data-theme="light"] .premium-input:focus {
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
           }
           .premium-input::placeholder {
-            color: #4b5563;
+            color: var(--text-dim);
           }
           .interactive-btn {
             font-family: 'Space Grotesk', sans-serif;
@@ -253,10 +256,10 @@ export default function CreateProject() {
           {/* Ultra-Transparent Glass Composer Container */}
           <div
             style={{
-              background: "rgba(13, 20, 38, 0.35)",
+              background: "var(--surface)",
               backdropFilter: "blur(24px) saturate(120%)",
               WebkitBackdropFilter: "blur(24px) saturate(120%)",
-              border: "1px solid rgba(255, 255, 255, 0.07)",
+              border: "1px solid var(--border)",
               borderRadius: 24,
               padding: "28px",
               boxShadow:
@@ -349,10 +352,10 @@ export default function CreateProject() {
                     transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
                     background: "rgba(255, 255, 255, 0.01)",
                     border: hover
-                      ? "1px solid rgba(29, 155, 240, 0.4)"
-                      : "1px solid rgba(255, 255, 255, 0.05)",
+                      ? "1px solid var(--text)"
+                      : "1px solid var(--border)",
                     boxShadow: hover
-                      ? "0 12px 30px rgba(29, 155, 240, 0.1)"
+                      ? "0 12px 30px rgba(255, 255, 255, 0.05)"
                       : "none",
                     backdropFilter: "blur(8px)",
                     WebkitBackdropFilter: "blur(8px)",
@@ -567,12 +570,12 @@ export default function CreateProject() {
                     marginTop: 8,
                     border: 0,
                     borderRadius: 12,
-                    background: "#1d9bf0",
-                    color: "#ffffff",
+                    background: "var(--text)",
+                    color: "var(--bg)",
                     fontWeight: 700,
                     fontSize: 13,
                     cursor: loading ? "not-allowed" : "pointer",
-                    boxShadow: "0 10px 20px rgba(29,155,240,0.15)",
+                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
                     opacity: loading ? 0.6 : 1,
                     display: "flex",
                     alignItems: "center",

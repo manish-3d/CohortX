@@ -73,10 +73,10 @@ export default function Profile() {
           asteroid.x - asteroid.length * 0.5,
           asteroid.y - asteroid.length
         );
-        gradient.addColorStop(0, `rgba(29, 155, 240, ${asteroid.opacity})`);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${asteroid.opacity})`);
         gradient.addColorStop(
           0.3,
-          `rgba(124, 200, 255, ${asteroid.opacity * 0.5})`
+          `rgba(200, 200, 200, ${asteroid.opacity * 0.5})`
         );
         gradient.addColorStop(1, "transparent");
 
@@ -140,8 +140,8 @@ export default function Profile() {
   }
 
   const bannerStyle = {
-  // Linear gradient from dark-blue to medium-blue
-  background: 'linear-gradient(135deg, #0a192f 0%, #112240 100%)',
+  // Linear gradient from dark-grey to black
+  background: 'linear-gradient(135deg, #111111 0%, #000000 100%)',
   
   // Necessary styling for a banner
   width: '100%',
@@ -183,7 +183,7 @@ export default function Profile() {
         minHeight: "100vh",
         width: "100%",
         overflowX: "hidden",
-        background: "#0b111e",
+        background: "var(--bg)",
         boxSizing: "border-box",
       }}
     >
@@ -202,14 +202,14 @@ export default function Profile() {
           left: 0;
           width: 200%;
           height: 70px;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,100 300,20 600,60 C900,100 900,20 1200,60 L1200,120 L0,120 Z' fill='%231d9bf0' fill-opacity='0.25'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,100 300,20 600,60 C900,100 900,20 1200,60 L1200,120 L0,120 Z' fill='%23cccccc' fill-opacity='0.25'%3E%3C/path%3E%3C/svg%3E") repeat-x;
           animation: riverFlow 10s linear infinite;
           z-index: 2;
           pointer-events: none;
         }
         .river-stream-secondary {
           height: 85px;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C300,20 300,90 600,50 C900,20 900,90 1200,50 L1200,120 L0,120 Z' fill='%237cc8ff' fill-opacity='0.15'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C300,20 300,90 600,50 C900,20 900,90 1200,50 L1200,120 L0,120 Z' fill='%23888888' fill-opacity='0.15'%3E%3C/path%3E%3C/svg%3E") repeat-x;
           animation: riverFlow 6s linear infinite reverse;
           z-index: 1;
         }
@@ -230,8 +230,8 @@ export default function Profile() {
         }
         .interactive-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 30px 60px rgba(29, 155, 240, 0.12) !important;
-          border-color: rgba(29, 155, 240, 0.3) !important;
+          box-shadow: var(--shadow-lg) !important;
+          border-color: var(--border) !important;
         }
         .action-pill {
           transition: all 0.25s ease;
@@ -322,11 +322,11 @@ export default function Profile() {
             style={{
               overflow: "hidden",
               borderRadius: 40,
-              background: "rgba(15, 23, 42, 0.7)",
+              background: "var(--surface)",
               backdropFilter: "blur(24px)",
               WebkitBackdropFilter: "blur(24px)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              boxShadow: "0 25px 70px rgba(0, 0, 0, 0.35)",
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-lg)",
               width: "100%",
             }}
           >
@@ -335,7 +335,7 @@ export default function Profile() {
               style={{
                 height: 220,
                 background:
-                  "linear-gradient(135deg, #0f172a, #1e3a8a, #0b111e)",
+                  "linear-gradient(135deg, var(--ocean-deep), var(--ocean-surf))",
                 position: "relative",
                 overflow: "hidden",
               }}
@@ -432,19 +432,19 @@ export default function Profile() {
                       @{profile.username}
                     </h1>
 
-                    <div
-                      style={{
-                        background: "rgba(29, 155, 240, 0.12)",
-                        color: "#7cc8ff",
-                        padding: "6px 14px",
-                        borderRadius: 999,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        fontSize: 13,
-                        fontWeight: 600,
-                        border: "1px solid rgba(29, 155, 240, 0.25)",
-                      }}
+                     <div
+                       style={{
+                         background: "var(--border)",
+                         color: "var(--text)",
+                         padding: "6px 14px",
+                         borderRadius: 999,
+                         display: "flex",
+                         alignItems: "center",
+                         gap: 6,
+                         fontSize: 13,
+                         fontWeight: 600,
+                         border: "1px solid var(--border)",
+                       }}
                     >
                       <Sparkles size={13} />
                       Builder
@@ -481,7 +481,7 @@ export default function Profile() {
                         alignItems: "center",
                       }}
                     >
-                      <FollowButton background="#1d9bf0" userId={profile.id} />
+                      <FollowButton userId={profile.id} />
 
                       <Link
                         to={`/chat/${profile.id}`}
@@ -514,9 +514,9 @@ export default function Profile() {
                         onClick={() => openFollowList("followers")}
                         className="action-pill"
                         style={{
-                          border: "1px solid rgba(255,255,255,0.06)",
+                          border: "1px solid var(--border)",
                           background: "rgba(255, 255, 255, 0.02)",
-                          color: "#f8fafc",
+                          color: "var(--text)",
                           padding: "10px 18px",
                           borderRadius: 14,
                           cursor: "pointer",
@@ -524,13 +524,13 @@ export default function Profile() {
                           fontSize: 14,
                         }}
                       >
-                        <span style={{ color: "#1d9bf0" }}>
+                        <span style={{ color: "var(--text)" }}>
                           {profile._count?.followers || 0}
                         </span>
                         <span
                           style={{
                             marginLeft: 6,
-                            color: "#64748b",
+                            color: "var(--text-dim)",
                             fontWeight: 500,
                           }}
                         >
@@ -542,9 +542,9 @@ export default function Profile() {
                         onClick={() => openFollowList("following")}
                         className="action-pill"
                         style={{
-                          border: "1px solid rgba(255,255,255,0.06)",
+                          border: "1px solid var(--border)",
                           background: "rgba(255, 255, 255, 0.02)",
-                          color: "#f8fafc",
+                          color: "var(--text)",
                           padding: "10px 18px",
                           borderRadius: 14,
                           cursor: "pointer",
@@ -552,13 +552,13 @@ export default function Profile() {
                           fontSize: 14,
                         }}
                       >
-                        <span style={{ color: "#1d9bf0" }}>
+                        <span style={{ color: "var(--text)" }}>
                           {profile._count?.following || 0}
                         </span>
                         <span
                           style={{
                             marginLeft: 6,
-                            color: "#64748b",
+                            color: "var(--text-dim)",
                             fontWeight: 500,
                           }}
                         >

@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import "./Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -115,6 +117,10 @@ export default function Navbar() {
             />
           </Link>
 
+          <button onClick={toggleTheme} className="theme-toggle-btn" aria-label="Toggle Theme">
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
+
           <button onClick={handleLogout} className="nav-logout-btn">
             Logout
           </button>
@@ -161,6 +167,10 @@ export default function Navbar() {
           </Link>
 
           <hr className="cosmic-divider" />
+
+          <button onClick={toggleTheme} className="mobile-logout-action-btn" style={{ marginBottom: "10px" }}>
+            Toggle {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </button>
 
           <button onClick={handleLogout} className="mobile-logout-action-btn">
             Disconnect System

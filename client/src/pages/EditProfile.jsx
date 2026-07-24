@@ -75,7 +75,7 @@ export default function EditProfile() {
           }
           .gradient-heading {
             font-family: 'Space Grotesk', sans-serif;
-            background: linear-gradient(135deg, #ffffff 30%, #1d9bf0 70%, #7cc8ff 100%);
+            background: linear-gradient(135deg, var(--text) 30%, var(--text-muted) 70%, var(--text-dim) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -95,12 +95,15 @@ export default function EditProfile() {
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           }
           .premium-input:focus {
-            border-color: rgba(29, 155, 240, 0.5);
-            background: rgba(15, 23, 42, 0.4);
-            box-shadow: 0 0 0 4px rgba(29, 155, 240, 0.12);
+            border-color: var(--text);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+          }
+          [data-theme="light"] .premium-input:focus {
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
           }
           .premium-input::placeholder {
-            color: #4b5563;
+            color: var(--text-dim);
           }
           .interactive-btn {
             font-family: 'Space Grotesk', sans-serif;
@@ -148,10 +151,10 @@ export default function EditProfile() {
               display: "flex",
               flexDirection: "column",
               gap: 24,
-              background: "rgba(13, 20, 38, 0.35)",
+              background: "var(--surface)",
               backdropFilter: "blur(24px) saturate(120%)",
               WebkitBackdropFilter: "blur(24px) saturate(120%)",
-              border: "1px solid rgba(255, 255, 255, 0.07)",
+              border: "1px solid var(--border)",
               borderRadius: 28,
               padding: "40px",
               boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
@@ -288,11 +291,11 @@ export default function EditProfile() {
                 border: 0,
                 cursor: loading ? "not-allowed" : "pointer",
                 borderRadius: 14,
-                color: "#ffffff",
+                color: "var(--bg)",
                 fontWeight: 700,
                 fontSize: 14,
-                background: "#1d9bf0",
-                boxShadow: "0 10px 25px rgba(29, 155, 240, 0.15)",
+                background: "var(--text)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
                 opacity: loading ? 0.6 : 1,
                 display: "flex",
                 alignItems: "center",

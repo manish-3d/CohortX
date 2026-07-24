@@ -44,7 +44,7 @@ export default function FollowButton({ userId }) {
 
         background: following
           ? "rgba(255,255,255,.9)"
-          : "linear-gradient(135deg,#1d9bf0,#57b3ff)",
+          : "linear-gradient(135deg,#333,#111)",
 
         color: following ? "#111827" : "#fff",
 
@@ -56,7 +56,7 @@ export default function FollowButton({ userId }) {
 
         boxShadow: following
           ? "0 8px 22px rgba(0,0,0,.05)"
-          : "0 14px 40px rgba(29,155,240,.25)",
+          : "0 14px 40px rgba(0,0,0,.15)",
 
         transition: ".25s",
       }}

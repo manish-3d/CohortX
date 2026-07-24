@@ -1,19 +1,27 @@
+/* ============================================================
+   CohortX — Global Styles
+   Theme: Premium Black / Grey / White
+   ============================================================ */
+
 :root {
-  --bg: #030d1a;
-
-  --surface: rgba(6, 25, 41, 0.72);
-
-  --primary: #1d9bf0;
-
-  --text: #e8f4fd;
-
-  --muted: rgba(180, 210, 235, 0.65);
-
-  --border: rgba(29, 155, 240, 0.16);
-
+  --bg: #0a0a0a;
+  --surface: rgba(24, 24, 24, 0.85);
+  --primary: #ffffff;
+  --text: #f0f0f0;
+  --muted: rgba(255, 255, 255, 0.55);
+  --border: rgba(255, 255, 255, 0.1);
   --radius: 22px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
 
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+[data-theme="light"] {
+  --bg: #f5f5f5;
+  --surface: rgba(255, 255, 255, 0.92);
+  --primary: #111111;
+  --text: #111111;
+  --muted: rgba(0, 0, 0, 0.55);
+  --border: rgba(0, 0, 0, 0.1);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -29,14 +37,18 @@ body,
 
 body {
   background:
-    radial-gradient(circle at top, rgba(29, 155, 240, 0.12), transparent 35%),
-    linear-gradient(180deg, #030d1a 0%, #061929 40%, #0a2540 72%, #0d3460 100%);
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.03), transparent 35%),
+    linear-gradient(180deg, #0a0a0a 0%, #111111 40%, #181818 72%, #1a1a1a 100%);
 
   color: var(--text);
-
   font-family: Inter, sans-serif;
-
   overflow-x: hidden;
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(circle at top, rgba(0, 0, 0, 0.02), transparent 35%),
+    linear-gradient(180deg, #f5f5f5 0%, #eeeeee 40%, #e8e8e8 72%, #e5e5e5 100%);
 }
 
 a {

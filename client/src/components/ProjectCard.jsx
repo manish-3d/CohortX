@@ -40,7 +40,7 @@ export default function ProjectCard({ project }) {
         background: "rgba(255, 255, 255, 0.02)",
         backdropFilter: "blur(16px) saturate(140%)",
         WebkitBackdropFilter: "blur(16px) saturate(140%)",
-        border: "1px solid rgba(29, 155, 240, 0.15)",
+        border: "1px solid var(--border)",
         borderRadius: "var(--radius-xl)",
         color: "var(--text)",
         overflow: "hidden",
@@ -55,7 +55,7 @@ export default function ProjectCard({ project }) {
           justifyContent: "space-between",
           alignItems: "center",
           padding: "13px 15px",
-          borderBottom: "1px solid rgba(29, 155, 240, 0.08)",
+          borderBottom: "1px solid var(--border)",
           background: "rgba(255, 255, 255, 0.01)",
         }}
       >
@@ -76,7 +76,7 @@ export default function ProjectCard({ project }) {
               height: "39px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "1px solid rgba(29, 155, 240, 0.2)",
+              border: "1px solid var(--border)",
             }}
           />
 
@@ -130,7 +130,7 @@ export default function ProjectCard({ project }) {
                   right: 0,
                   background: "rgba(4, 18, 34, 0.96)",
                   backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(29, 155, 240, 0.35)",
+                  border: "1px solid var(--border)",
                   borderRadius: "var(--radius-md)",
                   overflow: "hidden",
                   minWidth: "110px",
@@ -153,7 +153,7 @@ export default function ProjectCard({ project }) {
                     cursor: "pointer",
                   }}
                   onMouseEnter={(e) =>
-                    (e.target.style.background = "rgba(29, 155, 240, 0.15)")
+                    (e.target.style.background = "rgba(255, 255, 255, 0.08)")
                   }
                   onMouseLeave={(e) =>
                     (e.target.style.background = "transparent")
@@ -175,7 +175,7 @@ export default function ProjectCard({ project }) {
                     fontSize: "11px",
                     fontWeight: "600",
                     cursor: "pointer",
-                    borderTop: "1px solid rgba(29, 155, 240, 0.08)",
+                    borderTop: "1px solid var(--border)",
                   }}
                   onMouseEnter={(e) =>
                     (e.target.style.background = "rgba(255, 74, 90, 0.12)")
@@ -227,8 +227,8 @@ export default function ProjectCard({ project }) {
           style={{
             width: "100%",
             display: "block",
-            borderTop: "1px solid rgba(29, 155, 240, 0.06)",
-            borderBottom: "1px solid rgba(29, 155, 240, 0.06)",
+            borderTop: "1px solid var(--border)",
+            borderBottom: "1px solid var(--border)",
           }}
         />
       )}
@@ -240,8 +240,8 @@ export default function ProjectCard({ project }) {
           style={{
             width: "100%",
             display: "block",
-            borderTop: "1px solid rgba(29, 155, 240, 0.06)",
-            borderBottom: "1px solid rgba(29, 155, 240, 0.06)",
+            borderTop: "1px solid var(--border)",
+            borderBottom: "1px solid var(--border)",
           }}
         />
       )}
@@ -254,7 +254,7 @@ export default function ProjectCard({ project }) {
           gap: "15px",
           padding: "12px 15px",
           background: "rgba(255, 255, 255, 0.01)",
-          borderTop: "1px solid rgba(29, 155, 240, 0.06)",
+          borderTop: "1px solid var(--border)",
         }}
       >
         <LikeButton
@@ -277,7 +277,7 @@ export default function ProjectCard({ project }) {
             gap: "6px",
             background: "transparent",
             border: "none",
-            color: shared ? "#1d9bf0" : "var(--text-muted)",
+            color: shared ? "var(--text)" : "var(--text-muted)",
             fontFamily: "'Hookride', 'Space Grotesk', sans-serif",
             fontSize: "12.5px",
             fontWeight: "600",
@@ -287,7 +287,7 @@ export default function ProjectCard({ project }) {
             transition: "color 0.18s ease, transform 0.18s ease",
           }}
           onMouseEnter={(e) => {
-            if (!shared) e.currentTarget.style.color = "#42b0f5";
+            if (!shared) e.currentTarget.style.color = "var(--text)";
           }}
           onMouseLeave={(e) => {
             if (!shared) e.currentTarget.style.color = "var(--text-muted)";
