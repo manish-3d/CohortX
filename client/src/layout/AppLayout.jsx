@@ -59,6 +59,7 @@ const globalStyles = `
     --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
     --dur:          0.3s;
     --app-bg:       linear-gradient(180deg, #0a0a0a 0%, #111111 38%, #181818 72%, #1e1e1e 100%);
+    --profile-banner: linear-gradient(135deg, #1a1a1a 0%, #111111 40%, #0a0a0a 75%, #000000 100%);
   }
 
   [data-theme="light"] {
@@ -89,6 +90,7 @@ const globalStyles = `
     --shadow-md:    0 8px 32px rgba(0,0,0,0.08);
     --shadow-lg:    0 20px 60px rgba(0,0,0,0.1);
     --app-bg:       linear-gradient(180deg, #f5f5f5 0%, #eeeeee 38%, #e8e8e8 72%, #e0e0e0 100%);
+    --profile-banner: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #111827 65%, #0a0f1e 100%);
   }
 
   html { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }

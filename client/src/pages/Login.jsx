@@ -287,7 +287,7 @@ function ProjectDemo() {
         </div>
         <div className="demo-metrics">
           <span>
-            <Star size={13} fill="currentColor" /> 2.8k
+            2.8k
           </span>
           <span>Forks 418</span>
           <span>Demo open</span>
@@ -572,15 +572,7 @@ function OceanCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const PARTICLE_COUNT = 80;
-    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: 0.5 + Math.random() * 1.5,
-      vx: (Math.random() - 0.5) * 0.18,
-      vy: -0.05 - Math.random() * 0.15,
-      alpha: 0.1 + Math.random() * 0.4,
-    }));
+
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -625,9 +617,9 @@ function OceanCanvas() {
       const H = canvas.height;
 
       const bg = ctx.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, "#020b16");
-      bg.addColorStop(0.4, "#030f1f");
-      bg.addColorStop(1, "#010810");
+      bg.addColorStop(0, "#050505");
+      bg.addColorStop(0.5, "#0b0b0b");
+      bg.addColorStop(1, "#020202");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
@@ -639,8 +631,8 @@ function OceanCanvas() {
         H * 0.85,
         W * 0.65
       );
-      glow.addColorStop(0, "rgba(13,68,140,0.25)");
-      glow.addColorStop(0.5, "rgba(8,40,88,0.10)");
+      glow.addColorStop(0, "rgba(255,255,255,0.06)");
+      glow.addColorStop(0.5, "rgba(255,255,255,0.02)");
       glow.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, H);
@@ -653,7 +645,7 @@ function OceanCanvas() {
         H * 0.2,
         W * 0.4
       );
-      glow2.addColorStop(0, "rgba(15,90,160,0.12)");
+      glow2.addColorStop(0, "rgba(255,255,255,0.04)");
       glow2.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow2;
       ctx.fillRect(0, 0, W, H);
@@ -664,7 +656,7 @@ function OceanCanvas() {
           frequency: 0.0018,
           speed: 0.22,
           yBase: H * 0.68,
-          color: "rgba(5,28,58,0.80)",
+          color: "rgba(15,15,15,0.85)",
           blur: 4,
         },
         {
@@ -672,7 +664,7 @@ function OceanCanvas() {
           frequency: 0.0022,
           speed: 0.3,
           yBase: H * 0.72,
-          color: "rgba(7,38,75,0.85)",
+          color: "rgba(20,20,20,0.88)",
           blur: 3,
         },
         {
@@ -680,7 +672,7 @@ function OceanCanvas() {
           frequency: 0.0028,
           speed: 0.38,
           yBase: H * 0.76,
-          color: "rgba(9,50,96,0.88)",
+          color: "rgba(25,25,25,0.90)",
           blur: 2,
         },
         {
@@ -688,7 +680,7 @@ function OceanCanvas() {
           frequency: 0.0034,
           speed: 0.46,
           yBase: H * 0.8,
-          color: "rgba(11,60,112,0.90)",
+          color: "rgba(30,30,30,0.92)",
           blur: 2,
         },
         {
@@ -696,7 +688,7 @@ function OceanCanvas() {
           frequency: 0.004,
           speed: 0.55,
           yBase: H * 0.83,
-          color: "rgba(13,72,128,0.92)",
+          color: "rgba(35,35,35,0.94)",
           blur: 1,
         },
         {
@@ -704,7 +696,7 @@ function OceanCanvas() {
           frequency: 0.005,
           speed: 0.64,
           yBase: H * 0.86,
-          color: "rgba(16,85,148,0.93)",
+          color: "rgba(40,40,40,0.95)",
           blur: 0,
         },
         {
@@ -712,7 +704,7 @@ function OceanCanvas() {
           frequency: 0.006,
           speed: 0.75,
           yBase: H * 0.89,
-          color: "rgba(18,100,168,0.94)",
+          color: "rgba(45,45,45,0.96)",
           blur: 0,
         },
         {
@@ -720,7 +712,7 @@ function OceanCanvas() {
           frequency: 0.007,
           speed: 0.85,
           yBase: H * 0.91,
-          color: "rgba(20,112,186,0.95)",
+          color: "rgba(50,50,50,0.97)",
           blur: 0,
         },
         {
@@ -728,7 +720,7 @@ function OceanCanvas() {
           frequency: 0.0085,
           speed: 1.0,
           yBase: H * 0.93,
-          color: "rgba(22,124,205,0.96)",
+          color: "rgba(60,60,60,0.98)",
           blur: 0,
         },
         {
@@ -736,7 +728,7 @@ function OceanCanvas() {
           frequency: 0.01,
           speed: 1.2,
           yBase: H * 0.955,
-          color: "rgba(29,155,240,0.55)",
+          color: "rgba(80,80,80,0.60)",
           blur: 0,
         },
       ];
@@ -755,7 +747,7 @@ function OceanCanvas() {
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = `rgba(150,210,255,${0.35 - i * 0.04})`;
+        ctx.strokeStyle = `rgba(200,200,200,${0.25 - i * 0.03})`;
         ctx.lineWidth = 1.5 - i * 0.2;
         ctx.stroke();
       }
@@ -773,8 +765,8 @@ function OceanCanvas() {
         }
         const grad = ctx.createLinearGradient(0, 0, W, 0);
         grad.addColorStop(0, "transparent");
-        grad.addColorStop(0.3, "rgba(66,176,245,0.8)");
-        grad.addColorStop(0.7, "rgba(29,155,240,0.6)");
+        grad.addColorStop(0.3, "rgba(200,200,200,0.6)");
+        grad.addColorStop(0.7, "rgba(150,150,150,0.4)");
         grad.addColorStop(1, "transparent");
         ctx.strokeStyle = grad;
         ctx.lineWidth = 2;
@@ -782,21 +774,7 @@ function OceanCanvas() {
       }
       ctx.restore();
 
-      particles.forEach((p) => {
-        p.x += (p.vx + Math.sin(t * 0.3 + p.y * 0.01) * 0.08) * frameScale;
-        p.y += p.vy * frameScale;
-        if (p.y < -10) {
-          p.y = H + 10;
-          p.x = Math.random() * W;
-        }
-        if (p.x < 0) p.x = W;
-        if (p.x > W) p.x = 0;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(100,190,255,${p.alpha * (0.6 + 0.4 * Math.sin(t + p.x))})`;
-        ctx.fill();
-      });
 
       ctx.save();
       ctx.globalAlpha = 0.06;
@@ -804,7 +782,7 @@ function OceanCanvas() {
         const cx2 = W * (0.15 + 0.14 * i + Math.sin(t * 0.18 + i) * 0.04);
         const cy2 = H * (0.6 + Math.cos(t * 0.22 + i * 0.8) * 0.06);
         const rg = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, W * 0.08);
-        rg.addColorStop(0, "rgba(120,200,255,0.6)");
+        rg.addColorStop(0, "rgba(255,255,255,0.1)");
         rg.addColorStop(1, "transparent");
         ctx.fillStyle = rg;
         ctx.fillRect(0, 0, W, H);
@@ -823,188 +801,6 @@ function OceanCanvas() {
   }, []);
 
   return <canvas ref={canvasRef} id="ocean-canvas" />;
-}
-
-/* ── ANTIGRAVITY HAND PARTICLE FIELD ─────────────────────────
-   Fills the hero with a starfield of small glowing particles
-   that drift slowly, and repel away from the cursor (antigravity
-   effect) within a radius. Sits as its own layer above the ocean
-   canvas but behind the headline text, framing the hand image.
-─────────────────────────────────────────────────────────────── */
-function HandParticleField() {
-  const canvasRef = useRef(null);
-  const wrapRef = useRef(null);
-  const animRef = useRef(null);
-  const lastTimeRef = useRef(null);
-  const mouseRef = useRef({ x: -9999, y: -9999, active: false });
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const wrap = wrapRef.current;
-    if (!canvas || !wrap) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let W = 0;
-    let H = 0;
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    const REPEL_RADIUS = 130;
-    const REPEL_FORCE = 1.9;
-    const RETURN_FORCE = 0.018;
-    const FRICTION = 0.92;
-
-    function makeParticles() {
-      const area = W * H;
-      const density = 1 / 9000; // tuned for "so many stars" without killing perf
-      const count = Math.max(220, Math.min(900, Math.round(area * density)));
-      return Array.from({ length: count }, () => {
-        const baseX = Math.random() * W;
-        const baseY = Math.random() * H;
-        return {
-          baseX,
-          baseY,
-          x: baseX,
-          y: baseY,
-          vx: 0,
-          vy: 0,
-          r:
-            Math.random() < 0.12
-              ? 1.6 + Math.random() * 1.6
-              : 0.5 + Math.random() * 1.1,
-          twinkleSpeed: 0.5 + Math.random() * 1.8,
-          twinklePhase: Math.random() * Math.PI * 2,
-          driftX: (Math.random() - 0.5) * 0.05,
-          driftY: (Math.random() - 0.5) * 0.05,
-          hueShift: Math.random(),
-        };
-      });
-    }
-
-    let particles = [];
-
-    function resize() {
-      const rect = wrap.getBoundingClientRect();
-      W = rect.width;
-      H = rect.height;
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
-      canvas.style.width = W + "px";
-      canvas.style.height = H + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      particles = makeParticles();
-    }
-    resize();
-    window.addEventListener("resize", resize);
-
-    function onMove(e) {
-      const rect = wrap.getBoundingClientRect();
-      mouseRef.current.x = e.clientX - rect.left;
-      mouseRef.current.y = e.clientY - rect.top;
-      mouseRef.current.active = true;
-    }
-    function onLeave() {
-      mouseRef.current.active = false;
-      mouseRef.current.x = -9999;
-      mouseRef.current.y = -9999;
-    }
-    window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("mouseleave", onLeave, { passive: true });
-
-    let t = 0;
-
-    function draw(timestamp) {
-      const dt =
-        lastTimeRef.current === null
-          ? 1 / 60
-          : Math.min((timestamp - lastTimeRef.current) / 1000, 0.05);
-      const frameScale = dt * 60;
-      lastTimeRef.current = timestamp;
-      t += dt;
-      ctx.clearRect(0, 0, W, H);
-
-      const mouse = mouseRef.current;
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-
-        // slow ambient drift of the resting position
-        p.baseX += p.driftX * frameScale;
-        p.baseY += p.driftY * frameScale;
-        if (p.baseX < -20) p.baseX = W + 20;
-        if (p.baseX > W + 20) p.baseX = -20;
-        if (p.baseY < -20) p.baseY = H + 20;
-        if (p.baseY > H + 20) p.baseY = -20;
-
-        // antigravity repulsion from cursor
-        if (mouse.active) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
-          if (dist < REPEL_RADIUS) {
-            const force = (1 - dist / REPEL_RADIUS) * REPEL_FORCE;
-            p.vx += (dx / dist) * force * frameScale;
-            p.vy += (dy / dist) * force * frameScale;
-          }
-        }
-
-        // spring back toward base position
-        p.vx += (p.baseX - p.x) * RETURN_FORCE * frameScale;
-        p.vy += (p.baseY - p.y) * RETURN_FORCE * frameScale;
-
-        // friction / damping
-        const damping = Math.pow(FRICTION, frameScale);
-        p.vx *= damping;
-        p.vy *= damping;
-
-        p.x += p.vx * frameScale;
-        p.y += p.vy * frameScale;
-
-        const twinkle =
-          0.45 + 0.55 * Math.sin(t * p.twinkleSpeed + p.twinklePhase);
-        const alpha = 0.25 + twinkle * 0.55;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        const c = p.hueShift > 0.7 ? "150,225,255" : "90,180,250";
-        ctx.fillStyle = `rgba(${c},${alpha})`;
-        ctx.fill();
-
-        // glow halo on the bigger "feature" stars
-        if (p.r > 1.4) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * 3.2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${c},${alpha * 0.12})`;
-          ctx.fill();
-        }
-      }
-
-      animRef.current = requestAnimationFrame(draw);
-    }
-
-    animRef.current = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animRef.current);
-      lastTimeRef.current = null;
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
-  return (
-    <div className="hand-field" ref={wrapRef}>
-      <canvas ref={canvasRef} className="hand-field-canvas" />
-      <div className="hand-field-glow" />
-      <img
-        src="/assets/adam-hand.png"
-        alt=""
-        className="hand-field-img"
-        draggable={false}
-      />
-    </div>
-  );
 }
 
 /* ── SCROLL REVEAL ────────────────────────────────────────── */
@@ -1150,7 +946,6 @@ export default function Login() {
 
       {/* ── HERO ────────────────────────────────────────── */}
       <section className="cx-hero cx-hero-centered">
-        <HandParticleField />
 
         <div className="hero-content">
           <div className="cohortx-domain">

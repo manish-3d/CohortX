@@ -149,7 +149,7 @@ export default function RightSidebar() {
     background: "rgba(4,14,28,0.72)",
     backdropFilter: "blur(20px) saturate(160%)",
     WebkitBackdropFilter: "blur(20px) saturate(160%)",
-    border: "1px solid rgba(29,155,240,0.18)",
+    border: "1px solid var(--white-12)",
     boxShadow:
       "0 2px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)",
     transition: "box-shadow 0.3s, border-color 0.3s",
@@ -176,7 +176,7 @@ export default function RightSidebar() {
   const inputStyle = {
     width: "100%",
     background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(29,155,240,0.22)",
+    border: "1px solid var(--white-30)",
     borderRadius: "var(--radius-md)",
     padding: "10px 12px",
     color: "var(--text)",
@@ -187,12 +187,12 @@ export default function RightSidebar() {
   };
 
   function focusInput(e) {
-    e.currentTarget.style.borderColor = "rgba(29,155,240,0.6)";
-    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(29,155,240,0.12)";
+    e.currentTarget.style.borderColor = "var(--white-60)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px var(--white-12)";
     e.currentTarget.style.background = "rgba(255,255,255,0.07)";
   }
   function blurInput(e) {
-    e.currentTarget.style.borderColor = "rgba(29,155,240,0.22)";
+    e.currentTarget.style.borderColor = "var(--white-30)";
     e.currentTarget.style.boxShadow = "none";
     e.currentTarget.style.background = "rgba(255,255,255,0.05)";
   }
@@ -215,7 +215,7 @@ export default function RightSidebar() {
           onClick={() => setShowNotifications((v) => !v)}
           style={panelHeaderStyle}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(29,155,240,0.07)";
+            e.currentTarget.style.background = "var(--white-07)";
             e.currentTarget.style.color = "var(--blue-bright)";
           }}
           onMouseLeave={(e) => {
@@ -228,7 +228,7 @@ export default function RightSidebar() {
               size={12}
               color="var(--blue)"
               strokeWidth={2}
-              style={{ filter: "drop-shadow(0 0 4px rgba(29,155,240,0.6))" }}
+              style={{ filter: "drop-shadow(0 0 4px var(--white-60))" }}
             />
             Notifications
           </div>
@@ -247,7 +247,7 @@ export default function RightSidebar() {
                   placeItems: "center",
                   fontSize: 9,
                   fontWeight: 900,
-                  boxShadow: "0 0 10px rgba(29,155,240,0.6)",
+                  boxShadow: "0 0 10px var(--white-60)",
                 }}
               >
                 {unread}
@@ -280,7 +280,7 @@ export default function RightSidebar() {
               display: "flex",
               flexDirection: "column",
               gap: 6,
-              borderTop: "1px solid rgba(29,155,240,0.1)",
+              borderTop: "1px solid var(--white-12)",
               paddingTop: 9,
             }}
           >
@@ -308,10 +308,10 @@ export default function RightSidebar() {
                       borderRadius: "var(--radius-md)",
                       background: n.isRead
                         ? "rgba(255,255,255,0.03)"
-                        : "rgba(29,155,240,0.09)",
+                        : "var(--white-07)",
                       border: n.isRead
-                        ? "1px solid rgba(29,155,240,0.07)"
-                        : "1px solid rgba(29,155,240,0.28)",
+                        ? "1px solid var(--white-07)"
+                        : "1px solid var(--white-30)",
                       cursor: n.link ? "pointer" : "default",
                       transition:
                         "background 0.2s, transform 0.2s, box-shadow 0.2s",
@@ -320,7 +320,7 @@ export default function RightSidebar() {
                       if (n.link) {
                         e.currentTarget.style.transform = "translateX(2px)";
                         e.currentTarget.style.boxShadow =
-                          "0 2px 12px rgba(29,155,240,0.2)";
+                          "0 2px 12px var(--white-30)";
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -348,8 +348,8 @@ export default function RightSidebar() {
                           height: 28,
                           borderRadius: "50%",
                           objectFit: "cover",
-                          border: "1.5px solid rgba(29,155,240,0.35)",
-                          boxShadow: "0 0 8px rgba(29,155,240,0.2)",
+                          border: "1.5px solid var(--white-30)",
+                          boxShadow: "0 0 8px var(--white-30)",
                         }}
                       />
                     </button>
@@ -388,10 +388,10 @@ export default function RightSidebar() {
         style={{
           ...sectionStyle,
           borderColor: showChat
-            ? "rgba(29,155,240,0.32)"
-            : "rgba(29,155,240,0.18)",
+            ? "var(--white-30)"
+            : "var(--white-12)",
           boxShadow: showChat
-            ? "0 4px 28px rgba(29,155,240,0.16), inset 0 1px 0 rgba(255,255,255,0.05)"
+            ? "0 4px 28px var(--white-12), inset 0 1px 0 rgba(255,255,255,0.05)"
             : sectionStyle.boxShadow,
         }}
       >
@@ -400,17 +400,17 @@ export default function RightSidebar() {
           style={{
             ...panelHeaderStyle,
             background: showChat
-              ? "linear-gradient(180deg, rgba(29,155,240,0.16), rgba(29,155,240,0.07))"
+              ? "linear-gradient(180deg, var(--white-12), var(--white-07))"
               : "transparent",
             color: showChat ? "var(--blue-bright)" : "var(--text-muted)",
             borderRadius: showChat
               ? "var(--radius-lg) var(--radius-lg) 0 0"
               : "var(--radius-lg)",
-            borderBottom: showChat ? "1px solid rgba(29,155,240,0.2)" : "none",
+            borderBottom: showChat ? "1px solid var(--white-30)" : "none",
           }}
           onMouseEnter={(e) => {
             if (!showChat) {
-              e.currentTarget.style.background = "rgba(29,155,240,0.07)";
+              e.currentTarget.style.background = "var(--white-07)";
               e.currentTarget.style.color = "var(--blue-bright)";
             }
           }}
@@ -430,8 +430,8 @@ export default function RightSidebar() {
                 display: "grid",
                 placeItems: "center",
                 background: showChat
-                  ? "rgba(29,155,240,0.22)"
-                  : "rgba(29,155,240,0.1)",
+                  ? "var(--white-30)"
+                  : "var(--white-12)",
                 transition: "background 0.2s",
               }}
             >
@@ -440,7 +440,7 @@ export default function RightSidebar() {
                 strokeWidth={2.2}
                 style={{
                   filter: showChat
-                    ? "drop-shadow(0 0 4px rgba(29,155,240,0.6))"
+                    ? "drop-shadow(0 0 4px var(--white-60))"
                     : "none",
                 }}
               />
@@ -468,14 +468,14 @@ export default function RightSidebar() {
             style={{
               padding: "12px",
               background:
-                "linear-gradient(180deg, rgba(29,155,240,0.04), transparent 60px)",
+                "linear-gradient(180deg, var(--white-07), transparent 60px)",
             }}
           >
             <div
               style={{
                 borderRadius: "var(--radius-md)",
                 overflow: "hidden",
-                border: "1px solid rgba(29,155,240,0.12)",
+                border: "1px solid var(--white-12)",
                 background: "rgba(2,9,18,0.4)",
               }}
             >
@@ -534,7 +534,7 @@ export default function RightSidebar() {
           <Radio
             size={10}
             color="var(--blue)"
-            style={{ filter: "drop-shadow(0 0 4px rgba(29,155,240,0.7))" }}
+            style={{ filter: "drop-shadow(0 0 4px var(--white-85))" }}
           />
           <span>Live Now</span>
           {lives.length > 0 && (
@@ -543,12 +543,12 @@ export default function RightSidebar() {
                 marginLeft: "auto",
                 fontSize: 9,
                 fontWeight: 800,
-                background: "rgba(29,155,240,0.15)",
+                background: "var(--white-12)",
                 color: "var(--blue-bright)",
                 padding: "1px 6px",
                 borderRadius: "var(--radius-full)",
-                border: "1px solid rgba(29,155,240,0.3)",
-                boxShadow: "0 0 8px rgba(29,155,240,0.2)",
+                border: "1px solid var(--white-30)",
+                boxShadow: "0 0 8px var(--white-30)",
               }}
             >
               {lives.length}
@@ -563,19 +563,19 @@ export default function RightSidebar() {
               key={live.id}
               style={{
                 background: "rgba(6,25,41,0.65)",
-                border: "1px solid rgba(29,155,240,0.18)",
+                border: "1px solid var(--white-12)",
                 borderRadius: "var(--radius-md)",
                 padding: "9px 10px",
                 transition: "box-shadow 0.25s, border-color 0.25s",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow =
-                  "0 4px 20px rgba(29,155,240,0.2)";
-                e.currentTarget.style.borderColor = "rgba(29,155,240,0.38)";
+                  "0 4px 20px var(--white-30)";
+                e.currentTarget.style.borderColor = "var(--white-30)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.borderColor = "rgba(29,155,240,0.18)";
+                e.currentTarget.style.borderColor = "var(--white-12)";
               }}
             >
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -587,8 +587,8 @@ export default function RightSidebar() {
                       width: 32,
                       height: 32,
                       borderRadius: "50%",
-                      border: "1.5px solid rgba(29,155,240,0.4)",
-                      boxShadow: "0 0 10px rgba(29,155,240,0.25)",
+                      border: "1.5px solid var(--white-30)",
+                      boxShadow: "0 0 10px var(--white-30)",
                     }}
                   />
                   <span
@@ -727,9 +727,9 @@ export default function RightSidebar() {
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
               borderRadius: "var(--radius-xl)",
-              border: "1px solid rgba(29,155,240,0.28)",
+              border: "1px solid var(--white-30)",
               boxShadow:
-                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(29,155,240,0.1)",
+                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px var(--white-12)",
               position: "relative",
             }}
           >
@@ -752,8 +752,8 @@ export default function RightSidebar() {
                 position: "absolute",
                 top: 14,
                 right: 14,
-                border: "1px solid rgba(29,155,240,0.2)",
-                background: "rgba(29,155,240,0.08)",
+                border: "1px solid var(--white-30)",
+                background: "var(--white-07)",
                 borderRadius: "50%",
                 width: 26,
                 height: 26,
@@ -764,12 +764,12 @@ export default function RightSidebar() {
                 transition: "background 0.2s, box-shadow 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(29,155,240,0.18)";
+                e.currentTarget.style.background = "var(--white-12)";
                 e.currentTarget.style.boxShadow =
-                  "0 0 10px rgba(29,155,240,0.3)";
+                  "0 0 10px var(--white-30)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(29,155,240,0.08)";
+                e.currentTarget.style.background = "var(--white-07)";
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
@@ -791,8 +791,8 @@ export default function RightSidebar() {
                   borderRadius: "var(--radius-md)",
                   display: "grid",
                   placeItems: "center",
-                  background: "rgba(29,155,240,0.15)",
-                  border: "1px solid rgba(29,155,240,0.3)",
+                  background: "var(--white-12)",
+                  border: "1px solid var(--white-30)",
                   flexShrink: 0,
                 }}
               >
@@ -800,7 +800,7 @@ export default function RightSidebar() {
                   size={15}
                   color="var(--blue-bright)"
                   style={{
-                    filter: "drop-shadow(0 0 6px rgba(29,155,240,0.6))",
+                    filter: "drop-shadow(0 0 6px var(--white-60))",
                   }}
                 />
               </span>
@@ -962,9 +962,9 @@ export default function RightSidebar() {
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
               borderRadius: "var(--radius-xl)",
-              border: "1px solid rgba(29,155,240,0.28)",
+              border: "1px solid var(--white-30)",
               boxShadow:
-                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(29,155,240,0.1)",
+                "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px var(--white-12)",
               position: "relative",
             }}
           >
@@ -986,8 +986,8 @@ export default function RightSidebar() {
                 position: "absolute",
                 top: 14,
                 right: 14,
-                border: "1px solid rgba(29,155,240,0.2)",
-                background: "rgba(29,155,240,0.08)",
+                border: "1px solid var(--white-30)",
+                background: "var(--white-07)",
                 borderRadius: "50%",
                 width: 26,
                 height: 26,
@@ -998,12 +998,12 @@ export default function RightSidebar() {
                 transition: "background 0.2s, box-shadow 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(29,155,240,0.18)";
+                e.currentTarget.style.background = "var(--white-12)";
                 e.currentTarget.style.boxShadow =
-                  "0 0 10px rgba(29,155,240,0.3)";
+                  "0 0 10px var(--white-30)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(29,155,240,0.08)";
+                e.currentTarget.style.background = "var(--white-07)";
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
@@ -1021,7 +1021,7 @@ export default function RightSidebar() {
               <Radio
                 size={16}
                 color="var(--blue)"
-                style={{ filter: "drop-shadow(0 0 6px rgba(29,155,240,0.7))" }}
+                style={{ filter: "drop-shadow(0 0 6px var(--white-85))" }}
               />
               <h2
                 style={{
@@ -1092,11 +1092,11 @@ export default function RightSidebar() {
             border:
               toast.tone === "error"
                 ? "1px solid rgba(239,68,68,0.35)"
-                : "1px solid rgba(29,155,240,0.32)",
+                : "1px solid var(--white-30)",
             boxShadow:
               toast.tone === "error"
                 ? "0 8px 30px rgba(239,68,68,0.18), 0 0 0 1px rgba(0,0,0,0.2)"
-                : "0 8px 30px rgba(29,155,240,0.18), 0 0 0 1px rgba(0,0,0,0.2)",
+                : "0 8px 30px var(--white-12), 0 0 0 1px rgba(0,0,0,0.2)",
             fontSize: 12,
             fontWeight: 600,
             color: "var(--text)",
@@ -1115,7 +1115,7 @@ export default function RightSidebar() {
               boxShadow:
                 toast.tone === "error"
                   ? "0 0 8px rgba(239,68,68,0.7)"
-                  : "0 0 8px rgba(29,155,240,0.7)",
+                  : "0 0 8px var(--white-85)",
             }}
           />
           {toast.message}
@@ -1145,9 +1145,9 @@ function smokeEffect(e) {
       borderRadius: "50%",
       background:
         i % 3 === 0
-          ? "rgba(29,155,240,0.65)"
+          ? "var(--white-60)"
           : i % 3 === 1
-            ? "rgba(66,176,245,0.5)"
+            ? "var(--white-60)"
             : "rgba(255,255,255,0.35)",
       pointerEvents: "none",
       zIndex: 9999,

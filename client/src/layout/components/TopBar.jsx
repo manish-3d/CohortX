@@ -66,10 +66,10 @@ export default function TopBar() {
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             border: focused
-              ? "1.5px solid rgba(29,155,240,0.55)"
-              : "1.5px solid rgba(29,155,240,0.15)",
+              ? "1.5px solid var(--white-60)"
+              : "1.5px solid var(--white-12)",
             boxShadow: focused
-              ? "0 0 0 4px rgba(29,155,240,0.10), var(--shadow-sm)"
+              ? "0 0 0 4px var(--white-12), var(--shadow-sm)"
               : "var(--shadow-sm)",
             transition:
               "border-color 0.25s, box-shadow 0.25s, background 0.25s",
@@ -155,7 +155,7 @@ export default function TopBar() {
                   transition: "background 0.2s",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "rgba(29,155,240,0.08)")
+                  (e.currentTarget.style.background = "var(--white-07)")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.background = "transparent")
@@ -169,7 +169,7 @@ export default function TopBar() {
                     height: 44,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    border: "1.5px solid rgba(29,155,240,0.3)",
+                    border: "1.5px solid var(--white-30)",
                     flexShrink: 0,
                   }}
                 />
@@ -240,18 +240,18 @@ export default function TopBar() {
               height: 48,
               borderRadius: "50%",
               objectFit: "cover",
-              border: "2px solid rgba(29,155,240,0.35)",
+              border: "2px solid var(--white-30)",
               transition: "border-color 0.25s, box-shadow 0.25s",
-              boxShadow: "0 2px 10px rgba(29,155,240,0.18)",
+              boxShadow: "0 2px 10px var(--white-12)",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "var(--blue)";
               e.currentTarget.style.boxShadow = "0 4px 18px var(--blue-glow)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(29,155,240,0.35)";
+              e.currentTarget.style.borderColor = "var(--white-30)";
               e.currentTarget.style.boxShadow =
-                "0 2px 10px rgba(29,155,240,0.18)";
+                "0 2px 10px var(--white-12)";
             }}
           />
         </button>

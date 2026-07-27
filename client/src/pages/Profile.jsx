@@ -202,14 +202,14 @@ export default function Profile() {
           left: 0;
           width: 200%;
           height: 70px;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,100 300,20 600,60 C900,100 900,20 1200,60 L1200,120 L0,120 Z' fill='%23cccccc' fill-opacity='0.25'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,100 300,20 600,60 C900,100 900,20 1200,60 L1200,120 L0,120 Z' fill='%23ffffff' fill-opacity='0.12'%3E%3C/path%3E%3C/svg%3E") repeat-x;
           animation: riverFlow 10s linear infinite;
           z-index: 2;
           pointer-events: none;
         }
         .river-stream-secondary {
           height: 85px;
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C300,20 300,90 600,50 C900,20 900,90 1200,50 L1200,120 L0,120 Z' fill='%23888888' fill-opacity='0.15'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C300,20 300,90 600,50 C900,20 900,90 1200,50 L1200,120 L0,120 Z' fill='%23ffffff' fill-opacity='0.07'%3E%3C/path%3E%3C/svg%3E") repeat-x;
           animation: riverFlow 6s linear infinite reverse;
           z-index: 1;
         }
@@ -334,8 +334,7 @@ export default function Profile() {
             <div
               style={{
                 height: 220,
-                background:
-                  "linear-gradient(135deg, var(--ocean-deep), var(--ocean-surf))",
+                background: "var(--profile-banner)",
                 position: "relative",
                 overflow: "hidden",
               }}

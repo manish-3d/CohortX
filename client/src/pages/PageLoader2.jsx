@@ -12,144 +12,60 @@ export default function PageLoader({ loading = true }) {
   return (
     <>
       <style>{`
-        .page-loader{
-          position:fixed;
-          inset:0;
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
-
-          background:rgba(0,0,0,.08);
-
-          backdrop-filter:blur(10px);
-
-          z-index:99999;
-
-          animation:fadeIn .25s ease;
+        .page-loader {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(12px);
+          z-index: 99999;
+          animation: fadeIn 0.25s ease;
         }
 
-        .loader-wrap{
-          position:relative;
-
-          width:120px;
-          height:120px;
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
+        .loader-card {
+          background: #ffffff;
+          padding: 32px;
+          border-radius: 24px;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .loader-ring{
-          position:absolute;
-
-          width:100px;
-          height:100px;
-
-          border-radius:50%;
-
-          border:
-            2px solid
-            rgba(255,255,255,.08);
-
-          border-top:
-            2px solid
-            #1d9bf0;
-
-          animation:
-            spin 1s linear infinite;
+        .loader-spinner {
+          width: 44px;
+          height: 44px;
+          border: 3.5px solid rgba(0, 0, 0, 0.1);
+          border-top: 3.5px solid #000000;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
         }
 
-        .loader-ring::before{
-          content:"";
-
-          position:absolute;
-
-          inset:-14px;
-
-          border-radius:50%;
-
-          border:
-            2px solid
-            transparent;
-
-          border-top:
-            2px solid
-            rgba(66,176,245,.6);
-
-          animation:
-            spinReverse 1.5s linear infinite;
-        }
-
-        .loader-core{
-          width:12px;
-          height:12px;
-
-          border-radius:50%;
-
-          background:#42b0f5;
-
-          box-shadow:
-            0 0 25px #42b0f5,
-            0 0 80px #1d9bf0;
-
-          animation:
-            pulse 1.4s ease infinite;
-        }
-
-        @keyframes spin{
-          from{
-            transform:rotate(0);
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
           }
-
-          to{
-            transform:rotate(360deg);
+          to {
+            transform: rotate(360deg);
           }
         }
 
-        @keyframes spinReverse{
-          from{
-            transform:rotate(360deg);
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
           }
-
-          to{
-            transform:rotate(0);
-          }
-        }
-
-        @keyframes pulse{
-          0%{
-            transform:scale(.9);
-            opacity:.6;
-          }
-
-          50%{
-            transform:scale(1.4);
-            opacity:1;
-          }
-
-          100%{
-            transform:scale(.9);
-            opacity:.6;
-          }
-        }
-
-        @keyframes fadeIn{
-          from{
-            opacity:0;
-          }
-
-          to{
-            opacity:1;
+          to {
+            opacity: 1;
           }
         }
       `}</style>
 
       <div className="page-loader">
-        <div className="loader-wrap">
-          <div className="loader-ring" />
-
-          <div className="loader-core" />
+        <div className="loader-card">
+          <div className="loader-spinner" />
         </div>
       </div>
     </>

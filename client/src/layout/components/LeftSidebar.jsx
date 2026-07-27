@@ -66,9 +66,9 @@ export default function LeftSidebar() {
           Cohort
           <span
             style={{
-              color: "var(--blue)",
+              color: "var(--white)",
               textShadow:
-                "0 0 18px rgba(29,155,240,0.8), 0 0 40px rgba(29,155,240,0.4)",
+                "0 0 18px var(--white-85), 0 0 40px var(--white-30)",
             }}
           >
             X
@@ -91,8 +91,8 @@ export default function LeftSidebar() {
             width: 24,
             height: 1.5,
             borderRadius: 999,
-            background: "linear-gradient(90deg, var(--blue), transparent)",
-            boxShadow: "0 0 8px rgba(29,155,240,0.6)",
+            background: "linear-gradient(90deg, var(--white), transparent)",
+            boxShadow: "0 0 8px var(--white-60)",
           }}
         />
       </div>
@@ -135,7 +135,7 @@ export default function LeftSidebar() {
                     borderRadius: "50%",
                     background: "rgba(255,255,255,0.9)",
                     boxShadow:
-                      "0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(29,155,240,0.6)",
+                      "0 0 8px rgba(255,255,255,0.8), 0 0 16px var(--white-60)",
                   }}
                 />
               )}
@@ -181,8 +181,8 @@ export default function LeftSidebar() {
           gap: 8,
           alignItems: "center",
           padding: "9px 10px",
-          background: "rgba(6,25,41,0.75)",
-          border: "1px solid rgba(29,155,240,0.22)",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           backdropFilter: "blur(20px)",
           borderRadius: "var(--radius-lg)",
         }}
@@ -196,8 +196,8 @@ export default function LeftSidebar() {
               height: 28,
               borderRadius: "50%",
               objectFit: "cover",
-              border: "1.5px solid rgba(29,155,240,0.5)",
-              boxShadow: "0 0 10px rgba(29,155,240,0.3)",
+              border: "1.5px solid var(--white-30)",
+              boxShadow: "0 0 10px var(--white-12)",
             }}
           />
           <span
@@ -231,10 +231,10 @@ export default function LeftSidebar() {
           <div
             style={{
               fontSize: 9,
-              color: "var(--blue)",
+              color: "var(--text-muted)",
               marginTop: 1,
               fontWeight: 600,
-              textShadow: "0 0 8px rgba(29,155,240,0.6)",
+              textShadow: "0 0 8px var(--white-30)",
             }}
           >
             Builder
@@ -297,9 +297,9 @@ function smokeEffect(e) {
       borderRadius: "50%",
       background:
         i % 3 === 0
-          ? "rgba(29,155,240,0.65)"
+          ? "rgba(255,255,255,0.65)"
           : i % 3 === 1
-            ? "rgba(66,176,245,0.5)"
+            ? "rgba(200,200,200,0.5)"
             : "rgba(255,255,255,0.35)",
       pointerEvents: "none",
       zIndex: 9999,

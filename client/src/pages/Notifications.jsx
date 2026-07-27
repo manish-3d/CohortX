@@ -108,7 +108,7 @@ export default function Notifications() {
                   background: item.isRead ? "#fff" : "#eff6ff",
                   boxShadow: item.isRead
                     ? "none"
-                    : "0 10px 30px rgba(29,155,240,.12)",
+                    : "0 10px 30px var(--white-12)",
                   cursor: item.link ? "pointer" : "default",
                 }}
               >

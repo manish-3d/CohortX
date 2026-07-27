@@ -104,9 +104,9 @@ function OceanCanvas() {
       const H = canvas.height;
 
       const bg = ctx.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, "#020b16");
-      bg.addColorStop(0.4, "#030f1f");
-      bg.addColorStop(1, "#010810");
+      bg.addColorStop(0, "#050505");
+      bg.addColorStop(0.5, "#0b0b0b");
+      bg.addColorStop(1, "#020202");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
@@ -118,8 +118,8 @@ function OceanCanvas() {
         H * 0.85,
         W * 0.65
       );
-      glow.addColorStop(0, "rgba(13,68,140,0.25)");
-      glow.addColorStop(0.5, "rgba(8,40,88,0.10)");
+      glow.addColorStop(0, "rgba(255,255,255,0.06)");
+      glow.addColorStop(0.5, "rgba(255,255,255,0.02)");
       glow.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, H);
@@ -132,7 +132,7 @@ function OceanCanvas() {
         H * 0.2,
         W * 0.4
       );
-      glow2.addColorStop(0, "rgba(15,90,160,0.12)");
+      glow2.addColorStop(0, "rgba(255,255,255,0.04)");
       glow2.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow2;
       ctx.fillRect(0, 0, W, H);
@@ -143,7 +143,7 @@ function OceanCanvas() {
           frequency: 0.0018,
           speed: 0.22,
           yBase: H * 0.68,
-          color: "rgba(5,28,58,0.80)",
+          color: "rgba(15,15,15,0.85)",
           blur: 4,
         },
         {
@@ -151,7 +151,7 @@ function OceanCanvas() {
           frequency: 0.0022,
           speed: 0.3,
           yBase: H * 0.72,
-          color: "rgba(7,38,75,0.85)",
+          color: "rgba(20,20,20,0.88)",
           blur: 3,
         },
         {
@@ -159,7 +159,7 @@ function OceanCanvas() {
           frequency: 0.0028,
           speed: 0.38,
           yBase: H * 0.76,
-          color: "rgba(9,50,96,0.88)",
+          color: "rgba(25,25,25,0.90)",
           blur: 2,
         },
         {
@@ -167,7 +167,7 @@ function OceanCanvas() {
           frequency: 0.0034,
           speed: 0.46,
           yBase: H * 0.8,
-          color: "rgba(11,60,112,0.90)",
+          color: "rgba(30,30,30,0.92)",
           blur: 2,
         },
         {
@@ -175,7 +175,7 @@ function OceanCanvas() {
           frequency: 0.004,
           speed: 0.55,
           yBase: H * 0.83,
-          color: "rgba(13,72,128,0.92)",
+          color: "rgba(35,35,35,0.94)",
           blur: 1,
         },
         {
@@ -183,7 +183,7 @@ function OceanCanvas() {
           frequency: 0.005,
           speed: 0.64,
           yBase: H * 0.86,
-          color: "rgba(16,85,148,0.93)",
+          color: "rgba(40,40,40,0.95)",
           blur: 0,
         },
         {
@@ -191,7 +191,7 @@ function OceanCanvas() {
           frequency: 0.006,
           speed: 0.75,
           yBase: H * 0.89,
-          color: "rgba(18,100,168,0.94)",
+          color: "rgba(45,45,45,0.96)",
           blur: 0,
         },
         {
@@ -199,7 +199,7 @@ function OceanCanvas() {
           frequency: 0.007,
           speed: 0.85,
           yBase: H * 0.91,
-          color: "rgba(20,112,186,0.95)",
+          color: "rgba(50,50,50,0.97)",
           blur: 0,
         },
         {
@@ -207,7 +207,7 @@ function OceanCanvas() {
           frequency: 0.0085,
           speed: 1.0,
           yBase: H * 0.93,
-          color: "rgba(22,124,205,0.96)",
+          color: "rgba(60,60,60,0.98)",
           blur: 0,
         },
         {
@@ -215,7 +215,7 @@ function OceanCanvas() {
           frequency: 0.01,
           speed: 1.2,
           yBase: H * 0.955,
-          color: "rgba(29,155,240,0.55)",
+          color: "rgba(80,80,80,0.60)",
           blur: 0,
         },
       ];
@@ -234,7 +234,7 @@ function OceanCanvas() {
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = `rgba(150,210,255,${0.35 - i * 0.04})`;
+        ctx.strokeStyle = `rgba(200,200,200,${0.25 - i * 0.03})`;
         ctx.lineWidth = 1.5 - i * 0.2;
         ctx.stroke();
       }
@@ -252,7 +252,7 @@ function OceanCanvas() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(100,190,255,${p.alpha * (0.6 + 0.4 * Math.sin(t + p.x))})`;
+        ctx.fillStyle = `rgba(255,255,255,${p.alpha * (0.6 + 0.4 * Math.sin(t + p.x))})`;
         ctx.fill();
       });
 
