@@ -139,17 +139,16 @@ export default function Profile() {
     navigate(`/profile/${user.username}`);
   }
 
-  const bannerStyle = {
-  // Linear gradient from dark-grey to black
-  background: 'linear-gradient(135deg, #111111 0%, #000000 100%)',
-  
-  // Necessary styling for a banner
-  width: '100%',
-  minHeight: '100vh', // Adjust height as needed
-  borderRadius: '16px', // Matches your card's rounded corners
-  position: 'relative',
-  overflow: 'hidden'
-};
+  const loadingScreenStyle = {
+    background: "linear-gradient(135deg, #0a0a0a 0%, #111111 100%)",
+    width: "100%",
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    overflow: "hidden"
+  };
 
   const handleShareProfile = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -159,13 +158,9 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <>
-       <div style={bannerStyle}>
-          <PageLoader  text="profile loading.."/>
-       </div>
-        
-        
-      </>
+      <div style={loadingScreenStyle}>
+        <PageLoader text="Loading profile..." minHeight="100vh" />
+      </div>
     );
   }
 

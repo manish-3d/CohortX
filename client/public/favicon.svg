@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Dark background rounded square -->
+  <rect width="64" height="64" rx="14" fill="#0a0a0a"/>
+
+  <!-- White "C" -->
+  <text
+    x="10"
+    y="47"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="38"
+    font-weight="800"
+    fill="#ffffff"
+    letter-spacing="-2"
+  >C</text>
+
+  <!-- Blue "X" -->
+  <text
+    x="34"
+    y="47"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="38"
+    font-weight="800"
+    fill="#3b82f6"
+    letter-spacing="-2"
+  >X</text>
+</svg>

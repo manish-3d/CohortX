@@ -154,21 +154,8 @@ export default function LeftSidebar() {
           marginBottom: 10,
           fontSize: 11,
           gap: 6,
-          position: "relative",
-          overflow: "hidden",
         }}
-        onMouseEnter={smokeEffect}
       >
-        <span
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
-            animation: "shineSweep 2.8s ease-in-out infinite",
-            pointerEvents: "none",
-          }}
-        />
         <Plus size={12} />
         <span>Create</span>
       </button>
@@ -254,15 +241,12 @@ export default function LeftSidebar() {
             background: "rgba(51, 103, 193, 0.08)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(22, 139, 178, 0.18)";
-            e.currentTarget.style.borderColor = "rgba(47, 164, 232, 0.6)";
-            e.currentTarget.style.boxShadow =
-              "0 0 12px rgba(68, 142, 239, 0.35)";
-            smokeEffect(e);
+            e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(62, 122, 190, 0.08)";
-            e.currentTarget.style.borderColor = "rgba(70, 154, 232, 0.3)";
+            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+            e.currentTarget.style.borderColor = "rgba(242, 242, 242, 0.3)";
             e.currentTarget.style.boxShadow = "none";
           }}
         >
@@ -273,47 +257,3 @@ export default function LeftSidebar() {
   );
 }
 
-/* ── Smoke particle effect ── */
-function smokeEffect(e) {
-  const btn = e.currentTarget;
-  const rect = btn.getBoundingClientRect();
-  const count = 12;
-
-  for (let i = 0; i < count; i++) {
-    const puff = document.createElement("div");
-    const size = Math.random() * 14 + 6;
-    const startX = Math.random() * rect.width;
-    const dirX = (Math.random() - 0.5) * 50;
-    const dirY = -(Math.random() * 40 + 16);
-    const dur = Math.random() * 500 + 350;
-    const delay = Math.random() * 180;
-
-    Object.assign(puff.style, {
-      position: "fixed",
-      left: rect.left + startX + "px",
-      top: rect.top + rect.height / 2 + "px",
-      width: size + "px",
-      height: size + "px",
-      borderRadius: "50%",
-      background:
-        i % 3 === 0
-          ? "rgba(255,255,255,0.65)"
-          : i % 3 === 1
-            ? "rgba(200,200,200,0.5)"
-            : "rgba(255,255,255,0.35)",
-      pointerEvents: "none",
-      zIndex: 9999,
-      filter: "blur(3px)",
-      transition: `all ${dur}ms cubic-bezier(0.22,1,0.36,1)`,
-      opacity: "0.85",
-      transform: "scale(0.3)",
-    });
-
-    document.body.appendChild(puff);
-    setTimeout(() => {
-      puff.style.transform = `translate(${dirX}px, ${dirY}px) scale(${Math.random() * 1.6 + 1.1})`;
-      puff.style.opacity = "0";
-    }, delay);
-    setTimeout(() => puff.remove(), dur + delay + 50);
-  }
-}

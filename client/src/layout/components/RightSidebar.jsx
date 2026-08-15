@@ -146,12 +146,12 @@ export default function RightSidebar() {
   const sectionStyle = {
     borderRadius: "var(--radius-lg)",
     overflow: "hidden",
-    background: "rgba(4,14,28,0.72)",
+    background: "linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.80) 100%)",
     backdropFilter: "blur(20px) saturate(160%)",
     WebkitBackdropFilter: "blur(20px) saturate(160%)",
     border: "1px solid var(--white-12)",
     boxShadow:
-      "0 2px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)",
+      "0 2px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     transition: "box-shadow 0.3s, border-color 0.3s",
   };
 
@@ -226,9 +226,8 @@ export default function RightSidebar() {
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <Bell
               size={12}
-              color="var(--blue)"
+              color="var(--text-muted)"
               strokeWidth={2}
-              style={{ filter: "drop-shadow(0 0 4px var(--white-60))" }}
             />
             Notifications
           </div>
@@ -241,13 +240,13 @@ export default function RightSidebar() {
                   height: 17,
                   borderRadius: "var(--radius-full)",
                   background:
-                    "linear-gradient(135deg, var(--blue), var(--blue-bright))",
-                  color: "#fff",
+                    "linear-gradient(135deg, #fff, rgba(200,200,200,0.8))",
+                  color: "#000",
                   display: "grid",
                   placeItems: "center",
                   fontSize: 9,
                   fontWeight: 900,
-                  boxShadow: "0 0 10px var(--white-60)",
+                  boxShadow: "0 0 8px rgba(255,255,255,0.4)",
                 }}
               >
                 {unread}
@@ -438,11 +437,6 @@ export default function RightSidebar() {
               <MessageCircle
                 size={11}
                 strokeWidth={2.2}
-                style={{
-                  filter: showChat
-                    ? "drop-shadow(0 0 4px var(--white-60))"
-                    : "none",
-                }}
               />
             </span>
             Messages
@@ -496,21 +490,8 @@ export default function RightSidebar() {
             height: 36,
             fontSize: 11,
             gap: 6,
-            position: "relative",
-            overflow: "hidden",
           }}
-          onMouseEnter={smokeEffect}
         >
-          <span
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
-              animation: "shineSweep 2.4s ease-in-out infinite",
-              pointerEvents: "none",
-            }}
-          />
           <Video size={12} />
           Go Live
         </button>
@@ -533,8 +514,7 @@ export default function RightSidebar() {
         >
           <Radio
             size={10}
-            color="var(--blue)"
-            style={{ filter: "drop-shadow(0 0 4px var(--white-85))" }}
+            color="var(--text-muted)"
           />
           <span>Live Now</span>
           {lives.length > 0 && (
@@ -544,11 +524,10 @@ export default function RightSidebar() {
                 fontSize: 9,
                 fontWeight: 800,
                 background: "var(--white-12)",
-                color: "var(--blue-bright)",
+                color: "var(--text-muted)",
                 padding: "1px 6px",
                 borderRadius: "var(--radius-full)",
                 border: "1px solid var(--white-30)",
-                boxShadow: "0 0 8px var(--white-30)",
               }}
             >
               {lives.length}
@@ -562,7 +541,7 @@ export default function RightSidebar() {
             <div
               key={live.id}
               style={{
-                background: "rgba(6,25,41,0.65)",
+          background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%)",
                 border: "1px solid var(--white-12)",
                 borderRadius: "var(--radius-md)",
                 padding: "9px 10px",
@@ -644,20 +623,8 @@ export default function RightSidebar() {
                     fontSize: 10,
                     padding: "0 8px",
                     gap: 4,
-                    position: "relative",
-                    overflow: "hidden",
                   }}
                 >
-                  <span
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%)",
-                      animation: "shineSweep 2.8s ease-in-out infinite",
-                      pointerEvents: "none",
-                    }}
-                  />
                   <Play size={9} />
                   Watch
                 </button>
@@ -706,7 +673,7 @@ export default function RightSidebar() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(3,10,20,0.75)",
+            background: "rgba(0,0,0,0.75)",
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
             display: "flex",
@@ -723,7 +690,7 @@ export default function RightSidebar() {
               width: 360,
               maxWidth: "100%",
               padding: 24,
-              background: "rgba(4,14,28,0.94)",
+              background: "rgba(10,10,10,0.95)",
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
               borderRadius: "var(--radius-xl)",
@@ -943,7 +910,7 @@ export default function RightSidebar() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(3,10,20,0.75)",
+            background: "rgba(0,0,0,0.75)",
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
             display: "flex",
@@ -958,7 +925,7 @@ export default function RightSidebar() {
             style={{
               width: 320,
               padding: 22,
-              background: "rgba(4,14,28,0.92)",
+              background: "rgba(10,10,10,0.94)",
               backdropFilter: "blur(28px)",
               WebkitBackdropFilter: "blur(28px)",
               borderRadius: "var(--radius-xl)",
@@ -1086,7 +1053,7 @@ export default function RightSidebar() {
             gap: 9,
             padding: "12px 16px",
             borderRadius: "var(--radius-md)",
-            background: "rgba(4,14,28,0.94)",
+            background: "rgba(10,10,10,0.95)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             border:
@@ -1125,42 +1092,3 @@ export default function RightSidebar() {
   );
 }
 
-function smokeEffect(e) {
-  const btn = e.currentTarget;
-  const rect = btn.getBoundingClientRect();
-  for (let i = 0; i < 12; i++) {
-    const puff = document.createElement("div");
-    const size = Math.random() * 14 + 6;
-    const startX = Math.random() * rect.width;
-    const dirX = (Math.random() - 0.5) * 48;
-    const dirY = -(Math.random() * 38 + 14);
-    const dur = Math.random() * 500 + 350;
-    const delay = Math.random() * 180;
-    Object.assign(puff.style, {
-      position: "fixed",
-      left: rect.left + startX + "px",
-      top: rect.top + rect.height / 2 + "px",
-      width: size + "px",
-      height: size + "px",
-      borderRadius: "50%",
-      background:
-        i % 3 === 0
-          ? "var(--white-60)"
-          : i % 3 === 1
-            ? "var(--white-60)"
-            : "rgba(255,255,255,0.35)",
-      pointerEvents: "none",
-      zIndex: 9999,
-      filter: "blur(3px)",
-      transition: `all ${dur}ms cubic-bezier(0.22,1,0.36,1)`,
-      opacity: "0.85",
-      transform: "scale(0.3)",
-    });
-    document.body.appendChild(puff);
-    setTimeout(() => {
-      puff.style.transform = `translate(${dirX}px, ${dirY}px) scale(${Math.random() * 1.6 + 1.1})`;
-      puff.style.opacity = "0";
-    }, delay);
-    setTimeout(() => puff.remove(), dur + delay + 50);
-  }
-}

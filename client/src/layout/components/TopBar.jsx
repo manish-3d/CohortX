@@ -61,8 +61,8 @@ export default function TopBar() {
             padding: "0 18px",
             borderRadius: "var(--radius-full)",
             background: focused
-              ? "rgba(15, 23, 42, 0.65)"
-              : "rgba(15, 23, 42, 0.4)",
+              ? "rgba(0, 0, 0, 0.85)"
+              : "rgba(0, 0, 0, 0.6)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             border: focused
@@ -77,7 +77,7 @@ export default function TopBar() {
         >
           <Search
             size={18}
-            color={focused ? "var(--blue-bright)" : "var(--text-muted)"}
+            color={focused ? "#ffffff" : "var(--text-muted)"}
             strokeWidth={2}
             style={{ transition: "color 0.25s", flexShrink: 0 }}
           />
@@ -130,7 +130,7 @@ export default function TopBar() {
               zIndex: 100,
               overflow: "hidden",
               borderRadius: "20px",
-              background: "rgba(15, 23, 42, 0.95)",
+              background: "rgba(10, 10, 10, 0.96)",
               backdropFilter: "blur(24px)",
               WebkitBackdropFilter: "blur(24px)",
               border: "1px solid rgba(255, 255, 255, 0.08)",
